@@ -136,7 +136,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
         if (obj instanceof RoleDetailResp detail) {
             Long roleId = detail.getId();
             if (SysConstants.SUPER_ROLE_CODE.equals(detail.getCode())) {
-                List<MenuResp> list = menuService.listAll();
+                List<MenuResp> list = menuService.listAll(UserContextHolder.getTenantId());
                 List<Long> menuIds = list.stream().map(MenuResp::getId).toList();
                 detail.setMenuIds(menuIds);
             } else {
@@ -234,5 +234,25 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
                 UserContextHolder.setContext(userContext);
             }
         });
+    }
+
+    /**
+     * 初始化租户角色
+     *
+     * @return 角色ID
+     */
+    @Override
+    public Long initTenantRole() {
+        RoleDO roleDO = new RoleDO();
+        roleDO.setName("系统管理员");
+        roleDO.setCode(SysConstants.SUPER_ROLE_CODE);
+        roleDO.setDataScope(DataScopeEnum.ALL);
+        roleDO.setDescription("系统初始角色");
+        roleDO.setSort(1);
+        roleDO.setIsSystem(true);
+        roleDO.setMenuCheckStrictly(false);
+        roleDO.setDeptCheckStrictly(false);
+        baseMapper.insert(roleDO);
+        return roleDO.getId();
     }
 }

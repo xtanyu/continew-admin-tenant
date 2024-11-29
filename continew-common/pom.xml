@@ -153,5 +153,12 @@
             <groupId>top.continew</groupId>
             <artifactId>continew-starter-json-jackson</artifactId>
         </dependency>
+
+        <!-- 多租户组件-->
+        <dependency>
+            <groupId>top.continew</groupId>
+            <artifactId>continew-starter-extension-tenant-mp</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

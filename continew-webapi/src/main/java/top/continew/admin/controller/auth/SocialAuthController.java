@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.auth.model.resp.SocialAuthAuthorizeResp;
 import top.continew.admin.auth.service.LoginService;
+import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.log.core.annotation.Log;
@@ -53,6 +54,7 @@ public class SocialAuthController {
 
     private final LoginService loginService;
     private final AuthRequestFactory authRequestFactory;
+    private final TenantService tenantService;
 
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
     @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
@@ -75,6 +77,8 @@ public class SocialAuthController {
         AuthResponse<AuthUser> response = authRequest.login(callback);
         ValidationUtils.throwIf(!response.ok(), response.getMsg());
         AuthUser authUser = response.getData();
+        //验证租户
+        tenantService.checkStatus();
         String token = loginService.socialLogin(authUser);
         return LoginResp.builder().token(token).build();
     }

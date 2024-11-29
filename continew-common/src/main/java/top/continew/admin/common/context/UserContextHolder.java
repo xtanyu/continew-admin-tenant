@@ -180,4 +180,11 @@ public class UserContextHolder {
         StpUtil.checkLogin();
         return getContext().isAdmin();
     }
+
+    /**
+     * 获取租户ID
+     */
+    public static Long getTenantId() {
+        return ExceptionUtils.exToNull(() -> getContext().getTenantId());
+    }
 }
