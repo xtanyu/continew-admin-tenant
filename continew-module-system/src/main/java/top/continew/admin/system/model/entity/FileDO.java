@@ -86,28 +86,28 @@ public class FileDO extends BaseDO {
      * 转换为 X-File-Storage 文件信息对象
      *
      * @param storageCode 存储编码
-     * @param bucketName 桶名称
+     * @param bucketName  桶名称
      * @return X-File-Storage 文件信息对象
      */
-    public FileInfo toFileInfo(String storageCode,String bucketName) {
+    public FileInfo toFileInfo(String storageCode, String bucketName) {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setUrl(this.url);
         fileInfo.setSize(this.size);
         fileInfo.setFilename(StrUtil.contains(this.url, StringConstants.SLASH)
-                ? StrUtil.subAfter(this.url, StringConstants.SLASH, true)
-                : this.url);
+            ? StrUtil.subAfter(this.url, StringConstants.SLASH, true)
+            : this.url);
         fileInfo.setOriginalFilename(StrUtils
-                .blankToDefault(this.extension, this.name, ex -> this.name + StringConstants.DOT + ex));
+            .blankToDefault(this.extension, this.name, ex -> this.name + StringConstants.DOT + ex));
         fileInfo.setBasePath(StringConstants.EMPTY);
         // 优化 path 处理
-        fileInfo.setPath(extractRelativePath(this.url,bucketName));
+        fileInfo.setPath(extractRelativePath(this.url, bucketName));
 
         fileInfo.setExt(this.extension);
         fileInfo.setPlatform(storageCode);
         fileInfo.setThUrl(this.thumbnailUrl);
         fileInfo.setThFilename(StrUtil.contains(this.thumbnailUrl, StringConstants.SLASH)
-                ? StrUtil.subAfter(this.thumbnailUrl, StringConstants.SLASH, true)
-                : this.thumbnailUrl);
+            ? StrUtil.subAfter(this.thumbnailUrl, StringConstants.SLASH, true)
+            : this.thumbnailUrl);
         fileInfo.setThSize(this.thumbnailSize);
         return fileInfo;
     }
@@ -117,19 +117,18 @@ public class FileDO extends BaseDO {
      * 例如:
      * http://domain.cn/bucketName/2024/11/27/6746ec3b2907f0de80afdd70.png => 2024/11/27/
      * http://bucketName.damain.cn/2024/11/27/6746ec3b2907f0de80afdd70.png => 2024/11/27/
-     * @param url 文件路径
+     * 
+     * @param url        文件路径
      * @param bucketName 桶名称
      * @return
      */
     @SneakyThrows
     private static String extractRelativePath(String url, String bucketName) {
-         url = StrUtil.subBefore(url, StringConstants.SLASH, true) + StringConstants.SLASH;
+        url = StrUtil.subBefore(url, StringConstants.SLASH, true) + StringConstants.SLASH;
         // 提取 URL 中的路径部分
         String fullPath = new URL(url).getPath();
         // 移除开头的斜杠
-        String relativePath = fullPath.startsWith(StringConstants.SLASH)
-                ? fullPath.substring(1)
-                : fullPath;
+        String relativePath = fullPath.startsWith(StringConstants.SLASH) ? fullPath.substring(1) : fullPath;
         // 如果路径以 bucketName 开头，则移除 bucketName 例如: bucketName/2024/11/27/ -> 2024/11/27/
         if (relativePath.startsWith(bucketName)) {
             return StrUtil.split(relativePath, bucketName).get(1);

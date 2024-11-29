@@ -90,8 +90,8 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
     }
 
     @Override
-    @Cached(key = "'ALL'", name = CacheConstants.MENU_KEY_PREFIX)
-    public List<MenuResp> listAll() {
+    @Cached(key = "'ALL' + #tenantId", name = CacheConstants.MENU_KEY_PREFIX)
+    public List<MenuResp> listAll(Long tenantId) {
         return super.list(new MenuQuery(DisEnableStatusEnum.ENABLE), null);
     }
 

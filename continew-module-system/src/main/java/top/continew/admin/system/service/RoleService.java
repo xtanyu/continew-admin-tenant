@@ -99,4 +99,12 @@ public interface RoleService extends BaseService<RoleResp, RoleDetailResp, RoleQ
      * @return 角色数量
      */
     int countByNames(List<String> roleNames);
+
+    /**
+     * 初始化租户角色
+     * 
+     * @return 角色ID
+     */
+    Long initTenantRole();
+
 }

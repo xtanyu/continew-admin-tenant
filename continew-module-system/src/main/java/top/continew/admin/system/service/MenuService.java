@@ -20,8 +20,8 @@ import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.query.MenuQuery;
 import top.continew.admin.system.model.req.MenuReq;
 import top.continew.admin.system.model.resp.MenuResp;
-import top.continew.starter.extension.crud.service.BaseService;
 import top.continew.starter.data.mp.service.IService;
+import top.continew.starter.extension.crud.service.BaseService;
 
 import java.util.List;
 import java.util.Set;
@@ -39,7 +39,7 @@ public interface MenuService extends BaseService<MenuResp, MenuResp, MenuQuery, 
      *
      * @return 菜单列表
      */
-    List<MenuResp> listAll();
+    List<MenuResp> listAll(Long tenantId);
 
     /**
      * 根据用户 ID 查询
