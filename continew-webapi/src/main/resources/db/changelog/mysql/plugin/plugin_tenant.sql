@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS `sys_tenant`;
 CREATE TABLE `sys_tenant` (
 `id` bigint NOT NULL COMMENT 'ID',
 `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '租户名称',
+`tenant_sn` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '租户编号',
 `user_id` bigint DEFAULT NULL COMMENT '租户对应的用户',
 `domain` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '绑定的域名',
 `package_id` bigint NOT NULL COMMENT '租户套餐编号',
@@ -41,15 +42,35 @@ CREATE TABLE `sys_tenant_package` (
 -- changeset 小熊:2
 -- comment 添加租户列和索引
 ALTER TABLE sys_app ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_app_tenant_id ON sys_app(tenant_id);
 ALTER TABLE sys_dept ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_dept_tenant_id ON sys_dept(tenant_id);
 ALTER TABLE sys_file ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_file_tenant_id ON sys_file(tenant_id);
 ALTER TABLE sys_log ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_log_tenant_id ON sys_log(tenant_id);
 ALTER TABLE sys_menu ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_menu_tenant_id ON sys_menu(tenant_id);
 ALTER TABLE sys_message ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_message_tenant_id ON sys_message(tenant_id);
 ALTER TABLE sys_message_user ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_message_user_tenant_id ON sys_message_user(tenant_id);
 ALTER TABLE sys_notice ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_notice_tenant_id ON sys_notice(tenant_id);
 ALTER TABLE sys_role ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_role_tenant_id ON sys_role(tenant_id);
 ALTER TABLE sys_user ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_user_tenant_id ON sys_user(tenant_id);
+ALTER TABLE sys_role_dept ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_role_dept_tenant_id ON sys_role_dept(tenant_id);
+ALTER TABLE sys_role_menu ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_role_menu_tenant_id ON sys_role_menu(tenant_id);
+ALTER TABLE sys_user_password_history ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_user_password_history_tenant_id ON sys_user_password_history(tenant_id);
+ALTER TABLE sys_user_role ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_user_role_tenant_id ON sys_user_role(tenant_id);
+ALTER TABLE sys_user_social ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
+CREATE INDEX idx_sys_user_social_tenant_id ON sys_user_social(tenant_id);
 
 -- changeset 小熊:3
 -- comment 唯一索引变更
@@ -72,15 +93,18 @@ ALTER TABLE sys_user ADD UNIQUE INDEX `uk_phone` (`phone`, `tenant_id`);
 
 -- changeset 小熊:4
 -- comment 菜单录入
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10015, '租户套餐管理', 7000, 2, '/open/tenantPackage', 'TenantPackage', 'open/tenantPackage/index', NULL, 'storage', b'0', b'0', b'0', NULL, 1, 1, 1, now(), 1, now(), 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10016, '列表', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:list', 1, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10017, '详情', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:detail', 2, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10018, '新增', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:add', 3, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10019, '修改', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:update', 4, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10020, '删除', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:delete', 5, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10022, '租户管理', 7000, 2, '/open/tenant', 'Tenant', 'open/tenant/index', NULL, 'user-group', b'0', b'0', b'0', NULL, 1, 1, 1, now(), 1, now(), 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10023, '列表', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:list', 1, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10024, '详情', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:detail', 2, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10025, '新增', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:add', 3, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10026, '修改', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:update', 4, 1, 1, now(), NULL, NULL, 0);
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`) VALUES (10027, '删除', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:delete', 5, 1, 1, now(), NULL, NULL, 0);
+INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`)
+VALUES
+(10015, '租户套餐管理', 7000, 2, '/open/tenantPackage', 'TenantPackage', 'open/tenantPackage/index', NULL, 'storage', b'0', b'0', b'0', NULL, 1, 1, 1, now(), NULL, NULL, 0),
+(10016, '列表', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:list', 1, 1, 1, now(), NULL, NULL, 0),
+(10017, '详情', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:detail', 2, 1, 1, now(), NULL, NULL, 0),
+(10018, '新增', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:add', 3, 1, 1, now(), NULL, NULL, 0),
+(10019, '修改', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:update', 4, 1, 1, now(), NULL, NULL, 0),
+(10020, '删除', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:delete', 5, 1, 1, now(), NULL, NULL, 0),
+(10022, '租户管理', 7000, 2, '/open/tenant', 'Tenant', 'open/tenant/index', NULL, 'user-group', b'0', b'0', b'0', NULL, 1, 1, 1, now(), NULL, NULL, 0),
+(10023, '列表', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:list', 1, 1, 1, now(), NULL, NULL, 0),
+(10024, '详情', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:detail', 2, 1, 1, now(), NULL, NULL, 0),
+(10025, '新增', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:add', 3, 1, 1, now(), NULL, NULL, 0),
+(10026, '修改', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:update', 4, 1, 1, now(), NULL, NULL, 0),
+(10027, '删除', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:delete', 5, 1, 1, now(), NULL, NULL, 0);
+

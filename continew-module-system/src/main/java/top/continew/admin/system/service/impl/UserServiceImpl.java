@@ -734,4 +734,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
         return userDO.getId();
     }
 
+    @Override
+    public UserDO getById(Long userId) {
+        return baseMapper.selectById(userId);
+    }
 }

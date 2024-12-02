@@ -87,4 +87,13 @@ public class TenantDetailResp extends BaseDetailResp {
     @Schema(description = "关联的菜单ids")
     private List<Long> menuIds;
 
+    /**
+     * 租户编号
+     */
+    private String tenantSn;
+
+    /**
+     * 租户绑定的管理用户id
+     */
+    private Long userId;
 }

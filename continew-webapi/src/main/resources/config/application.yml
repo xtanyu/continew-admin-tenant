@@ -298,16 +298,10 @@ continew-starter.tenant:
     - gen_field_config
     - sys_dict # 字典表
     - sys_dict_item
-    - sys_message_user # 消息关联
     - sys_option #参数
-    - sys_role_dept # 角色部门关联
-    - sys_role_menu # 角色菜单关联
     - sys_storage # 存储配置
     - sys_tenant # 租户
     - sys_tenant_package
-    - sys_user_password_history
-    - sys_user_role
-    - sys_user_social
   #租户不能使用的菜单
   ignore-menus:
     - 1070 #字典

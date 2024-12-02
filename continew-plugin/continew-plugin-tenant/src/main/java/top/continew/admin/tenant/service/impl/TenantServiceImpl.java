@@ -18,6 +18,7 @@ package top.continew.admin.tenant.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -66,6 +67,19 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
         //租户名称不能重复
         ValidationUtils.throwIf(baseMapper.exists(Wrappers.lambdaQuery(TenantDO.class)
             .eq(TenantDO::getName, req.getName())), "重复的租户名称");
+        //录入随机的六位租户编号
+        req.setTenantSn(generateTenantSn());
+    }
+
+    /**
+     * 生成六位随机不重复的编号
+     */
+    private String generateTenantSn() {
+        String tenantSn;
+        do {
+            tenantSn = RandomUtil.randomString(6);
+        } while (baseMapper.exists(Wrappers.lambdaQuery(TenantDO.class).eq(TenantDO::getTenantSn, tenantSn)));
+        return tenantSn;
     }
 
     @Override

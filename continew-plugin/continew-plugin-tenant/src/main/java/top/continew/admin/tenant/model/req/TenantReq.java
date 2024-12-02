@@ -83,7 +83,7 @@ public class TenantReq extends BaseReq {
      * 用户名
      */
     @Schema(description = "用户名", example = "zhangsan")
-    @NotBlank(message = "用户名不能为空")
+    @NotBlank(message = "用户名不能为空", groups = ValidateGroup.Crud.Add.class)
     @Pattern(regexp = RegexConstants.USERNAME, message = "用户名长度为 4-64 个字符，支持大小写字母、数字、下划线，以字母开头")
     private String username;
 
@@ -94,4 +94,6 @@ public class TenantReq extends BaseReq {
     @NotBlank(message = "密码不能为空", groups = ValidateGroup.Crud.Add.class)
     private String password;
 
+
+    private String tenantSn;
 }

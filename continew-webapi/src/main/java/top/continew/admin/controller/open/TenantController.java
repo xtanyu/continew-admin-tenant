@@ -18,16 +18,25 @@ package top.continew.admin.controller.open;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import top.continew.admin.common.util.SecureUtils;
+import top.continew.admin.open.service.AppService;
 import top.continew.admin.system.model.entity.MenuDO;
+import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.service.*;
 import top.continew.admin.tenant.config.TenantConfig;
 import top.continew.admin.tenant.model.query.TenantQuery;
+import top.continew.admin.tenant.model.req.TenantLoginUserInfoReq;
 import top.continew.admin.tenant.model.req.TenantReq;
 import top.continew.admin.tenant.model.resp.TenantCommonResp;
 import top.continew.admin.tenant.model.resp.TenantDetailResp;
@@ -36,11 +45,14 @@ import top.continew.admin.tenant.model.resp.TenantResp;
 import top.continew.admin.tenant.service.TenantPackageService;
 import top.continew.admin.tenant.service.TenantService;
 import top.continew.admin.tenant.util.TenantUtil;
+import top.continew.starter.core.util.ExceptionUtils;
+import top.continew.starter.core.validation.CheckUtils;
+import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.controller.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
+import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 import top.continew.starter.extension.crud.model.resp.BaseIdResp;
-import top.continew.starter.extension.crud.model.resp.BaseResp;
 
 import java.util.List;
 
@@ -61,9 +73,9 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     private final MenuService menuService;
     private final TenantPackageService packageService;
     private final RoleService roleService;
-    private final RoleDeptService roleDeptService;
-    private final RoleMenuService roleMenuService;
     private final UserService userService;
+    private final TenantSysDataService tenantSysDataService;
+    private final AppService appService;
 
     @GetMapping("/common")
     @SaIgnore
@@ -88,13 +100,9 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             //租户部门初始化
             Long deptId = deptService.initTenantDept(req.getName());
             //租户菜单初始化
-            menuInit(menuRespList, 0L, 0L);
+            menuService.menuInit(menuRespList, 0L, 0L);
             //租户角色初始化
             Long roleId = roleService.initTenantRole();
-            //角色绑定部门
-            roleDeptService.add(ListUtil.of(deptId), roleId);
-            //角色绑定菜单
-            roleMenuService.add(menuService.listAll(baseIdResp.getId()).stream().map(BaseResp::getId).toList(), roleId);
             //管理用户初始化
             Long userId = userService.initTenantUser(req.getUsername(), req.getPassword(), deptId);
             //用户绑定角色
@@ -105,18 +113,45 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
         return baseIdResp;
     }
 
-    /**
-     * 递归初始化菜单
-     */
-    private void menuInit(List<MenuDO> menuList, Long oldParentId, Long newParentId) {
-        List<MenuDO> children = menuList.stream().filter(menuDO -> menuDO.getParentId().equals(oldParentId)).toList();
-        for (MenuDO menuDO : children) {
-            Long oldId = menuDO.getId();
-            menuDO.setId(null);
-            menuDO.setParentId(newParentId);
-            menuService.save(menuDO);
-            menuInit(menuList, oldId, menuDO.getId());
+    @Override
+    @Transactional
+    public void delete(List<Long> ids) {
+        for (Long id : ids) {
+            //在租户中执行数据清除
+            TenantUtil.execute(id, () -> {
+                //应用数据清除
+                appService.clear();
+                //系统数据清楚
+                tenantSysDataService.clear();
+            });
         }
+        super.delete(ids);
+    }
+
+    /**
+     * 租户管理账号信息更新
+     */
+    @PutMapping("/loginUser")
+    @Operation(summary = "租户管理账号信息更新", description = "租户管理账号信息更新")
+    public void EditLoginUserInfo(@Validated @RequestBody TenantLoginUserInfoReq req) {
+        TenantDetailResp detailResp = baseService.get(req.getTenantId());
+        CheckUtils.throwIfNull(detailResp, "租户不存在");
+        TenantUtil.execute(detailResp.getId(), () -> {
+            UserDO userDO = userService.getById(detailResp.getUserId());
+            CheckUtils.throwIfNull(userDO, "用户不存在");
+            //修改用户名
+            if (!req.getUsername().equals(userDO.getUsername())) {
+                userService.update(Wrappers.lambdaUpdate(UserDO.class)
+                    .set(UserDO::getUsername, req.getUsername())
+                    .eq(BaseIdDO::getId, userDO.getId()));
+            }
+            //修改密码
+            if (StrUtil.isNotEmpty(req.getPassword())) {
+                String password = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
+                ValidationUtils.throwIfNull(password, "密码解密失败");
+                userService.updatePassword(userDO.getPassword(), password, userDO.getId());
+            }
+        });
     }
 
 }

@@ -172,4 +172,12 @@ public interface UserService extends BaseService<UserResp, UserDetailResp, UserQ
      * @return 管理员id
      */
     Long initTenantUser(String username, String password, Long deptId);
+
+    /**
+     * 根据用户ID查询DO
+     *
+     * @param userId
+     * @return
+     */
+    UserDO getById(Long userId);
 }
