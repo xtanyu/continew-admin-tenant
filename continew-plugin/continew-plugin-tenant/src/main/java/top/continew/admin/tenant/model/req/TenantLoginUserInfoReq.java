@@ -14,18 +14,35 @@
  * limitations under the License.
  */
 
-package top.continew.admin.system.service;
+package top.continew.admin.tenant.model.req;
+
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
- * @description: 多租户系统数据接口
+ * @description: 租户登录用户信息
  * @author: 小熊
- * @create: 2024-12-02 20:08
+ * @create: 2024-12-02 20:41
  */
-public interface TenantSysDataService {
+@Data
+public class TenantLoginUserInfoReq {
 
     /**
-     * 清除所有系统数据
+     * 租户id
      */
-    void clear();
+    @NotNull(message = "租户ID不能为空")
+    private Long tenantId;
+
+    /**
+     * 登录用户名
+     */
+    @NotEmpty(message = "登录用户名不能为空")
+    private String username;
+
+    /**
+     * 登录密码
+     */
+    private String password;
 
 }

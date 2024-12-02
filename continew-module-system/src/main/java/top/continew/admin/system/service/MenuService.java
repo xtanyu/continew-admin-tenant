@@ -57,10 +57,10 @@ public interface MenuService extends BaseService<MenuResp, MenuResp, MenuQuery, 
      */
     List<MenuResp> listByRoleCode(String roleCode);
 
-
     /**
      * 递归初始化菜单
-     * @param menuList 需要初始化的菜单ID
+     * 
+     * @param menuList    需要初始化的菜单ID
      * @param oldParentId 原来的父级ID
      * @param newParentId 新的父级ID
      */

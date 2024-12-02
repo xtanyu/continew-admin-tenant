@@ -91,4 +91,9 @@ public class TenantDetailResp extends BaseDetailResp {
      * 租户编号
      */
     private String tenantSn;
+
+    /**
+     * 租户绑定的管理用户id
+     */
+    private Long userId;
 }
