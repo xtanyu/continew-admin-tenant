@@ -180,5 +180,4 @@ public interface UserService extends BaseService<UserResp, UserDetailResp, UserQ
      * @return
      */
     UserDO getById(Long userId);
-
 }

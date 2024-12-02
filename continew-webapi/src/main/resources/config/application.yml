@@ -291,7 +291,7 @@ management.health:
 
 #多租户配置
 continew-starter.tenant:
-  enabled: false
+  enabled: true
   # 多租户忽略的表
   ignore-tables:
     - gen_config # 代码生成

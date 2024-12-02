@@ -72,7 +72,6 @@ CREATE INDEX idx_sys_user_role_tenant_id ON sys_user_role(tenant_id);
 ALTER TABLE sys_user_social ADD COLUMN tenant_id BIGINT NOT NULL DEFAULT 0;
 CREATE INDEX idx_sys_user_social_tenant_id ON sys_user_social(tenant_id);
 
-
 -- changeset 小熊:3
 -- comment 唯一索引变更
 ALTER TABLE sys_app DROP INDEX `uk_access_key`;
@@ -108,3 +107,4 @@ VALUES
 (10025, '新增', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:add', 3, 1, 1, now(), NULL, NULL, 0),
 (10026, '修改', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:update', 4, 1, 1, now(), NULL, NULL, 0),
 (10027, '删除', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:delete', 5, 1, 1, now(), NULL, NULL, 0);
+
