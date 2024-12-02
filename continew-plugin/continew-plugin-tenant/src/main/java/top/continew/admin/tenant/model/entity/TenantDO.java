@@ -61,5 +61,13 @@ public class TenantDO extends BaseDO {
      */
     private LocalDateTime expireTime;
 
+    /**
+     * 用户ID
+     */
     private Long userId;
+
+    /**
+     * 租户编号
+     */
+    private String tenantSn;
 }

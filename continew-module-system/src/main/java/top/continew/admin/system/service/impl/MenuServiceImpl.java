@@ -109,6 +109,18 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
         return list;
     }
 
+    @Override
+    public void menuInit(List<MenuDO> menuList, Long oldParentId, Long newParentId) {
+        List<MenuDO> children = menuList.stream().filter(menuDO -> menuDO.getParentId().equals(oldParentId)).toList();
+        for (MenuDO menuDO : children) {
+            Long oldId = menuDO.getId();
+            menuDO.setId(null);
+            menuDO.setParentId(newParentId);
+            save(menuDO);
+            menuInit(menuList, oldId, menuDO.getId());
+        }
+    }
+
     /**
      * 标题是否存在
      *
