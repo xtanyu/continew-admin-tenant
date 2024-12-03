@@ -26,16 +26,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.continew.admin.common.util.SecureUtils;
 import top.continew.admin.open.service.AppService;
 import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.entity.UserDO;
+import top.continew.admin.system.model.req.user.UserPasswordResetReq;
 import top.continew.admin.system.service.*;
 import top.continew.admin.tenant.config.TenantConfig;
+import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantQuery;
 import top.continew.admin.tenant.model.req.TenantLoginUserInfoReq;
 import top.continew.admin.tenant.model.req.TenantReq;
@@ -95,6 +94,7 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
         BaseIdResp<Long> baseIdResp = super.add(req);
         TenantPackageDetailResp detailResp = packageService.get(req.getPackageId());
         //菜单
+        CheckUtils.throwIf(detailResp.getMenuIds().isEmpty(), "该套餐无可用菜单");
         List<MenuDO> menuRespList = menuService.listByIds(detailResp.getMenuIds());
         //在租户中执行数据插入
         TenantUtil.execute(baseIdResp.getId(), () -> {
@@ -130,16 +130,34 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     }
 
     /**
+     * 获取租户管理账号用户名
+     */
+    @GetMapping("/loginUser/{tenantId}")
+    @Operation(summary = "获取租户管理账号信息", description = "获取租户管理账号信息")
+    @SaCheckPermission("tenant:user:editLoginUserInfo")
+    public String loginUserInfo(@PathVariable Long tenantId) {
+        TenantDO tenantDO = baseService.getTenantById(tenantId);
+        CheckUtils.throwIfNull(tenantDO, "租户不存在");
+        StringBuilder username = new StringBuilder();
+        TenantUtil.execute(tenantDO.getId(), () -> {
+            UserDO userDO = userService.getById(tenantDO.getUserId());
+            CheckUtils.throwIfNull(userDO, "租户管理用户不存在");
+            username.append(userDO.getUsername());
+        });
+        return username.toString();
+    }
+
+    /**
      * 租户管理账号信息更新
      */
     @PutMapping("/loginUser")
     @Operation(summary = "租户管理账号信息更新", description = "租户管理账号信息更新")
     @SaCheckPermission("tenant:user:editLoginUserInfo")
     public void editLoginUserInfo(@Validated @RequestBody TenantLoginUserInfoReq req) {
-        TenantDetailResp detailResp = baseService.get(req.getTenantId());
-        CheckUtils.throwIfNull(detailResp, "租户不存在");
-        TenantUtil.execute(detailResp.getId(), () -> {
-            UserDO userDO = userService.getById(detailResp.getUserId());
+        TenantDO tenantDO = baseService.getTenantById(req.getTenantId());
+        CheckUtils.throwIfNull(tenantDO, "租户不存在");
+        TenantUtil.execute(tenantDO.getId(), () -> {
+            UserDO userDO = userService.getById(tenantDO.getUserId());
             CheckUtils.throwIfNull(userDO, "用户不存在");
             //修改用户名
             if (!req.getUsername().equals(userDO.getUsername())) {
@@ -150,8 +168,10 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             //修改密码
             if (StrUtil.isNotEmpty(req.getPassword())) {
                 String password = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
-                ValidationUtils.throwIfNull(password, "密码解密失败");
-                userService.updatePassword(userDO.getPassword(), password, userDO.getId());
+                ValidationUtils.throwIfNull(password, "新密码解密失败");
+                UserPasswordResetReq passwordResetReq = new UserPasswordResetReq();
+                passwordResetReq.setNewPassword(password);
+                userService.resetPassword(passwordResetReq, userDO.getId());
             }
         });
     }

@@ -71,7 +71,7 @@ public class TenantResp extends BaseResp {
      */
     @Schema(description = "绑定的套餐名称")
     private String packageName;
-  
+
     /**
      * 租户编号
      */

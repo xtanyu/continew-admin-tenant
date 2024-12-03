@@ -16,6 +16,7 @@
 
 package top.continew.admin.tenant.service;
 
+import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantQuery;
 import top.continew.admin.tenant.model.req.TenantReq;
 import top.continew.admin.tenant.model.resp.TenantAvailableResp;
@@ -47,5 +48,10 @@ public interface TenantService extends BaseService<TenantResp, TenantDetailResp,
      * 检查租户状态
      */
     void checkStatus();
+
+    /**
+     * 根据id获取租户DO
+     */
+    TenantDO getTenantById(Long id);
 
 }
