@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package top.continew.admin.controller.open;
+package top.continew.admin.controller.tenant;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
@@ -65,7 +66,7 @@ import java.util.List;
 @Tag(name = "租户管理 API")
 @RestController
 @AllArgsConstructor
-@CrudRequestMapping(value = "/open/tenant", api = {Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE, Api.DELETE})
+@CrudRequestMapping(value = "/tenant/user", api = {Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE, Api.DELETE})
 public class TenantController extends BaseController<TenantService, TenantResp, TenantDetailResp, TenantQuery, TenantReq> {
 
     private final TenantConfig tenantConfig;
@@ -133,7 +134,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
      */
     @PutMapping("/loginUser")
     @Operation(summary = "租户管理账号信息更新", description = "租户管理账号信息更新")
-    public void EditLoginUserInfo(@Validated @RequestBody TenantLoginUserInfoReq req) {
+    @SaCheckPermission("tenant:user:editLoginUserInfo")
+    public void editLoginUserInfo(@Validated @RequestBody TenantLoginUserInfoReq req) {
         TenantDetailResp detailResp = baseService.get(req.getTenantId());
         CheckUtils.throwIfNull(detailResp, "租户不存在");
         TenantUtil.execute(detailResp.getId(), () -> {

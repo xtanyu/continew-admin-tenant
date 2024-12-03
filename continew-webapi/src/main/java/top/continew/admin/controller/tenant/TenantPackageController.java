@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.continew.admin.controller.open;
+package top.continew.admin.controller.tenant;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
@@ -47,7 +47,7 @@ import java.util.List;
 @Tag(name = "租户套餐管理 API")
 @RestController
 @AllArgsConstructor
-@CrudRequestMapping(value = "/open/tenantPackage", api = {Api.LIST, Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE,
+@CrudRequestMapping(value = "/tenant/package", api = {Api.LIST, Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE,
     Api.DELETE})
 public class TenantPackageController extends BaseController<TenantPackageService, TenantPackageResp, TenantPackageDetailResp, TenantPackageQuery, TenantPackageReq> {
 
@@ -55,7 +55,7 @@ public class TenantPackageController extends BaseController<TenantPackageService
     private final TenantConfig tenantConfig;
 
     @GetMapping("/menuTree")
-    @SaCheckPermission("open:tenantPackage:detail")
+    @SaCheckPermission("tenant:package:detail")
     @Operation(summary = "获取租户套餐菜单", description = "获取租户套餐菜单")
     public List<Tree<Long>> menuTree() {
         MenuQuery query = new MenuQuery();
