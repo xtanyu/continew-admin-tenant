@@ -93,18 +93,20 @@ ALTER TABLE sys_user ADD UNIQUE INDEX `uk_phone` (`phone`, `tenant_id`);
 
 -- changeset 小熊:4
 -- comment 菜单录入
-INSERT INTO `sys_menu` (`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`)
+INSERT INTO `sys_menu`
+(`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`, `tenant_id`)
 VALUES
-(10015, '租户套餐管理', 7000, 2, '/open/tenantPackage', 'TenantPackage', 'open/tenantPackage/index', NULL, 'storage', b'0', b'0', b'0', NULL, 1, 1, 1, now(), NULL, NULL, 0),
-(10016, '列表', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:list', 1, 1, 1, now(), NULL, NULL, 0),
-(10017, '详情', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:detail', 2, 1, 1, now(), NULL, NULL, 0),
-(10018, '新增', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:add', 3, 1, 1, now(), NULL, NULL, 0),
-(10019, '修改', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:update', 4, 1, 1, now(), NULL, NULL, 0),
-(10020, '删除', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenantPackage:delete', 5, 1, 1, now(), NULL, NULL, 0),
-(10022, '租户管理', 7000, 2, '/open/tenant', 'Tenant', 'open/tenant/index', NULL, 'user-group', b'0', b'0', b'0', NULL, 1, 1, 1, now(), NULL, NULL, 0),
-(10023, '列表', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:list', 1, 1, 1, now(), NULL, NULL, 0),
-(10024, '详情', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:detail', 2, 1, 1, now(), NULL, NULL, 0),
-(10025, '新增', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:add', 3, 1, 1, now(), NULL, NULL, 0),
-(10026, '修改', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:update', 4, 1, 1, now(), NULL, NULL, 0),
-(10027, '删除', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:tenant:delete', 5, 1, 1, now(), NULL, NULL, 0);
-
+(10010, '租户管理', 0, 1, '/tenant', 'Tenant', 'Layout', NULL, 'user-group', b'0', b'0', b'0', NULL, 6, 1, 1, now(), NULL, NULL, 0),
+(10015, '租户套餐', 10010, 2, '/tenant/package', 'TenantPackage', 'tenant/package/index', NULL, 'storage', b'0', b'0', b'0', NULL, 2, 1, 1, now(), NULL, NULL, 0),
+(10016, '列表', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:list', 1, 1, 1, now(), NULL, NULL, 0),
+(10017, '详情', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:detail', 2, 1, 1, now(), NULL, NULL, 0),
+(10018, '新增', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:add', 3, 1, 1, now(), NULL, NULL, 0),
+(10019, '修改', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:update', 4, 1, 1, now(), NULL, NULL, 0),
+(10020, '删除', 10015, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:delete', 5, 1, 1, now(), NULL, NULL, 0),
+(10022, '租户管理', 10010, 2, '/tenant/user', 'TenantUser', 'tenant/user/index', NULL, 'user-group', b'0', b'0', b'0', NULL, 1, 1, 1, now(), NULL, NULL, 0),
+(10023, '列表', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:user:list', 1, 1, 1, now(), NULL, NULL, 0),
+(10024, '详情', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:user:detail', 2, 1, 1, now(), NULL, NULL, 0),
+(10025, '新增', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:user:add', 3, 1, 1, now(), NULL, NULL, 0),
+(10026, '修改', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:user:update', 4, 1, 1, now(), NULL, NULL, 0),
+(10027, '删除', 10022, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:user:delete', 5, 1, 1, now(), NULL, NULL, 0),
+(10028, '账号更新', 10022, 3, NULL, NULL, NULL, NULL, NULL, b'0', b'0', b'0', 'tenant:user:editLoginUserInfo', 999, 1, 1, now(), NULL, NULL, 0);

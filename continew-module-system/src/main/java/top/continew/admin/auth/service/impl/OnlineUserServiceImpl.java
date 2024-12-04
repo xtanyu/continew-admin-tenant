@@ -35,6 +35,8 @@ import top.continew.admin.common.context.UserExtraContext;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
+import top.continew.starter.extension.tenant.autoconfigure.TenantProperties;
+import top.continew.starter.extension.tenant.context.TenantContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -49,6 +51,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OnlineUserServiceImpl implements OnlineUserService {
+
+    private final TenantProperties tenantProperties;
 
     @Override
     @AutoOperate(type = OnlineUserResp.class, on = "list")
@@ -75,6 +79,12 @@ public class OnlineUserServiceImpl implements OnlineUserService {
             UserContext userContext = UserContextHolder.getContext(userId);
             if (null == userContext || !this.isMatchNickname(query.getNickname(), userContext)) {
                 continue;
+            }
+            //租户数据过滤
+            if (tenantProperties.isEnabled()) {
+                if (!userContext.getTenantId().equals(TenantContextHolder.getTenantId())) {
+                    continue;
+                }
             }
             List<Date> loginTimeList = query.getLoginTime();
             entry.getValue().parallelStream().forEach(token -> {

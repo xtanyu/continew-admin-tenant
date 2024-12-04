@@ -144,4 +144,9 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
         }
     }
 
+    @Override
+    public TenantDO getTenantById(Long id) {
+        return baseMapper.selectById(id);
+    }
+
 }

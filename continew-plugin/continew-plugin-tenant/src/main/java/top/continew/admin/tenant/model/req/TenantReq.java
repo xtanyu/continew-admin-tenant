@@ -94,6 +94,5 @@ public class TenantReq extends BaseReq {
     @NotBlank(message = "密码不能为空", groups = ValidateGroup.Crud.Add.class)
     private String password;
 
-
     private String tenantSn;
 }
