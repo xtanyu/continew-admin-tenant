@@ -89,6 +89,14 @@ public class CaptchaController {
     private final OptionService optionService;
 
     @Log(ignore = true)
+    @Operation(summary = "获取验证码配置", description = "获取验证码配置（预留后续扩展多种验证码）")
+    @GetMapping("/config")
+    public R getCaptchaConfig() {
+        Map<String, String> captchaConfig = optionService.getByCategory(OptionCategoryEnum.CAPTCHA);
+        return R.ok(captchaConfig);
+    }
+
+    @Log(ignore = true)
     @Operation(summary = "获取行为验证码", description = "获取行为验证码（Base64编码）")
     @GetMapping("/behavior")
     public Object getBehaviorCaptcha(CaptchaVO captchaReq, HttpServletRequest request) {
@@ -129,7 +137,7 @@ public class CaptchaController {
      * 2、同一邮箱所有模板 24 小时 100 条 <br>
      * 3、同一 IP 每分钟限制发送 30 条
      * </p>
-     * 
+     *
      * @param email 邮箱
      * @return /
      */
@@ -175,7 +183,7 @@ public class CaptchaController {
      * 2、同一号码所有模板 24 小时 100 条 <br>
      * 3、同一 IP 每分钟限制发送 30 条
      * </p>
-     * 
+     *
      * @param phone      手机号
      * @param captchaReq 行为验证码信息
      * @return /

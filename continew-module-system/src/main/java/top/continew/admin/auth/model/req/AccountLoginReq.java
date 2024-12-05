@@ -50,17 +50,20 @@ public class AccountLoginReq implements Serializable {
     @NotBlank(message = "密码不能为空")
     private String password;
 
+    @Schema(description = "是否开启验证码", example = "true")
+    private Boolean unCaptcha;
+
     /**
      * 验证码
      */
     @Schema(description = "验证码", example = "ABCD")
-    @NotBlank(message = "验证码不能为空")
+    //    @NotBlank(message = "验证码不能为空")
     private String captcha;
 
     /**
      * 验证码标识
      */
     @Schema(description = "验证码标识", example = "090b9a2c-1691-4fca-99db-e4ed0cff362f")
-    @NotBlank(message = "验证码标识不能为空")
+    //    @NotBlank(message = "验证码标识不能为空")
     private String uuid;
 }
