@@ -304,6 +304,7 @@ continew-starter.tenant:
     - sys_tenant_package
   #租户不能使用的菜单
   ignore-menus:
+    - 1050 #菜单
     - 1070 #字典
     - 1080
     - 1110 #储存配置和系统配置

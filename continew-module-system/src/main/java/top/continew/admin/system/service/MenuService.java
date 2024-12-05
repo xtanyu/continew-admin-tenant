@@ -59,10 +59,26 @@ public interface MenuService extends BaseService<MenuResp, MenuResp, MenuQuery, 
 
     /**
      * 递归初始化菜单
-     * 
+     *
      * @param menuList    需要初始化的菜单ID
      * @param oldParentId 原来的父级ID
      * @param newParentId 新的父级ID
      */
     void menuInit(List<MenuDO> menuList, Long oldParentId, Long newParentId);
+
+    /**
+     * 删除租户菜单
+     *
+     * @param menuList
+     */
+    void deleteTenantMenus(List<MenuDO> menuList);
+
+    /**
+     * 新增租户菜单
+     *
+     * @param menu  新增的菜单
+     * @param pMenu 新增菜单的父级别
+     */
+    void addTenantMenu(MenuDO menu, MenuDO pMenu);
+
 }
