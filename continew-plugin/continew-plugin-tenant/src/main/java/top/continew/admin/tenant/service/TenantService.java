@@ -22,6 +22,7 @@ import top.continew.admin.tenant.model.req.TenantReq;
 import top.continew.admin.tenant.model.resp.TenantAvailableResp;
 import top.continew.admin.tenant.model.resp.TenantDetailResp;
 import top.continew.admin.tenant.model.resp.TenantResp;
+import top.continew.starter.data.mp.service.IService;
 import top.continew.starter.extension.crud.service.BaseService;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
  * @author 小熊
  * @since 2024/11/26 17:20
  */
-public interface TenantService extends BaseService<TenantResp, TenantDetailResp, TenantQuery, TenantReq> {
+public interface TenantService extends BaseService<TenantResp, TenantDetailResp, TenantQuery, TenantReq>, IService<TenantDO> {
 
     /**
      * 获取所有可用的租户列表

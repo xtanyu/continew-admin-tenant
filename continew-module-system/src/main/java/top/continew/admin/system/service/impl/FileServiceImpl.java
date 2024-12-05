@@ -73,7 +73,7 @@ public class FileServiceImpl extends BaseServiceImpl<FileMapper, FileDO, FileRes
         for (Map.Entry<Long, List<FileDO>> entry : fileListGroup.entrySet()) {
             StorageDO storage = storageService.getById(entry.getKey());
             for (FileDO file : entry.getValue()) {
-                FileInfo fileInfo = file.toFileInfo(storage.getCode(), storage.getBucketName());
+                FileInfo fileInfo = file.toFileInfo(storage);
                 fileStorageService.delete(fileInfo);
             }
         }
