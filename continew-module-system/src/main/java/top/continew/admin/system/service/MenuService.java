@@ -20,8 +20,8 @@ import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.query.MenuQuery;
 import top.continew.admin.system.model.req.MenuReq;
 import top.continew.admin.system.model.resp.MenuResp;
-import top.continew.starter.extension.crud.service.BaseService;
 import top.continew.starter.data.mp.service.IService;
+import top.continew.starter.extension.crud.service.BaseService;
 
 import java.util.List;
 import java.util.Set;
@@ -39,7 +39,7 @@ public interface MenuService extends BaseService<MenuResp, MenuResp, MenuQuery, 
      *
      * @return 菜单列表
      */
-    List<MenuResp> listAll();
+    List<MenuResp> listAll(Long tenantId);
 
     /**
      * 根据用户 ID 查询
@@ -56,4 +56,29 @@ public interface MenuService extends BaseService<MenuResp, MenuResp, MenuQuery, 
      * @return 菜单列表
      */
     List<MenuResp> listByRoleCode(String roleCode);
+
+    /**
+     * 递归初始化菜单
+     *
+     * @param menuList    需要初始化的菜单ID
+     * @param oldParentId 原来的父级ID
+     * @param newParentId 新的父级ID
+     */
+    void menuInit(List<MenuDO> menuList, Long oldParentId, Long newParentId);
+
+    /**
+     * 删除租户菜单
+     *
+     * @param menuList
+     */
+    void deleteTenantMenus(List<MenuDO> menuList);
+
+    /**
+     * 新增租户菜单
+     *
+     * @param menu  新增的菜单
+     * @param pMenu 新增菜单的父级别
+     */
+    void addTenantMenu(MenuDO menu, MenuDO pMenu);
+
 }

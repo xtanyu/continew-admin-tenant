@@ -74,12 +74,21 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 多租户插件 -->
+            <dependency>
+                <groupId>top.continew</groupId>
+                <artifactId>continew-plugin-tenant</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- 代码生成器插件（后续会改造为独立插件） -->
             <dependency>
                 <groupId>top.continew</groupId>
                 <artifactId>continew-plugin-generator</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

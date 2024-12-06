@@ -19,6 +19,7 @@ package top.continew.admin.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alicp.jetcache.anno.Cached;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -90,8 +92,8 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
     }
 
     @Override
-    @Cached(key = "'ALL'", name = CacheConstants.MENU_KEY_PREFIX)
-    public List<MenuResp> listAll() {
+    @Cached(key = "'ALL' + #tenantId", name = CacheConstants.MENU_KEY_PREFIX)
+    public List<MenuResp> listAll(Long tenantId) {
         return super.list(new MenuQuery(DisEnableStatusEnum.ENABLE), null);
     }
 
@@ -107,6 +109,52 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
         List<MenuResp> list = BeanUtil.copyToList(menuList, MenuResp.class);
         list.forEach(super::fill);
         return list;
+    }
+
+    @Override
+    public void menuInit(List<MenuDO> menuList, Long oldParentId, Long newParentId) {
+        List<MenuDO> children = menuList.stream().filter(menuDO -> menuDO.getParentId().equals(oldParentId)).toList();
+        for (MenuDO menuDO : children) {
+            Long oldId = menuDO.getId();
+            menuDO.setId(null);
+            menuDO.setParentId(newParentId);
+            save(menuDO);
+            menuInit(menuList, oldId, menuDO.getId());
+        }
+    }
+
+    @Override
+    public void deleteTenantMenus(List<MenuDO> menuList) {
+        if (!menuList.isEmpty()) {
+            List<Long> delIds = new ArrayList<>();
+            for (MenuDO menuDO : menuList) {
+                MenuDO tMenu = getOne(Wrappers.query(MenuDO.class)
+                    .eq(menuDO.getType().equals(MenuTypeEnum.BUTTON), "CONCAT(title,permission)", menuDO
+                        .getTitle() + menuDO.getPermission())
+                    .eq(!menuDO.getType().equals(MenuTypeEnum.BUTTON), "name", menuDO.getName()));
+                if (tMenu != null) {
+                    delIds.add(tMenu.getId());
+                }
+            }
+            if (!delIds.isEmpty()) {
+                delete(delIds);
+            }
+        }
+    }
+
+    @Override
+    public void addTenantMenu(MenuDO menu, MenuDO pMenu) {
+        Long pId = 0l;
+        if (pMenu != null) {
+            MenuDO tPMenu = getOne(Wrappers.query(MenuDO.class)
+                .eq(pMenu.getType().equals(MenuTypeEnum.BUTTON), "CONCAT(title,permission)", pMenu.getTitle() + pMenu
+                    .getPermission())
+                .eq(!pMenu.getType().equals(MenuTypeEnum.BUTTON), "name", pMenu.getName()));
+            pId = tPMenu.getId();
+        }
+        menu.setId(null);
+        menu.setParentId(pId);
+        save(menu);
     }
 
     /**

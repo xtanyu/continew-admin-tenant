@@ -24,10 +24,7 @@ import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.EnumUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.*;
 import cn.hutool.extra.validation.ValidationUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.json.JSONUtil;
@@ -55,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.continew.admin.auth.service.OnlineUserService;
 import top.continew.admin.common.constant.CacheConstants;
+import top.continew.admin.common.constant.RegexConstants;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.context.UserContext;
 import top.continew.admin.common.context.UserContextHolder;
@@ -77,7 +75,9 @@ import top.continew.admin.system.service.*;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.exception.BusinessException;
+import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.CheckUtils;
+import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.query.SortQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
@@ -712,5 +712,30 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
             userContext.setPermissions(roleService.listPermissionByUserId(id));
             UserContextHolder.setContext(userContext);
         }
+    }
+
+    @Override
+    public Long initTenantUser(String username, String password, Long deptId) {
+        //密码验证
+        String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(password));
+        ValidationUtils.throwIfNull(rawPassword, "密码解密失败");
+        ValidationUtils.throwIf(!ReUtil
+            .isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        UserDO userDO = new UserDO();
+        userDO.setUsername(username);
+        userDO.setNickname("系统管理员");
+        userDO.setPassword(rawPassword);
+        userDO.setGender(GenderEnum.UNKNOWN);
+        userDO.setDescription("系统初始用户");
+        userDO.setStatus(DisEnableStatusEnum.ENABLE);
+        userDO.setIsSystem(true);
+        userDO.setDeptId(deptId);
+        baseMapper.insert(userDO);
+        return userDO.getId();
+    }
+
+    @Override
+    public UserDO getById(Long userId) {
+        return baseMapper.selectById(userId);
     }
 }

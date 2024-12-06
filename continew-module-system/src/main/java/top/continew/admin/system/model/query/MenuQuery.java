@@ -25,6 +25,7 @@ import top.continew.starter.data.core.enums.QueryType;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 菜单查询条件
@@ -56,4 +57,12 @@ public class MenuQuery implements Serializable {
     public MenuQuery(DisEnableStatusEnum status) {
         this.status = status;
     }
+
+    /**
+     * 排除的菜单
+     */
+    @Schema(description = "排除的菜单")
+    @Query(columns = "id", type = QueryType.NOT_IN)
+    private List<Long> excludeMenuIdList;
+
 }

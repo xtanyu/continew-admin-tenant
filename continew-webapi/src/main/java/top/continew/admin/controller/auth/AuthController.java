@@ -42,6 +42,7 @@ import top.continew.admin.common.util.SecureUtils;
 import top.continew.admin.system.model.resp.user.UserDetailResp;
 import top.continew.admin.system.service.OptionService;
 import top.continew.admin.system.service.UserService;
+import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.ValidationUtils;
@@ -67,6 +68,7 @@ public class AuthController {
     private final OptionService optionService;
     private final LoginService loginService;
     private final UserService userService;
+    private final TenantService tenantService;
 
     @SaIgnore
     @Operation(summary = "账号登录", description = "根据账号和密码进行登录认证")
@@ -83,6 +85,8 @@ public class AuthController {
             RedisUtils.delete(captchaKey);
             ValidationUtils.throwIfNotEqualIgnoreCase(loginReq.getCaptcha(), captcha, CAPTCHA_ERROR);
         }
+        //租户验证
+        tenantService.checkStatus();
         // 用户登录
         String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(loginReq.getPassword()));
         ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
@@ -100,6 +104,8 @@ public class AuthController {
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
         ValidationUtils.throwIfNotEqualIgnoreCase(loginReq.getCaptcha(), captcha, CAPTCHA_ERROR);
         RedisUtils.delete(captchaKey);
+        //验证租户
+        tenantService.checkStatus();
         String token = loginService.phoneLogin(phone);
         return LoginResp.builder().token(token).build();
     }
@@ -114,6 +120,8 @@ public class AuthController {
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
         ValidationUtils.throwIfNotEqualIgnoreCase(loginReq.getCaptcha(), captcha, CAPTCHA_ERROR);
         RedisUtils.delete(captchaKey);
+        //验证租户
+        tenantService.checkStatus();
         String token = loginService.emailLogin(email);
         return LoginResp.builder().token(token).build();
     }

@@ -163,4 +163,21 @@ public interface UserService extends BaseService<UserResp, UserDetailResp, UserQ
      * @return 用户数量
      */
     Long countByDeptIds(List<Long> deptIds);
+
+    /**
+     * 初始化租户管理员
+     *
+     * @param username
+     * @param password
+     * @return 管理员id
+     */
+    Long initTenantUser(String username, String password, Long deptId);
+
+    /**
+     * 根据用户ID查询DO
+     *
+     * @param userId
+     * @return
+     */
+    UserDO getById(Long userId);
 }

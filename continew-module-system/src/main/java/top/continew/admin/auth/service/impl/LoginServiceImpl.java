@@ -63,6 +63,8 @@ import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.annotation.TreeField;
 import top.continew.starter.extension.crud.autoconfigure.CrudProperties;
+import top.continew.starter.extension.tenant.context.TenantContext;
+import top.continew.starter.extension.tenant.context.TenantContextHolder;
 import top.continew.starter.messaging.websocket.util.WebSocketUtils;
 import top.continew.starter.web.util.SpringWebUtils;
 
@@ -173,7 +175,7 @@ public class LoginServiceImpl implements LoginService {
         // 查询菜单列表
         Set<MenuResp> menuSet = new LinkedHashSet<>();
         if (roleCodeSet.contains(SysConstants.SUPER_ROLE_CODE)) {
-            menuSet.addAll(menuService.listAll());
+            menuSet.addAll(menuService.listAll(UserContextHolder.getTenantId()));
         } else {
             roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode)));
         }
@@ -208,12 +210,21 @@ public class LoginServiceImpl implements LoginService {
      */
     private String login(UserDO user) {
         Long userId = user.getId();
-        CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> roleService
-            .listPermissionByUserId(userId), threadPoolTaskExecutor);
-        CompletableFuture<Set<RoleContext>> roleFuture = CompletableFuture.supplyAsync(() -> roleService
-            .listByUserId(userId), threadPoolTaskExecutor);
-        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> optionService
-            .getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name()));
+        //多线程执行时获取不到当前上下文的问题
+        TenantContext tenantContext = new TenantContext();
+        tenantContext.setTenantId(user.getTenantId());
+        CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> {
+            TenantContextHolder.setContext(tenantContext);
+            return roleService.listPermissionByUserId(userId);
+        }, threadPoolTaskExecutor);
+        CompletableFuture<Set<RoleContext>> roleFuture = CompletableFuture.supplyAsync(() -> {
+            TenantContextHolder.setContext(tenantContext);
+            return roleService.listByUserId(userId);
+        }, threadPoolTaskExecutor);
+        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> {
+            TenantContextHolder.setContext(tenantContext);
+            return optionService.getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name());
+        });
         CompletableFuture.allOf(permissionFuture, roleFuture, passwordExpirationDaysFuture);
         UserContext userContext = new UserContext(permissionFuture.join(), roleFuture
             .join(), passwordExpirationDaysFuture.join());

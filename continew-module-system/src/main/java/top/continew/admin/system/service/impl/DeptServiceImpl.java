@@ -214,4 +214,25 @@ public class DeptServiceImpl extends BaseServiceImpl<DeptMapper, DeptDO, DeptRes
         }
         baseMapper.updateById(list);
     }
+
+    /**
+     * 初始化租户部门
+     *
+     * @param deptName
+     * @return 部门ID
+     */
+    @Override
+    public Long initTenantDept(String deptName) {
+        //部门添加
+        DeptDO deptDO = new DeptDO();
+        deptDO.setName(deptName);
+        deptDO.setParentId(0l);
+        deptDO.setAncestors("0");
+        deptDO.setDescription("系统初始部门");
+        deptDO.setSort(1);
+        deptDO.setStatus(DisEnableStatusEnum.ENABLE);
+        baseMapper.insert(deptDO);
+        return deptDO.getId();
+    }
+
 }
