@@ -90,14 +90,6 @@ public class CaptchaController {
     private final OptionService optionService;
 
     @Log(ignore = true)
-    @Operation(summary = "获取验证码配置", description = "获取验证码配置（预留后续扩展多种验证码）")
-    @GetMapping("/config")
-    public R getCaptchaConfig() {
-        Map<String, String> captchaConfig = optionService.getByCategory(OptionCategoryEnum.CAPTCHA);
-        return R.ok(captchaConfig);
-    }
-
-    @Log(ignore = true)
     @Operation(summary = "获取行为验证码", description = "获取行为验证码（Base64编码）")
     @GetMapping("/behavior")
     public Object getBehaviorCaptcha(CaptchaVO captchaReq, HttpServletRequest request) {
