@@ -30,7 +30,7 @@ import top.continew.admin.schedule.model.req.JobStatusReq;
 import top.continew.admin.schedule.model.resp.JobResp;
 import top.continew.admin.schedule.service.JobService;
 import top.continew.starter.extension.crud.model.resp.PageResp;
-import top.continew.starter.extension.crud.util.ValidateGroup;
+import top.continew.starter.extension.crud.validation.CrudValidationGroup;
 import top.continew.starter.log.core.annotation.Log;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class JobController {
     @Operation(summary = "新增任务", description = "新增任务")
     @SaCheckPermission("schedule:job:add")
     @PostMapping
-    public void add(@Validated(ValidateGroup.Crud.Add.class) @RequestBody JobReq req) {
+    public void add(@Validated(CrudValidationGroup.Add.class) @RequestBody JobReq req) {
         baseService.add(req);
     }
 
@@ -69,7 +69,7 @@ public class JobController {
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @SaCheckPermission("schedule:job:update")
     @PutMapping("/{id}")
-    public void update(@Validated(ValidateGroup.Crud.Update.class) @RequestBody JobReq req, @PathVariable Long id) {
+    public void update(@Validated(CrudValidationGroup.Update.class) @RequestBody JobReq req, @PathVariable Long id) {
         baseService.update(req, id);
     }
 

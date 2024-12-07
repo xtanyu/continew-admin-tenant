@@ -30,7 +30,7 @@ import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.query.MenuQuery;
 import top.continew.admin.system.service.MenuService;
-import top.continew.admin.tenant.config.TenantConfig;
+import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantPackageQuery;
 import top.continew.admin.tenant.model.req.TenantPackageReq;
@@ -62,7 +62,7 @@ import java.util.List;
 public class TenantPackageController extends BaseController<TenantPackageService, TenantPackageResp, TenantPackageDetailResp, TenantPackageQuery, TenantPackageReq> {
 
     private final MenuService menuService;
-    private final TenantConfig tenantConfig;
+    private final TenantProperties tenantProperties;
     private final TenantService tenantService;
 
     @GetMapping("/menuTree")
@@ -73,7 +73,7 @@ public class TenantPackageController extends BaseController<TenantPackageService
         //必须是启用状态的菜单
         query.setStatus(DisEnableStatusEnum.ENABLE);
         //过滤掉租户不能使用的菜单
-        query.setExcludeMenuIdList(tenantConfig.getIgnoreMenus());
+        query.setExcludeMenuIdList(tenantProperties.getIgnoreMenus());
         return menuService.tree(query, null, true);
     }
 

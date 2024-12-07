@@ -27,7 +27,7 @@ import top.continew.admin.system.model.resp.dashboard.DashboardNoticeResp;
 import top.continew.admin.system.model.resp.NoticeDetailResp;
 import top.continew.admin.system.model.resp.NoticeResp;
 import top.continew.admin.system.service.NoticeService;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 import java.util.List;
 

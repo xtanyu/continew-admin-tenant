@@ -35,10 +35,12 @@ import top.continew.admin.auth.model.resp.RouteResp;
 import top.continew.admin.auth.model.resp.UserInfoResp;
 import top.continew.admin.auth.service.LoginService;
 import top.continew.admin.common.constant.CacheConstants;
+import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.context.UserContext;
 import top.continew.admin.common.context.UserContextHolder;
 import top.continew.admin.common.util.SecureUtils;
 import top.continew.admin.system.model.resp.user.UserDetailResp;
+import top.continew.admin.system.service.OptionService;
 import top.continew.admin.system.service.UserService;
 import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
@@ -63,6 +65,7 @@ public class AuthController {
 
     private static final String CAPTCHA_EXPIRED = "验证码已失效";
     private static final String CAPTCHA_ERROR = "验证码错误";
+    private final OptionService optionService;
     private final LoginService loginService;
     private final UserService userService;
     private final TenantService tenantService;
@@ -71,7 +74,11 @@ public class AuthController {
     @Operation(summary = "账号登录", description = "根据账号和密码进行登录认证")
     @PostMapping("/account")
     public LoginResp accountLogin(@Validated @RequestBody AccountLoginReq loginReq, HttpServletRequest request) {
-        if (!loginReq.getUnCaptcha()) {
+        // 校验验证码
+        int loginCaptchaEnabled = optionService.getValueByCode2Int("LOGIN_CAPTCHA_ENABLED");
+        if (SysConstants.YES.equals(loginCaptchaEnabled)) {
+            ValidationUtils.throwIfBlank(loginReq.getCaptcha(), "验证码不能为空");
+            ValidationUtils.throwIfBlank(loginReq.getUuid(), "验证码标识不能为空");
             String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + loginReq.getUuid();
             String captcha = RedisUtils.get(captchaKey);
             ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);

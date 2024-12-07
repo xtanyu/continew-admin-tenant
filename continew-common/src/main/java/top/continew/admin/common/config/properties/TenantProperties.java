@@ -14,33 +14,27 @@
  * limitations under the License.
  */
 
-package top.continew.admin.system.enums;
+package top.continew.admin.common.config.properties;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import top.continew.starter.core.constant.PropertiesConstants;
+
+import java.util.List;
 
 /**
- * 参数类别枚举
- *
- * @author Charles7c
- * @since 2024/11/14 20:00
+ * @description: 多租户配置
+ * @author: 小熊
+ * @create: 2024-11-29 12:05
  */
-public enum OptionCategoryEnum {
+@Component
+@ConfigurationProperties(prefix = PropertiesConstants.TENANT)
+@Data
+public class TenantProperties {
 
-    /**
-     * 系统配置
-     */
-    SITE,
+    private boolean enabled;
 
-    /**
-     * 密码配置
-     */
-    PASSWORD,
+    private List<Long> ignoreMenus;
 
-    /**
-     * 邮箱配置
-     */
-    MAIL,
-
-    /**
-     * 登录配置
-     */
-    LOGIN,
 }

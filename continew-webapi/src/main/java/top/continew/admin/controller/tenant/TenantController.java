@@ -33,7 +33,7 @@ import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.model.req.user.UserPasswordResetReq;
 import top.continew.admin.system.service.*;
-import top.continew.admin.tenant.config.TenantConfig;
+import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantQuery;
 import top.continew.admin.tenant.model.req.TenantLoginUserInfoReq;
@@ -68,7 +68,7 @@ import java.util.List;
 @CrudRequestMapping(value = "/tenant/user", api = {Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE, Api.DELETE})
 public class TenantController extends BaseController<TenantService, TenantResp, TenantDetailResp, TenantQuery, TenantReq> {
 
-    private final TenantConfig tenantConfig;
+    private final TenantProperties tenantProperties;
     private final DeptService deptService;
     private final MenuService menuService;
     private final TenantPackageService packageService;
@@ -82,7 +82,7 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     @Operation(summary = "多租户通用信息查询", description = "多租户通用信息查询")
     public TenantCommonResp common() {
         TenantCommonResp commonResp = new TenantCommonResp();
-        commonResp.setIsEnabled(tenantConfig.isEnabled());
+        commonResp.setIsEnabled(tenantProperties.isEnabled());
         commonResp.setAvailableList(baseService.getAvailableList());
         return commonResp;
     }
