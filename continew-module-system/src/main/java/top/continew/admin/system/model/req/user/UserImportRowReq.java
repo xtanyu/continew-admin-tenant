@@ -25,7 +25,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.continew.admin.common.constant.RegexConstants;
 import top.continew.starter.extension.crud.model.req.BaseReq;
-import top.continew.starter.extension.crud.util.ValidateGroup;
+import top.continew.starter.extension.crud.validation.CrudValidationGroup;
 
 import java.io.Serial;
 
@@ -59,7 +59,7 @@ public class UserImportRowReq extends BaseReq {
     /**
      * 密码
      */
-    @NotBlank(message = "密码不能为空", groups = ValidateGroup.Crud.Add.class)
+    @NotBlank(message = "密码不能为空", groups = CrudValidationGroup.Add.class)
     private String password;
 
     /**

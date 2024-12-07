@@ -23,7 +23,7 @@ import top.continew.admin.system.model.req.StorageReq;
 import top.continew.admin.system.model.resp.StorageResp;
 import top.continew.admin.system.service.StorageService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.starter.extension.crud.controller.BaseController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
 
 /**

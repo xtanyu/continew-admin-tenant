@@ -63,7 +63,7 @@ public class DemoEnvironmentJob {
     private static final Long MESSAGE_FLAG = 0L;
     private static final Long[] USER_FLAG = {1L, 547889293968801831L};
     private static final Long ROLE_FLAG = 547888897925840928L;
-    private static final Long MENU_FLAG = 10003L;
+    private static final Long MENU_FLAG = 10000L;
     private static final Long DEPT_FLAG = 547888580614160409L;
 
     /**

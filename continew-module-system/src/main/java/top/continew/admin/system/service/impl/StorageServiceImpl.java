@@ -37,13 +37,13 @@ import top.continew.admin.system.model.req.StorageReq;
 import top.continew.admin.system.model.resp.StorageResp;
 import top.continew.admin.system.service.FileService;
 import top.continew.admin.system.service.StorageService;
-import top.continew.admin.system.util.ValidateGroup;
+import top.continew.admin.system.validation.ValidationGroup;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.util.URLUtils;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 import top.continew.starter.web.util.SpringWebUtils;
 
 import java.util.Collections;
@@ -129,7 +129,7 @@ public class StorageServiceImpl extends BaseServiceImpl<StorageMapper, StorageDO
         String bucketName = req.getBucketName();
         StorageTypeEnum type = req.getType();
         if (StorageTypeEnum.LOCAL.equals(type)) {
-            ValidationUtils.validate(req, ValidateGroup.Storage.Local.class);
+            ValidationUtils.validate(req, ValidationGroup.Storage.Local.class);
             req.setBucketName(StrUtil.appendIfMissing(bucketName
                 .replace(StringConstants.BACKSLASH, StringConstants.SLASH), StringConstants.SLASH));
             FileStorageProperties.LocalPlusConfig config = new FileStorageProperties.LocalPlusConfig();
@@ -139,7 +139,7 @@ public class StorageServiceImpl extends BaseServiceImpl<StorageMapper, StorageDO
                 .singletonList(config)));
             SpringWebUtils.registerResourceHandler(MapUtil.of(URLUtil.url(req.getDomain()).getPath(), bucketName));
         } else if (StorageTypeEnum.S3.equals(type)) {
-            ValidationUtils.validate(req, ValidateGroup.Storage.S3.class);
+            ValidationUtils.validate(req, ValidationGroup.Storage.S3.class);
             FileStorageProperties.AmazonS3Config config = new FileStorageProperties.AmazonS3Config();
             config.setPlatform(req.getCode());
             config.setAccessKey(req.getAccessKey());

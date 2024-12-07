@@ -34,7 +34,7 @@ import top.continew.admin.system.model.resp.RoleResp;
 import top.continew.admin.system.service.RoleService;
 import top.continew.admin.system.service.UserRoleService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.starter.extension.crud.controller.BaseController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
 
 import java.util.List;
