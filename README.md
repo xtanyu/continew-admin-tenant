@@ -4,7 +4,7 @@
 <img src="https://img.shields.io/badge/License-Apache--2.0-blue.svg" alt="License" />
 </a>
 <a href="https://github.com/continew-org/continew-admin" target="_blank">
-<img src="https://img.shields.io/badge/RELEASE-v3.4.0-%23ff3f59.svg" alt="Release" />
+<img src="https://img.shields.io/badge/RELEASE-v3.4.1-%23ff3f59.svg" alt="Release" />
 </a>
 <a href="https://app.codacy.com/gh/continew-org/continew-admin/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade" target="_blank">
 <img src="https://app.codacy.com/project/badge/Grade/19e3e2395d554efe902c3822e65db30e" alt="Codacy Badge" />
@@ -81,7 +81,7 @@ ContiNew Admin（Continue New Admin）持续迭代优化的前后端分离中后
 ```java
 @Tag(name = "部门管理 API")
 @RestController
-@CrudRequestMapping(value = "/system/dept", api = {Api.TREE, Api.GET, Api.ADD, Api.UPDATE, Api.DELETE, Api.EXPORT})
+@CrudRequestMapping(value = "/system/dept", api = {Api.TREE, Api.DETAIL, Api.ADD, Api.UPDATE, Api.DELETE, Api.EXPORT})
 public class DeptController extends BaseController<DeptService, DeptResp, DeptDetailResp, DeptQuery, DeptReq> {}
 ```
 
@@ -221,7 +221,7 @@ public class DeptController extends BaseController<DeptService, DeptResp, DeptDe
 
 | 名称                                                         | 版本           | 简介                                                         |
 | :----------------------------------------------------------- |:-------------| :----------------------------------------------------------- |
-| <a href="https://cn.vuejs.org/" target="_blank">Vue</a>      | 3.4.21       | 渐进式 JavaScript 框架，易学易用，性能出色，适用场景丰富的 Web 前端框架。 |
+| <a href="https://cn.vuejs.org/" target="_blank">Vue</a>      | 3.5.4        | 渐进式 JavaScript 框架，易学易用，性能出色，适用场景丰富的 Web 前端框架。 |
 | <a href="https://arco.design/vue/docs/start" target="_blank">Arco Design</a> | 2.56.0       | 字节跳动推出的前端 UI 框架，年轻化的色彩和组件设计。         |
 | <a href="https://www.typescriptlang.org/zh/" target="_blank">TypeScript</a> | 5.0.4        | TypeScript 是微软开发的一个开源的编程语言，通过在 JavaScript 的基础上添加静态类型定义构建而成。 |
 | <a href="https://cn.vitejs.dev/" target="_blank">Vite</a>    | 5.1.5        | 下一代的前端工具链，为开发提供极速响应。                     |
@@ -469,22 +469,11 @@ ContiNew Admin 的分支目前分为下个大版本的开发分支和上个大�
 
 ## 反馈交流
 
-欢迎各位小伙伴儿扫描下方二维码加好友，备注 `cnadmin`，拉你进群，探讨技术、提提需求~   
-
-加入交流群后，你将会：
-
-- 第一时间收到框架动态
-- 第一时间收到框架更新通知
-- 第一时间收到框架 Bug 通知
-- 和众多大佬互相 (huá shuǐ) 交流 (mō yú)
+欢迎各位小伙伴儿扫描下方二维码加入项目交流群，与项目维护团队及其他大佬用户实时交流讨论。  
 
 <div align="left">
-  <img src=".image/qrcode.jpg" alt="二维码" width="230px" />
+  <img src=".image/qrcode.jpg" alt="二维码" height="230px" />
 </div>
-<details>
-<summary>无加群意愿</summary>
-如无加群意愿，欢迎在 <a href="https://github.com/continew-org/continew-admin/issues" target="_blank">Issues</a> 中反馈交流~ 🍻
-</details>
 
 ## 鸣谢
 
