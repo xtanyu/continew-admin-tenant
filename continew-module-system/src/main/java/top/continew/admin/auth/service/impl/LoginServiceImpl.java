@@ -180,6 +180,9 @@ public class LoginServiceImpl implements LoginService {
             roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode)));
         }
         List<MenuResp> menuList = menuSet.stream().filter(m -> !MenuTypeEnum.BUTTON.equals(m.getType())).toList();
+        if (CollUtil.isEmpty(menuList)) {
+            return new ArrayList<>(0);
+        }
         // 构建路由树
         TreeField treeField = MenuResp.class.getDeclaredAnnotation(TreeField.class);
         TreeNodeConfig treeNodeConfig = crudProperties.getTree().genTreeNodeConfig(treeField);

@@ -25,7 +25,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.continew.admin.common.constant.RegexConstants;
 import top.continew.starter.extension.crud.model.req.BaseReq;
-import top.continew.starter.extension.crud.util.ValidateGroup;
+import top.continew.starter.extension.crud.validation.CrudValidationGroup;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
@@ -83,7 +83,7 @@ public class TenantReq extends BaseReq {
      * 用户名
      */
     @Schema(description = "用户名", example = "zhangsan")
-    @NotBlank(message = "用户名不能为空", groups = ValidateGroup.Crud.Add.class)
+    @NotBlank(message = "用户名不能为空", groups = CrudValidationGroup.Add.class)
     @Pattern(regexp = RegexConstants.USERNAME, message = "用户名长度为 4-64 个字符，支持大小写字母、数字、下划线，以字母开头")
     private String username;
 
@@ -91,7 +91,7 @@ public class TenantReq extends BaseReq {
      * 密码（加密）
      */
     @Schema(description = "密码（加密）", example = "E7c72TH+LDxKTwavjM99W1MdI9Lljh79aPKiv3XB9MXcplhm7qJ1BJCj28yaflbdVbfc366klMtjLIWQGqb0qw==")
-    @NotBlank(message = "密码不能为空", groups = ValidateGroup.Crud.Add.class)
+    @NotBlank(message = "密码不能为空", groups = CrudValidationGroup.Add.class)
     private String password;
 
     private String tenantSn;
