@@ -54,4 +54,22 @@ public class CaptchaResp implements Serializable {
      */
     @Schema(description = "过期时间戳", example = "1714376969409")
     private Long expireTime;
+
+    /**
+     * 是否启用
+     */
+    @Schema(description = "是否启用", example = "true")
+    private Boolean isEnabled;
+
+    /**
+     * 构建验证码信息
+     *
+     * @param uuid       验证码标识
+     * @param img        验证码图片（Base64编码，带图片格式：data:image/gif;base64）
+     * @param expireTime 过期时间戳
+     * @return 验证码信息
+     */
+    public static CaptchaResp of(String uuid, String img, Long expireTime) {
+        return CaptchaResp.builder().uuid(uuid).img(img).expireTime(expireTime).isEnabled(true).build();
+    }
 }

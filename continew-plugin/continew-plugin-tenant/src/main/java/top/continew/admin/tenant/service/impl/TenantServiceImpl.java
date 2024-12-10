@@ -28,7 +28,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
-import top.continew.admin.tenant.config.TenantConfig;
+import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.tenant.mapper.TenantMapper;
 import top.continew.admin.tenant.mapper.TenantPackageMapper;
 import top.continew.admin.tenant.model.entity.TenantDO;
@@ -60,7 +60,7 @@ import java.util.List;
 public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, TenantResp, TenantDetailResp, TenantQuery, TenantReq> implements TenantService {
 
     private final TenantPackageMapper packageMapper;
-    private final TenantConfig tenantConfig;
+    private final TenantProperties tenantProperties;
 
     @Override
     protected void beforeAdd(TenantReq req) {
@@ -126,7 +126,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
 
     @Override
     public void checkStatus() {
-        if (tenantConfig.isEnabled()) {
+        if (tenantProperties.isEnabled()) {
             Long tenantId = TenantContextHolder.getTenantId();
             CheckUtils.throwIfNull(tenantId, "未选择租户");
             if (tenantId != 0) {

@@ -45,9 +45,10 @@ import org.redisson.api.RateIntervalUnit;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.continew.admin.auth.model.resp.CaptchaResp;
 import top.continew.admin.common.config.properties.CaptchaProperties;
 import top.continew.admin.common.constant.CacheConstants;
-import top.continew.admin.auth.model.resp.CaptchaResp;
+import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.system.enums.OptionCategoryEnum;
 import top.continew.admin.system.service.OptionService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
@@ -89,14 +90,6 @@ public class CaptchaController {
     private final OptionService optionService;
 
     @Log(ignore = true)
-    @Operation(summary = "获取验证码配置", description = "获取验证码配置（预留后续扩展多种验证码）")
-    @GetMapping("/config")
-    public R getCaptchaConfig() {
-        Map<String, String> captchaConfig = optionService.getByCategory(OptionCategoryEnum.CAPTCHA);
-        return R.ok(captchaConfig);
-    }
-
-    @Log(ignore = true)
     @Operation(summary = "获取行为验证码", description = "获取行为验证码（Base64编码）")
     @GetMapping("/behavior")
     public Object getBehaviorCaptcha(CaptchaVO captchaReq, HttpServletRequest request) {
@@ -119,13 +112,17 @@ public class CaptchaController {
     @Operation(summary = "获取图片验证码", description = "获取图片验证码（Base64编码，带图片格式：data:image/gif;base64）")
     @GetMapping("/image")
     public CaptchaResp getImageCaptcha() {
+        int loginCaptchaEnabled = optionService.getValueByCode2Int("LOGIN_CAPTCHA_ENABLED");
+        if (SysConstants.NO.equals(loginCaptchaEnabled)) {
+            return CaptchaResp.builder().isEnabled(false).build();
+        }
         String uuid = IdUtil.fastUUID();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + uuid;
         Captcha captcha = graphicCaptchaService.getCaptcha();
         long expireTime = LocalDateTimeUtil.toEpochMilli(LocalDateTime.now()
             .plusMinutes(captchaProperties.getExpirationInMinutes()));
         RedisUtils.set(captchaKey, captcha.text(), Duration.ofMinutes(captchaProperties.getExpirationInMinutes()));
-        return CaptchaResp.builder().uuid(uuid).img(captcha.toBase64()).expireTime(expireTime).build();
+        return CaptchaResp.of(uuid, captcha.toBase64(), expireTime);
     }
 
     /**

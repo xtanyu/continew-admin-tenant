@@ -27,7 +27,7 @@ import top.continew.admin.system.service.DictItemService;
 import top.continew.admin.system.service.DictService;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.model.resp.LabelValueResp;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 import java.util.List;
 import java.util.Optional;

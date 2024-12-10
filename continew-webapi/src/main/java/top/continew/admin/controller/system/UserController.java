@@ -44,10 +44,10 @@ import top.continew.admin.system.service.UserService;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.starter.extension.crud.controller.BaseController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.extension.crud.model.resp.BaseIdResp;
-import top.continew.starter.extension.crud.util.ValidateGroup;
+import top.continew.starter.extension.crud.validation.CrudValidationGroup;
 
 import java.io.IOException;
 
@@ -68,7 +68,7 @@ public class UserController extends BaseController<UserService, UserResp, UserDe
     private final UserService userService;
 
     @Override
-    public BaseIdResp<Long> add(@Validated(ValidateGroup.Crud.Add.class) @RequestBody UserReq req) {
+    public BaseIdResp<Long> add(@Validated(CrudValidationGroup.Add.class) @RequestBody UserReq req) {
         String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
         ValidationUtils.throwIfNull(rawPassword, "密码解密失败");
         ValidationUtils.throwIf(!ReUtil

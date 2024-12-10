@@ -30,7 +30,7 @@ import top.continew.admin.open.model.resp.AppResp;
 import top.continew.admin.open.model.resp.AppSecretResp;
 import top.continew.admin.open.service.AppService;
 import top.continew.starter.core.constant.StringConstants;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 /**
  * 应用业务实现

@@ -142,8 +142,8 @@ VALUES
 (18, 'MAIL', '用户名', 'MAIL_USERNAME', NULL, 'charles7c@126.com', NULL, NULL, NULL),
 (19, 'MAIL', '密码', 'MAIL_PASSWORD', NULL, NULL, NULL, NULL, NULL),
 (20, 'MAIL', '是否启用SSL', 'MAIL_SSL_ENABLED', NULL, '1', NULL, NULL, NULL),
-(21, 'MAIL', 'SSL端口', 'MAIL_SSL_PORT', NULL, '465', NULL, NULL, NULL);
-(22, 'CAPTCHA', '是否开启验证码', 'NEED_CAPTCHA', '1', '1', '是否开启验证码（1：开启 0：关闭）', 1, '2024-12-04 16:19:58');
+(21, 'MAIL', 'SSL端口', 'MAIL_SSL_PORT', NULL, '465', NULL, NULL, NULL),
+(22, 'LOGIN', '是否启用验证码', 'LOGIN_CAPTCHA_ENABLED', NULL, '1', '是否启用验证码（1：是；0：否）', NULL, NULL);
 
 -- 初始化默认字典
 INSERT INTO "sys_dict"

@@ -17,10 +17,8 @@
 package top.continew.admin.controller.system;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.admin.system.enums.NoticeScopeEnum;
 import top.continew.admin.system.model.query.NoticeQuery;
 import top.continew.admin.system.model.req.NoticeReq;
@@ -28,12 +26,11 @@ import top.continew.admin.system.model.resp.NoticeDetailResp;
 import top.continew.admin.system.model.resp.NoticeResp;
 import top.continew.admin.system.service.NoticeService;
 import top.continew.starter.core.validation.ValidationUtils;
+import top.continew.starter.extension.crud.annotation.CrudApi;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.starter.extension.crud.controller.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
-import top.continew.starter.extension.crud.model.resp.BaseIdResp;
-import top.continew.starter.extension.crud.util.ValidateGroup;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 
 /**
@@ -48,23 +45,13 @@ import java.time.LocalDateTime;
 public class NoticeController extends BaseController<NoticeService, NoticeResp, NoticeDetailResp, NoticeQuery, NoticeReq> {
 
     @Override
-    public BaseIdResp<Long> add(@Validated(ValidateGroup.Crud.Add.class) @RequestBody NoticeReq req) {
-        this.check(req);
-        return super.add(req);
-    }
-
-    @Override
-    public void update(@Validated(ValidateGroup.Crud.Update.class) @RequestBody NoticeReq req, @PathVariable Long id) {
-        this.check(req);
-        super.update(req, id);
-    }
-
-    /**
-     * 校验
-     *
-     * @param req 创建或修改参数
-     */
-    private void check(NoticeReq req) {
+    public void preHandle(CrudApi crudApi, Object[] args, Method targetMethod, Class<?> targetClass) throws Exception {
+        super.preHandle(crudApi, args, targetMethod, targetClass);
+        Api api = crudApi.value();
+        if (!(Api.ADD.equals(api) || Api.UPDATE.equals(api))) {
+            return;
+        }
+        NoticeReq req = (NoticeReq)args[0];
         // 校验生效时间
         LocalDateTime effectiveTime = req.getEffectiveTime();
         LocalDateTime terminateTime = req.getTerminateTime();

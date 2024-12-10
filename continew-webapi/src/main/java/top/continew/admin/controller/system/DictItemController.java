@@ -23,7 +23,7 @@ import top.continew.admin.system.model.req.DictItemReq;
 import top.continew.admin.system.model.resp.DictItemResp;
 import top.continew.admin.system.service.DictItemService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.starter.extension.crud.controller.BaseController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.log.core.annotation.Log;
 

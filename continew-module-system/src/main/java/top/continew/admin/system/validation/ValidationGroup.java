@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.continew.admin.system.util;
+package top.continew.admin.system.validation;
 
 import jakarta.validation.groups.Default;
 
@@ -24,12 +24,12 @@ import jakarta.validation.groups.Default;
  * @author Charles7c
  * @since 2024/7/3 22:01
  */
-public interface ValidateGroup extends Default {
+public interface ValidationGroup extends Default {
 
     /**
      * 分组校验-增删改查
      */
-    interface Storage extends ValidateGroup {
+    interface Storage extends ValidationGroup {
         /**
          * 本地存储
          */
