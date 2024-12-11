@@ -1,3 +1,31 @@
+## [v3.4.1](https://github.com/continew-org/continew-admin/compare/v3.4.0...v3.4.1) (2024-12-08)
+
+### ✨ 新特性
+
+* 新增验证码配置开关 ([e314346](https://github.com/continew-org/continew-admin/commit/e31434617e751f08d12ace7773bb3ba7bf132370)) ([61fe39d](https://github.com/continew-org/continew-admin/commit/61fe39d439b73c90cfeb989f8f4727ade6b5b3b2)) (Gitee#37@@aiming317)
+
+### 💎 功能优化
+
+- 【open】优化 API 参数签名处理 ([22b3564](https://github.com/continew-org/continew-admin/commit/22b3564a2217dee739fc2172453b23600d82d6de))
+- 移除关于项目菜单初始数据（该菜单从动态路由调整为前端静态，且不再需要鉴权） ([88313c8](https://github.com/continew-org/continew-admin/commit/88313c8b2017e7ec620e5372f34bf5e431ce3e7f))
+- 优化代码生成菜单图标 ([9296985](https://github.com/continew-org/continew-admin/commit/9296985be0ab63ba54c63c71c011681f91aef7fb))
+- BaseServiceImpl 所在包调整 ([d7ae7b4](https://github.com/continew-org/continew-admin/commit/d7ae7b4e42c424a3db51c72a0ed79572c9fd7601))
+- BaseController 改为在 Admin common 模块编写（重构权限校验 checkPermission 处理） ([d7ae7b4](https://github.com/continew-org/continew-admin/commit/d7ae7b4e42c424a3db51c72a0ed79572c9fd7601))
+- CRUD ValidateGroup => CrudValidationGroup ([d7ae7b4](https://github.com/continew-org/continew-admin/commit/d7ae7b4e42c424a3db51c72a0ed79572c9fd7601))
+- ValidateGroup => ValidationGroup ([d7ae7b4](https://github.com/continew-org/continew-admin/commit/d7ae7b4e42c424a3db51c72a0ed79572c9fd7601))
+
+### 🐛 问题修复
+
+- 【generator】修复 columnSize 类型错误，兼容无注释字段配置 ([6b64ae3](https://github.com/continew-org/continew-admin/commit/6b64ae3e07a76d844eec4bd05302126cbcaca31b))
+- 补充能力开放模块接口文档配置 ([270fbf1](https://github.com/continew-org/continew-admin/commit/270fbf15af338a6ac3e6a686409eea8e9a32b6bf))
+- 修复文件管理删除文件异常或不成工的情况 ([361a412](https://github.com/continew-org/continew-admin/commit/361a41258e9fdece5ba681298f2839b013d6cfab)) (Gitee#35@kiki1373639299)
+- 修复本地文件管理删除文件异常或不成功的情况 ([c7b58a0](https://github.com/continew-org/continew-admin/commit/c7b58a0fd167c566f6680c87cc455b71c42b8eda)) (Gitee#36@kiki1373639299)
+- 修复 Query 查询数组范围报错 ([d7ae7b4](https://github.com/continew-org/continew-admin/commit/d7ae7b4e42c424a3db51c72a0ed79572c9fd7601))
+
+### 📦 依赖升级
+
+- ContiNew Starter 2.7.4 => 2.7.5 (更多特性及依赖升级详情，请查看 ContiNew Starter [更新日志](https://github.com/continew-org/continew-starter/blob/dev/CHANGELOG.md))
+
 ## [v3.4.0](https://github.com/continew-org/continew-admin/compare/v3.3.0...v3.4.0) (2024-11-18)
 
 ### ✨ 新特性

@@ -29,7 +29,7 @@ import top.continew.admin.tenant.model.resp.TenantPackageDetailResp;
 import top.continew.admin.tenant.model.resp.TenantPackageResp;
 import top.continew.admin.tenant.service.TenantPackageService;
 import top.continew.starter.core.validation.CheckUtils;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 import java.util.List;
 

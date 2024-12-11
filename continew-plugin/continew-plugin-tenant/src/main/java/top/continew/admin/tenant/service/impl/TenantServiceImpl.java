@@ -27,8 +27,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.common.config.properties.TenantProperties;
+import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.tenant.mapper.TenantMapper;
 import top.continew.admin.tenant.mapper.TenantPackageMapper;
 import top.continew.admin.tenant.model.entity.TenantDO;
@@ -44,7 +44,7 @@ import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
-import top.continew.starter.extension.crud.service.impl.BaseServiceImpl;
+import top.continew.starter.extension.crud.service.BaseServiceImpl;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
 
 import java.util.List;
