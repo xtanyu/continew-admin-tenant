@@ -53,6 +53,7 @@ import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 import top.continew.starter.extension.crud.model.resp.BaseIdResp;
+import top.continew.starter.extension.crud.model.resp.BaseResp;
 
 import java.util.List;
 
@@ -76,6 +77,7 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     private final UserService userService;
     private final TenantSysDataService tenantSysDataService;
     private final AppService appService;
+    private final RoleMenuService roleMenuService;
 
     @GetMapping("/common")
     @SaIgnore
@@ -104,6 +106,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             menuService.menuInit(menuRespList, 0L, 0L);
             //租户角色初始化
             Long roleId = roleService.initTenantRole();
+            //角色绑定菜单
+            roleMenuService.add(menuService.listAll(baseIdResp.getId()).stream().map(BaseResp::getId).toList(), roleId);
             //管理用户初始化
             Long userId = userService.initTenantUser(req.getUsername(), req.getPassword(), deptId);
             //用户绑定角色
