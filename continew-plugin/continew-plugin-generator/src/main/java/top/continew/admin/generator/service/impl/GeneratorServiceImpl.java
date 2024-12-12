@@ -289,14 +289,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         // 渲染代码
         String classNamePrefix = innerGenConfig.getClassNamePrefix();
         Map<String, GeneratorProperties.TemplateConfig> templateConfigMap = generatorProperties.getTemplateConfigs();
-
         TemplateEngine engine = TemplateUtil
             .createEngine(new TemplateConfig("templates", TemplateConfig.ResourceMode.CLASSPATH));
-        if (engine instanceof FreemarkerEngine) {
-            ((FreemarkerEngine)engine).getConfiguration()
+        if (engine instanceof FreemarkerEngine freemarkerEngine) {
+            freemarkerEngine.getConfiguration()
                 .setSharedVariable("statics", BeansWrapper.getDefaultInstance().getStaticModels());
         }
-
         for (Map.Entry<String, GeneratorProperties.TemplateConfig> templateConfigEntry : templateConfigMap.entrySet()) {
             GeneratorProperties.TemplateConfig templateConfig = templateConfigEntry.getValue();
             // 移除需要忽略的字段
@@ -309,7 +307,7 @@ public class GeneratorServiceImpl implements GeneratorService {
             // 处理其他配置
             innerGenConfig.setSubPackageName(templateConfig.getPackageName());
             String classNameSuffix = templateConfigEntry.getKey();
-            String className = classNamePrefix + classNameSuffix;
+            String className = classNamePrefix + StrUtil.blankToDefault(templateConfig.getSuffix(), classNameSuffix);
             innerGenConfig.setClassName(className);
             boolean isBackend = templateConfig.isBackend();
             String extension = templateConfig.getExtension();
