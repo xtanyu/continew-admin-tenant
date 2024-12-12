@@ -36,7 +36,7 @@ import top.continew.admin.auth.service.LoginService;
 import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.interceptor.annotation.Log;
 
 /**
  * 三方账号认证 API

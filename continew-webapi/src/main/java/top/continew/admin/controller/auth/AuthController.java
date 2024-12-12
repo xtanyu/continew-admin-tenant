@@ -46,7 +46,7 @@ import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.interceptor.annotation.Log;
 
 import java.util.List;
 

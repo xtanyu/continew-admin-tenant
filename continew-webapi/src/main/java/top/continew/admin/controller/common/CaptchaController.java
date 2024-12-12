@@ -57,7 +57,7 @@ import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.util.TemplateUtils;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.interceptor.annotation.Log;
 import top.continew.starter.messaging.mail.util.MailUtils;
 import top.continew.starter.security.limiter.annotation.RateLimiter;
 import top.continew.starter.security.limiter.annotation.RateLimiters;

@@ -31,7 +31,7 @@ import top.continew.admin.system.service.MessageService;
 import top.continew.admin.system.service.MessageUserService;
 import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.interceptor.annotation.Log;
 
 import java.util.List;
 

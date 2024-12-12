@@ -302,6 +302,7 @@ continew-starter.tenant:
     - sys_storage # 存储配置
     - sys_tenant # 租户
     - sys_tenant_package
+    - sys_tenant_db_connect
   #租户不能使用的菜单
   ignore-menus:
     - 1050 #菜单

@@ -38,7 +38,7 @@ import top.continew.admin.system.service.*;
 import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.model.query.SortQuery;
 import top.continew.starter.extension.crud.model.resp.LabelValueResp;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.interceptor.annotation.Log;
 
 import java.util.List;
 
