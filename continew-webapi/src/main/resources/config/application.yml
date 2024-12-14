@@ -185,7 +185,6 @@ mybatis-plus:
     # 分页插件配置
     pagination:
       enabled: true
-      db-type: MYSQL
 
 --- ### CosId 配置
 cosid:
@@ -314,3 +313,4 @@ continew-starter.tenant:
     - 9000 #代码生成
     - 10010 #租户管理
     - 7000 #能力开放
+  isolation-level: datasource

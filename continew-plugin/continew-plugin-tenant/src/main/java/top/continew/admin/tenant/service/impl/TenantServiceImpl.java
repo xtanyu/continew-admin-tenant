@@ -75,7 +75,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
     protected void beforeAdd(TenantReq req) {
         //租户名称不能重复
         ValidationUtils.throwIf(baseMapper.exists(Wrappers.lambdaQuery(TenantDO.class)
-                .eq(TenantDO::getName, req.getName())), "重复的租户名称");
+            .eq(TenantDO::getName, req.getName())), "重复的租户名称");
         //录入随机的六位租户编号
         req.setTenantSn(generateTenantSn());
     }
@@ -98,15 +98,16 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
             JdbcTemplate jdbcTemplate = dbConnectService.getConnectJdbcTemplateById(entity.getDbConnectId());
             String dbName = SysConstants.TENANT_DB_PREFIX + entity.getTenantSn();
             //建库
-            jdbcTemplate.execute(StrUtil.format("CREATE DATABASE {} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", dbName));
+            jdbcTemplate.execute(StrUtil
+                .format("CREATE DATABASE {} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", dbName));
             jdbcTemplate.execute(StrUtil.format("USE {};", dbName));
             //建表
             Resource resource = new ClassPathResource("db/changelog/mysql/main_table.sql");
             String tableSql = resource.readUtf8Str();
             Arrays.stream(tableSql.split(";"))
-                    .map(String::trim)
-                    .filter(sql -> !sql.isEmpty())
-                    .forEach(jdbcTemplate::execute);
+                .map(String::trim)
+                .filter(sql -> !sql.isEmpty())
+                .forEach(jdbcTemplate::execute);
             throw new BusinessException("成功");
         }
     }
@@ -114,20 +115,20 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
     @Override
     public List<TenantAvailableResp> getAvailableList() {
         List<TenantDO> tenantDOS = baseMapper.selectList(Wrappers.lambdaQuery(TenantDO.class)
-                .select(TenantDO::getName, BaseIdDO::getId, TenantDO::getDomain)
-                .eq(TenantDO::getStatus, DisEnableStatusEnum.ENABLE.getValue())
-                .and(t -> t.isNull(TenantDO::getExpireTime).or().ge(TenantDO::getExpireTime, DateUtil.date())));
+            .select(TenantDO::getName, BaseIdDO::getId, TenantDO::getDomain)
+            .eq(TenantDO::getStatus, DisEnableStatusEnum.ENABLE.getValue())
+            .and(t -> t.isNull(TenantDO::getExpireTime).or().ge(TenantDO::getExpireTime, DateUtil.date())));
         return BeanUtil.copyToList(tenantDOS, TenantAvailableResp.class);
     }
 
     @Override
     public PageResp<TenantResp> page(TenantQuery query, PageQuery pageQuery) {
         QueryWrapper queryWrapper = Wrappers.query(TenantQuery.class)
-                .eq(query.getPackageId() != null, "package_id", query.getPackageId())
-                .like(StrUtil.isNotEmpty(query.getName()), "sys_tenant.name", query.getName());
+            .eq(query.getPackageId() != null, "package_id", query.getPackageId())
+            .like(StrUtil.isNotEmpty(query.getName()), "sys_tenant.name", query.getName());
         this.sort(queryWrapper, pageQuery);
         IPage<TenantResp> list = baseMapper.listTenant(new Page<>(pageQuery.getPage(), pageQuery
-                .getSize()), queryWrapper);
+            .getSize()), queryWrapper);
         PageResp<TenantResp> pageResp = PageResp.build(list, TenantResp.class);
         return pageResp;
     }
@@ -164,7 +165,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
                 CheckUtils.throwIfNotEqual(DisEnableStatusEnum.ENABLE.getValue(), tenantDO.getStatus(), "此租户已被禁用");
                 //租户过期
                 CheckUtils.throwIf(tenantDO.getExpireTime() != null && tenantDO.getExpireTime()
-                        .isBefore(DateUtil.date().toLocalDateTime()), "租户已过期");
+                    .isBefore(DateUtil.date().toLocalDateTime()), "租户已过期");
                 //套餐状态
                 TenantPackageDO packageDO = packageMapper.selectById(tenantDO.getPackageId());
                 CheckUtils.throwIfNull(tenantDO, "套餐不存在");

@@ -166,8 +166,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             //修改用户名
             if (!req.getUsername().equals(userDO.getUsername())) {
                 userService.update(Wrappers.lambdaUpdate(UserDO.class)
-                        .set(UserDO::getUsername, req.getUsername())
-                        .eq(BaseIdDO::getId, userDO.getId()));
+                    .set(UserDO::getUsername, req.getUsername())
+                    .eq(BaseIdDO::getId, userDO.getId()));
             }
             //修改密码
             if (StrUtil.isNotEmpty(req.getPassword())) {
@@ -190,8 +190,6 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
         return packageService.list(null, null);
     }
 
-
-
     /**
      * 查询所有数据库连接
      */
@@ -201,6 +199,5 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     public List<TenantDbConnectResp> dbConnectList() {
         return dbConnectService.list(null, null);
     }
-
 
 }
