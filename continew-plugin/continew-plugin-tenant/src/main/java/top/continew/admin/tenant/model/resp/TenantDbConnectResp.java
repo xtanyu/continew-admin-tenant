@@ -49,9 +49,4 @@ public class TenantDbConnectResp extends BaseResp {
     @Schema(description = "连接用户名")
     private String username;
 
-    /**
-     * 连接密码
-     */
-    @Schema(description = "连接密码")
-    private String password;
 }

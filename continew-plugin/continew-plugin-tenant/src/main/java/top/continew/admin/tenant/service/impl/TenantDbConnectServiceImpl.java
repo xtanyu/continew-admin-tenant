@@ -1,11 +1,16 @@
 package top.continew.admin.tenant.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.tenant.mapper.TenantDbConnectMapper;
 import top.continew.admin.tenant.model.entity.TenantDbConnectDO;
 import top.continew.admin.tenant.model.enums.TenantConnectTypeEnum;
@@ -14,11 +19,13 @@ import top.continew.admin.tenant.model.req.TenantDbConnectReq;
 import top.continew.admin.tenant.model.resp.TenantDbConnectDetailResp;
 import top.continew.admin.tenant.model.resp.TenantDbConnectResp;
 import top.continew.admin.tenant.service.TenantDbConnectService;
+import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.exception.BusinessException;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * 租户数据连接业务实现
@@ -31,27 +38,42 @@ import javax.sql.DataSource;
 public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectMapper, TenantDbConnectDO, TenantDbConnectResp, TenantDbConnectDetailResp, TenantDbConnectQuery, TenantDbConnectReq> implements TenantDbConnectService {
 
     @Override
+    @Cached(name = CacheConstants.DB_CONNECT_KEY_PREFIX, key = "#id")
+    public TenantDbConnectDetailResp get(Long id) {
+        return super.get(id);
+    }
+
+    @Override
     protected void beforeAdd(TenantDbConnectReq req) {
-        if (req.getType().equals(TenantConnectTypeEnum.MYSQL)) {
-            checkMysqlConnect(req);
+        TenantConnectTypeEnum connectTypeEnum = TenantConnectTypeEnum.getByOrdinal(req.getType());
+        if (TenantConnectTypeEnum.MYSQL.equals(connectTypeEnum)) {
+            getMysqlConnect(req);
             checkRepeat(req, null);
         }
     }
 
     /**
-     * 验证mysql连接
+     * 验证mysql连接有消息并返回数据源
      */
-    private void checkMysqlConnect(TenantDbConnectReq req) {
+    private DataSource getMysqlConnect(TenantDbConnectReq req) {
         try {
+            String activeProfile = SpringUtil.getActiveProfile();
+            String jdbcUrl = StrUtil.format("jdbc:mysql://{}:{}", req.getHost(), req.getPort());
+            String driverClassName = "com.mysql.cj.jdbc.Driver";
+            if (activeProfile.equals("dev")) {
+                jdbcUrl = StrUtil.format("jdbc:p6spy:mysql://{}:{}", req.getHost(), req.getPort());
+                driverClassName = "com.p6spy.engine.spy.P6SpyDriver";
+            }
             HikariConfig configuration = new HikariConfig();
-            configuration.setJdbcUrl(StrUtil.format("jdbc:mysql://{}:{}", req.getHost(), req.getPort()));
-            configuration.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            configuration.setJdbcUrl(jdbcUrl);
+            configuration.setDriverClassName(driverClassName);
             configuration.setUsername(req.getUsername());
             configuration.setPassword(req.getPassword());
             DataSource dataSource = new HikariDataSource(configuration);
             dataSource.getConnection();
+            return dataSource;
         } catch (Exception e) {
-            throw new BusinessException("数据库连接失败,请基础配置信息");
+            throw new BusinessException("数据库连接失败,请检查基础配置信息");
         }
     }
 
@@ -70,8 +92,31 @@ public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectM
     @Override
     protected void beforeUpdate(TenantDbConnectReq req, Long id) {
         if (req.getType().equals(TenantConnectTypeEnum.MYSQL)) {
-            checkMysqlConnect(req);
+            getMysqlConnect(req);
             checkRepeat(req, id);
         }
     }
+
+    @Override
+    protected void afterUpdate(TenantDbConnectReq req, TenantDbConnectDO entity) {
+        RedisUtils.delete(CacheConstants.DB_CONNECT_KEY_PREFIX + entity.getId());
+    }
+
+    @Override
+    protected void afterDelete(List<Long> ids) {
+        ids.forEach(id -> RedisUtils.delete(CacheConstants.DB_CONNECT_KEY_PREFIX + id));
+    }
+
+    @Override
+    public JdbcTemplate getConnectJdbcTemplateById(Long id) {
+        TenantDbConnectDetailResp tenantDbConnectDetailResp = get(id);
+        TenantConnectTypeEnum connectTypeEnum = TenantConnectTypeEnum.getByOrdinal(tenantDbConnectDetailResp.getType());
+        if (TenantConnectTypeEnum.MYSQL.equals(connectTypeEnum)) {
+            TenantDbConnectReq dbConnectReq = BeanUtil.copyProperties(tenantDbConnectDetailResp, TenantDbConnectReq.class);
+            return new JdbcTemplate(getMysqlConnect(dbConnectReq));
+        }
+        return null;
+    }
+
+
 }

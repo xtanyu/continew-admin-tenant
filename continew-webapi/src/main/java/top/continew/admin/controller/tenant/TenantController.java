@@ -18,6 +18,7 @@ package top.continew.admin.controller.tenant;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -39,10 +40,8 @@ import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantQuery;
 import top.continew.admin.tenant.model.req.TenantLoginUserInfoReq;
 import top.continew.admin.tenant.model.req.TenantReq;
-import top.continew.admin.tenant.model.resp.TenantCommonResp;
-import top.continew.admin.tenant.model.resp.TenantDetailResp;
-import top.continew.admin.tenant.model.resp.TenantPackageDetailResp;
-import top.continew.admin.tenant.model.resp.TenantResp;
+import top.continew.admin.tenant.model.resp.*;
+import top.continew.admin.tenant.service.TenantDbConnectService;
 import top.continew.admin.tenant.service.TenantPackageService;
 import top.continew.admin.tenant.service.TenantService;
 import top.continew.admin.tenant.util.TenantUtil;
@@ -78,6 +77,7 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     private final TenantSysDataService tenantSysDataService;
     private final AppService appService;
     private final RoleMenuService roleMenuService;
+    private final TenantDbConnectService dbConnectService;
 
     @GetMapping("/common")
     @SaIgnore
@@ -94,8 +94,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     public BaseIdResp<Long> add(TenantReq req) {
         //租户添加
         BaseIdResp<Long> baseIdResp = super.add(req);
+        //套餐菜单
         TenantPackageDetailResp detailResp = packageService.get(req.getPackageId());
-        //菜单
         CheckUtils.throwIf(detailResp.getMenuIds().isEmpty(), "该套餐无可用菜单");
         List<MenuDO> menuRespList = menuService.listByIds(detailResp.getMenuIds());
         //在租户中执行数据插入
@@ -166,8 +166,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             //修改用户名
             if (!req.getUsername().equals(userDO.getUsername())) {
                 userService.update(Wrappers.lambdaUpdate(UserDO.class)
-                    .set(UserDO::getUsername, req.getUsername())
-                    .eq(BaseIdDO::getId, userDO.getId()));
+                        .set(UserDO::getUsername, req.getUsername())
+                        .eq(BaseIdDO::getId, userDO.getId()));
             }
             //修改密码
             if (StrUtil.isNotEmpty(req.getPassword())) {
@@ -179,5 +179,28 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             }
         });
     }
+
+    /**
+     * 查询所有租户套餐
+     */
+    @GetMapping("/all/package")
+    @Operation(summary = "查询所有租户套餐", description = "查询所有租户套餐")
+    @SaCheckPermission(value = {"tenant:user:add", "tenant:user:update"}, mode = SaMode.OR)
+    public List<TenantPackageResp> packageList() {
+        return packageService.list(null, null);
+    }
+
+
+
+    /**
+     * 查询所有数据库连接
+     */
+    @GetMapping("/all/dbConnect")
+    @Operation(summary = "获取租户数据连接列表", description = "获取租户数据连接列表")
+    @SaCheckPermission(value = {"tenant:user:add", "tenant:user:update"}, mode = SaMode.OR)
+    public List<TenantDbConnectResp> dbConnectList() {
+        return dbConnectService.list(null, null);
+    }
+
 
 }

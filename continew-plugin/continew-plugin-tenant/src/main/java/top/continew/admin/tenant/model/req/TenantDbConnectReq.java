@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.continew.admin.tenant.model.enums.TenantConnectTypeEnum;
 import top.continew.starter.extension.crud.model.req.BaseReq;
 
 import java.io.Serial;
@@ -36,7 +35,7 @@ public class TenantDbConnectReq extends BaseReq {
      */
     @Schema(description = "连接类型")
     @NotNull(message = "连接类型不能为空")
-    private TenantConnectTypeEnum type;
+    private Integer type;
 
     /**
      * 连接主机地址
@@ -69,7 +68,4 @@ public class TenantDbConnectReq extends BaseReq {
     @Length(max = 128, message = "连接密码长度不能超过 {max} 个字符")
     private String password;
 
-    public void setType(Integer type) {
-        this.type = TenantConnectTypeEnum.getByValue(type);
-    }
 }

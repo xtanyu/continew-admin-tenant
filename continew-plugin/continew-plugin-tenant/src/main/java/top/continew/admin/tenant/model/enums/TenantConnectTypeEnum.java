@@ -11,7 +11,7 @@ public enum TenantConnectTypeEnum {
     MYSQL;
 
 
-    public static TenantConnectTypeEnum getByValue(Integer ordinal) {
+    public static TenantConnectTypeEnum getByOrdinal(Integer ordinal) {
         for (TenantConnectTypeEnum item : TenantConnectTypeEnum.values()) {
             if (item.ordinal() == ordinal) {
                 return item;

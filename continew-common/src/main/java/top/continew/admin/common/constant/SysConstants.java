@@ -79,6 +79,11 @@ public class SysConstants {
      */
     public static final String DESCRIPTION_FIELD_SUFFIX = "String";
 
+    /**
+     * 租户数据库前缀
+     */
+    public static final String TENANT_DB_PREFIX = "tenant_";
+
     private SysConstants() {
     }
 }
