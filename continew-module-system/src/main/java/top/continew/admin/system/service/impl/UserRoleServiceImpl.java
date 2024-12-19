@@ -91,6 +91,9 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public void deleteByUserIds(List<Long> userIds) {
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(UserRoleDO::getUserId, userIds).remove();
     }
 
@@ -124,6 +127,9 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public boolean isRoleIdExists(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return false;
+        }
         return baseMapper.lambdaQuery().in(UserRoleDO::getRoleId, roleIds).exists();
     }
 }

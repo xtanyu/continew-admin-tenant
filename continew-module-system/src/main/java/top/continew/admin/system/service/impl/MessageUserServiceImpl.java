@@ -80,6 +80,9 @@ public class MessageUserServiceImpl implements MessageUserService {
 
     @Override
     public void readMessage(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
         baseMapper.lambdaUpdate()
             .set(MessageUserDO::getIsRead, true)
             .set(MessageUserDO::getReadTime, LocalDateTime.now())
@@ -90,6 +93,9 @@ public class MessageUserServiceImpl implements MessageUserService {
 
     @Override
     public void deleteByMessageIds(List<Long> messageIds) {
+        if (CollUtil.isEmpty(messageIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(MessageUserDO::getMessageId, messageIds).remove();
     }
 }

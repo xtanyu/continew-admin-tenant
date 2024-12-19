@@ -463,6 +463,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
 
     @Override
     public Long countByDeptIds(List<Long> deptIds) {
+        if (CollUtil.isEmpty(deptIds)) {
+            return 0L;
+        }
         return baseMapper.lambdaQuery().in(UserDO::getDeptId, deptIds).count();
     }
 

@@ -158,6 +158,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
     @Override
     @ContainerMethod(namespace = ContainerConstants.USER_ROLE_NAME_LIST, type = MappingType.ORDER_OF_KEYS)
     public List<String> listNameByIds(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
         List<RoleDO> roleList = baseMapper.lambdaQuery().select(RoleDO::getName).in(RoleDO::getId, ids).list();
         return roleList.stream().map(RoleDO::getName).toList();
     }
@@ -165,6 +168,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
     @Override
     public Set<String> listCodeByUserId(Long userId) {
         List<Long> roleIdList = userRoleService.listRoleIdByUserId(userId);
+        if (CollUtil.isEmpty(roleIdList)) {
+            return Collections.emptySet();
+        }
         List<RoleDO> roleList = baseMapper.lambdaQuery().select(RoleDO::getCode).in(RoleDO::getId, roleIdList).list();
         return roleList.stream().map(RoleDO::getCode).collect(Collectors.toSet());
     }
@@ -172,6 +178,9 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
     @Override
     public Set<RoleContext> listByUserId(Long userId) {
         List<Long> roleIdList = userRoleService.listRoleIdByUserId(userId);
+        if (CollUtil.isEmpty(roleIdList)) {
+            return Collections.emptySet();
+        }
         List<RoleDO> roleList = baseMapper.lambdaQuery().in(RoleDO::getId, roleIdList).list();
         return new HashSet<>(BeanUtil.copyToList(roleList, RoleContext.class));
     }
