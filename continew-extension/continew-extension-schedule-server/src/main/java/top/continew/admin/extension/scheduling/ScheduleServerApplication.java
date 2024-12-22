@@ -53,6 +53,7 @@ public class ScheduleServerApplication extends com.aizuda.snailjob.server.SnailJ
         log.info("----------------------------------------------");
         log.info("{} service started successfully.", SpringUtil.getApplicationName());
         log.info("访问地址：{}", baseUrl);
+        log.info("在线文档：https://snailjob.opensnail.com");
         log.info("----------------------------------------------");
     }
 }
