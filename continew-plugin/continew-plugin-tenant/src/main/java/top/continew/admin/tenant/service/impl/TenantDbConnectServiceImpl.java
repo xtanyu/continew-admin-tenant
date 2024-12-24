@@ -58,39 +58,28 @@ public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectM
     protected void beforeAdd(TenantDbConnectReq req) {
         TenantConnectTypeEnum connectTypeEnum = TenantConnectTypeEnum.getByOrdinal(req.getType());
         if (TenantConnectTypeEnum.MYSQL.equals(connectTypeEnum)) {
-            DbConnectUtil.getMysqlDataSource(
-                    req.getHost(),
-                    req.getPort(),
-                    req.getUsername(),
-                    req.getPassword(),
-                    null, null
-            );
+            DbConnectUtil.getMysqlDataSource(req.getHost(), req.getPort(), req.getUsername(), req
+                .getPassword(), null, null);
             checkRepeat(req, null);
         }
     }
-
 
     /**
      * 验证重复数据
      */
     private void checkRepeat(TenantDbConnectReq req, Long id) {
         CheckUtils.throwIf(baseMapper.exists(Wrappers.lambdaQuery(TenantDbConnectDO.class)
-                .eq(TenantDbConnectDO::getHost, req.getHost())
-                .eq(TenantDbConnectDO::getPort, req.getPort())
-                .eq(TenantDbConnectDO::getUsername, req.getUsername())
-                .ne(id != null, TenantDbConnectDO::getId, id)), "数据库连接已存在");
+            .eq(TenantDbConnectDO::getHost, req.getHost())
+            .eq(TenantDbConnectDO::getPort, req.getPort())
+            .eq(TenantDbConnectDO::getUsername, req.getUsername())
+            .ne(id != null, TenantDbConnectDO::getId, id)), "数据库连接已存在");
     }
 
     @Override
     protected void beforeUpdate(TenantDbConnectReq req, Long id) {
         if (req.getType().equals(TenantConnectTypeEnum.MYSQL)) {
-            DbConnectUtil.getMysqlDataSource(
-                    req.getHost(),
-                    req.getPort(),
-                    req.getUsername(),
-                    req.getPassword(),
-                    null, null
-            );
+            DbConnectUtil.getMysqlDataSource(req.getHost(), req.getPort(), req.getUsername(), req
+                .getPassword(), null, null);
             checkRepeat(req, id);
         }
     }
@@ -110,13 +99,8 @@ public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectM
         TenantDbConnectDetailResp dbConnectReq = get(id);
         TenantConnectTypeEnum connectTypeEnum = TenantConnectTypeEnum.getByOrdinal(dbConnectReq.getType());
         if (TenantConnectTypeEnum.MYSQL.equals(connectTypeEnum)) {
-            DataSource dataSource = DbConnectUtil.getMysqlDataSource(
-                    dbConnectReq.getHost(),
-                    dbConnectReq.getPort(),
-                    dbConnectReq.getUsername(),
-                    dbConnectReq.getPassword(),
-                    null, null
-            );
+            DataSource dataSource = DbConnectUtil.getMysqlDataSource(dbConnectReq.getHost(), dbConnectReq
+                .getPort(), dbConnectReq.getUsername(), dbConnectReq.getPassword(), null, null);
             return new JdbcTemplate(dataSource);
         }
         return null;

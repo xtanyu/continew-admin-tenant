@@ -110,12 +110,12 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
     @Override
     public void beforeDelete(List<Long> ids) {
         List<RoleDO> list = baseMapper.lambdaQuery()
-                .select(RoleDO::getName, RoleDO::getIsSystem)
-                .in(RoleDO::getId, ids)
-                .list();
+            .select(RoleDO::getName, RoleDO::getIsSystem)
+            .in(RoleDO::getId, ids)
+            .list();
         Optional<RoleDO> isSystemData = list.stream().filter(RoleDO::getIsSystem).findFirst();
         CheckUtils.throwIf(isSystemData::isPresent, "所选角色 [{}] 是系统内置角色，不允许删除", isSystemData.orElseGet(RoleDO::new)
-                .getName());
+            .getName());
         CheckUtils.throwIf(userRoleService.isRoleIdExists(ids), "所选角色存在用户关联，请解除关联后重试");
         // 删除角色和菜单关联
         roleMenuService.deleteByRoleIds(ids);
@@ -205,7 +205,7 @@ public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, RoleDO, RoleRes
         if (CollUtil.isEmpty(roleNames)) {
             return 0;
         }
-        return (int) this.count(Wrappers.<RoleDO>lambdaQuery().in(RoleDO::getName, roleNames));
+        return (int)this.count(Wrappers.<RoleDO>lambdaQuery().in(RoleDO::getName, roleNames));
     }
 
     /**

@@ -24,7 +24,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.continew.admin.common.base.BaseController;
@@ -84,7 +83,7 @@ public class TenantPackageController extends BaseController<TenantPackageService
     public void update(TenantPackageReq req, Long id) {
         //查询套餐对应的租户
         List<TenantDO> tenantDOList = tenantService.list(Wrappers.lambdaQuery(TenantDO.class)
-                .eq(TenantDO::getPackageId, id));
+            .eq(TenantDO::getPackageId, id));
         if (!tenantDOList.isEmpty()) {
             TenantPackageDetailResp detail = baseService.get(id);
             List<Long> oldMenuIds = detail.getMenuIds();
@@ -95,9 +94,8 @@ public class TenantPackageController extends BaseController<TenantPackageService
             //如果有删除的菜单则绑定了套餐的租户对应的菜单也会删除
             if (!deleteMenuIds.isEmpty()) {
                 List<MenuDO> deleteMenus = menuService.listByIds(deleteMenuIds);
-                tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class).execute(tenantDO.getId(), () ->
-                        menuService.deleteTenantMenus(deleteMenus)
-                ));
+                tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantDO.getId(), () -> menuService.deleteTenantMenus(deleteMenus)));
             }
             //新增的菜单
             List<Long> addMenuIds = new ArrayList<>(newMenuIds);
@@ -107,9 +105,8 @@ public class TenantPackageController extends BaseController<TenantPackageService
                 List<MenuDO> addMenus = menuService.listByIds(addMenuIds);
                 for (MenuDO addMenu : addMenus) {
                     MenuDO pMenu = addMenu.getParentId() != 0 ? menuService.getById(addMenu.getParentId()) : null;
-                    tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class).execute(tenantDO.getId(), () ->
-                            menuService.addTenantMenu(addMenu, pMenu)
-                    ));
+                    tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class)
+                        .execute(tenantDO.getId(), () -> menuService.addTenantMenu(addMenu, pMenu)));
                 }
                 RedisUtils.deleteByPattern(CacheConstants.MENU_KEY_PREFIX + StringConstants.ASTERISK);
             }

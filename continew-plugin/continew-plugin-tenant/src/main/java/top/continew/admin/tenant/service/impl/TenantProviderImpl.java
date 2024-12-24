@@ -52,20 +52,18 @@ public class TenantProviderImpl implements TenantProvider {
             Long longTenantId = Long.valueOf(tenantId);
             TenantDO tenantDO = tenantService.getTenantById(longTenantId);
             CheckUtils.throwIfNull(tenantDO, "租户[{}]不存在", tenantId);
-            CheckUtils.throwIf(verify && DisEnableStatusEnum.DISABLE.getValue().equals(tenantDO.getStatus()), "租户[{}]已被禁用", tenantId);
+            CheckUtils.throwIf(verify && DisEnableStatusEnum.DISABLE.getValue()
+                .equals(tenantDO.getStatus()), "租户[{}]已被禁用", tenantId);
             context.setTenantId(longTenantId);
-            TenantIsolationLevel isolationLevel = TenantIsolationLevel.DATASOURCE.ordinal() == tenantDO.getIsolationLevel() ? TenantIsolationLevel.DATASOURCE : TenantIsolationLevel.LINE;
+            TenantIsolationLevel isolationLevel = TenantIsolationLevel.DATASOURCE.ordinal() == tenantDO
+                .getIsolationLevel() ? TenantIsolationLevel.DATASOURCE : TenantIsolationLevel.LINE;
             context.setIsolationLevel(isolationLevel);
             if (isolationLevel.equals(TenantIsolationLevel.DATASOURCE)) {
                 TenantDbConnectDetailResp dbConnectReq = tenantDbConnectService.get(tenantDO.getDbConnectId());
                 String dbName = SysConstants.TENANT_DB_PREFIX + tenantDO.getTenantSn();
-                HikariConfig hikariConfig = DbConnectUtil.formatHikariConfig(
-                        dbConnectReq.getHost(),
-                        dbConnectReq.getPort(),
-                        dbConnectReq.getUsername(),
-                        dbConnectReq.getPassword(), dbName,
-                        DbConnectUtil.getDefaultMysqlConnectParameter()
-                );
+                HikariConfig hikariConfig = DbConnectUtil.formatHikariConfig(dbConnectReq.getHost(), dbConnectReq
+                    .getPort(), dbConnectReq.getUsername(), dbConnectReq.getPassword(), dbName, DbConnectUtil
+                        .getDefaultMysqlConnectParameter());
                 TenantDataSource source = new TenantDataSource();
                 source.setPoolName(tenantId);
                 source.setDriverClassName(hikariConfig.getDriverClassName());

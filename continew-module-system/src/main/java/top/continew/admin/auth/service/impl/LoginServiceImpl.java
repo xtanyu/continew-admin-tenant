@@ -65,7 +65,6 @@ import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.annotation.TreeField;
 import top.continew.starter.extension.crud.autoconfigure.CrudProperties;
-import top.continew.starter.extension.tenant.context.TenantContext;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
 
 import top.continew.starter.extension.tenant.handler.TenantHandler;
@@ -222,7 +221,8 @@ public class LoginServiceImpl implements LoginService {
         CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> {
             Set<String> permissionSet = new HashSet<>();
             if (tenantProperties.isEnabled()) {
-                SpringUtil.getBean(TenantHandler.class).execute(tenantId, () -> permissionSet.addAll(roleService.listPermissionByUserId(userId)));
+                SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantId, () -> permissionSet.addAll(roleService.listPermissionByUserId(userId)));
             } else {
                 permissionSet.addAll(roleService.listPermissionByUserId(userId));
             }
@@ -231,22 +231,24 @@ public class LoginServiceImpl implements LoginService {
         CompletableFuture<Set<RoleContext>> roleFuture = CompletableFuture.supplyAsync(() -> {
             Set<RoleContext> roleSet = new HashSet<>();
             if (tenantProperties.isEnabled()) {
-                SpringUtil.getBean(TenantHandler.class).execute(tenantId, () -> roleSet.addAll(roleService.listByUserId(userId)));
+                SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantId, () -> roleSet.addAll(roleService.listByUserId(userId)));
             } else {
                 roleSet.addAll(roleService.listByUserId(userId));
             }
             return roleSet;
         }, threadPoolTaskExecutor);
-        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> optionService.getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name()));
+        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> optionService
+            .getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name()));
         CompletableFuture.allOf(permissionFuture, roleFuture, passwordExpirationDaysFuture);
         UserContext userContext = new UserContext(permissionFuture.join(), roleFuture
-                .join(), passwordExpirationDaysFuture.join());
+            .join(), passwordExpirationDaysFuture.join());
         BeanUtil.copyProperties(user, userContext);
         // 设置租户ID
         userContext.setTenantId(tenantId);
         // 登录并缓存用户信息
         StpUtil.login(userContext.getId(), SaLoginConfig.setExtraData(BeanUtil
-                .beanToMap(new UserExtraContext(SpringWebUtils.getRequest()))));
+            .beanToMap(new UserExtraContext(SpringWebUtils.getRequest()))));
         UserContextHolder.setContext(userContext);
         return StpUtil.getTokenValue();
     }
@@ -277,7 +279,7 @@ public class LoginServiceImpl implements LoginService {
         }
         // 检测是否已被锁定
         String key = CacheConstants.USER_PASSWORD_ERROR_KEY_PREFIX + RedisUtils.formatKey(username, JakartaServletUtil
-                .getClientIP(request));
+            .getClientIP(request));
         int lockMinutes = optionService.getValueByCode2Int(PasswordPolicyEnum.PASSWORD_ERROR_LOCK_MINUTES.name());
         Integer currentErrorCount = ObjectUtil.defaultIfNull(RedisUtils.get(key), 0);
         CheckUtils.throwIf(currentErrorCount >= maxErrorCount, "账号锁定 {} 分钟，请稍后再试", lockMinutes);

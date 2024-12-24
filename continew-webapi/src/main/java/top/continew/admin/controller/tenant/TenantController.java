@@ -27,7 +27,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.continew.admin.common.base.BaseController;
@@ -166,8 +165,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
             //修改用户名
             if (!req.getUsername().equals(userDO.getUsername())) {
                 userService.update(Wrappers.lambdaUpdate(UserDO.class)
-                        .set(UserDO::getUsername, req.getUsername())
-                        .eq(BaseIdDO::getId, userDO.getId()));
+                    .set(UserDO::getUsername, req.getUsername())
+                    .eq(BaseIdDO::getId, userDO.getId()));
             }
             //修改密码
             if (StrUtil.isNotEmpty(req.getPassword())) {
