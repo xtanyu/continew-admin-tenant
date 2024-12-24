@@ -65,8 +65,6 @@ import java.io.IOException;
     Api.EXPORT})
 public class UserController extends BaseController<UserService, UserResp, UserDetailResp, UserQuery, UserReq> {
 
-    private final UserService userService;
-
     @Override
     public BaseIdResp<Long> add(@Validated(CrudValidationGroup.Add.class) @RequestBody UserReq req) {
         String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
@@ -81,7 +79,7 @@ public class UserController extends BaseController<UserService, UserResp, UserDe
     @SaCheckPermission("system:user:import")
     @GetMapping(value = "/import/template", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        userService.downloadImportTemplate(response);
+        baseService.downloadImportTemplate(response);
     }
 
     @Operation(summary = "解析导入数据", description = "解析导入数据")
@@ -89,14 +87,14 @@ public class UserController extends BaseController<UserService, UserResp, UserDe
     @PostMapping("/import/parse")
     public UserImportParseResp parseImport(@NotNull(message = "文件不能为空") MultipartFile file) {
         ValidationUtils.throwIf(file::isEmpty, "文件不能为空");
-        return userService.parseImport(file);
+        return baseService.parseImport(file);
     }
 
     @Operation(summary = "导入数据", description = "导入数据")
     @SaCheckPermission("system:user:import")
     @PostMapping(value = "/import")
     public UserImportResp importUser(@Validated @RequestBody UserImportReq req) {
-        return userService.importUser(req);
+        return baseService.importUser(req);
     }
 
     @Operation(summary = "重置密码", description = "重置用户登录密码")

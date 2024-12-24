@@ -65,6 +65,9 @@ public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteByRoleIds(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(RoleMenuDO::getRoleId, roleIds).remove();
     }
 

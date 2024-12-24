@@ -125,6 +125,9 @@ public class FileServiceImpl extends BaseServiceImpl<FileMapper, FileDO, FileRes
 
     @Override
     public Long countByStorageIds(List<Long> storageIds) {
+        if (CollUtil.isEmpty(storageIds)) {
+            return 0L;
+        }
         return baseMapper.lambdaQuery().in(FileDO::getStorageId, storageIds).count();
     }
 

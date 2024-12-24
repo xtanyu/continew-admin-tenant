@@ -16,6 +16,7 @@
 
 package top.continew.admin.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alicp.jetcache.anno.Cached;
@@ -77,6 +78,9 @@ public class DictItemServiceImpl extends BaseServiceImpl<DictItemMapper, DictIte
 
     @Override
     public void deleteByDictIds(List<Long> dictIds) {
+        if (CollUtil.isEmpty(dictIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(DictItemDO::getDictId, dictIds).remove();
         RedisUtils.deleteByPattern(CacheConstants.DICT_KEY_PREFIX + StringConstants.ASTERISK);
     }

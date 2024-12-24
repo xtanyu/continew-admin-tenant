@@ -40,11 +40,11 @@ CREATE TABLE IF NOT EXISTS `gen_field_config` (
 
 -- 初始化默认菜单
 INSERT INTO `sys_menu`
-(`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`)
+(`id`, `title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`)
 VALUES
-(9000, '代码生成', 0, 1, '/code', 'Code', 'Layout', '/code/generator', 'code-release-managment', b'0', b'0', b'0', NULL, 9, 1, 1, NOW(), NULL, NULL),
-(9010, '代码生成', 9000, 2, '/code/generator', 'CodeGenerator', 'code/generator/index', NULL, 'code', b'0', b'0', b'0', NULL, 1, 1, 1, NOW(), NULL, NULL),
-(9011, '列表', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:list', 1, 1, 1, NOW(), NULL, NULL),
-(9012, '配置', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:config', 2, 1, 1, NOW(), NULL, NULL),
-(9013, '预览', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:preview', 3, 1, 1, NOW(), NULL, NULL),
-(9014, '生成', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:generate', 4, 1, 1, NOW(), NULL, NULL);
+(9000, '代码生成', 0, 1, '/code', 'Code', 'Layout', '/code/generator', 'code-release-managment', b'0', b'0', b'0', NULL, 9, 1, 1, NOW()),
+(9010, '代码生成', 9000, 2, '/code/generator', 'CodeGenerator', 'code/generator/index', NULL, 'code', b'0', b'0', b'0', NULL, 1, 1, 1, NOW()),
+(9011, '列表', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:list', 1, 1, 1, NOW()),
+(9012, '配置', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:config', 2, 1, 1, NOW()),
+(9013, '预览', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:preview', 3, 1, 1, NOW()),
+(9014, '生成', 9010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'code:generator:generate', 4, 1, 1, NOW());

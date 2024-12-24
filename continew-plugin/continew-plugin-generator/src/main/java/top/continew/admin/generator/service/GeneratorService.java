@@ -74,15 +74,15 @@ public interface GeneratorService {
     /**
      * 生成预览
      *
-     * @param tableName 表名称
+     * @param tableNames 表名称列表
      * @return 预览信息
      */
-    List<GeneratePreviewResp> preview(String tableName);
+    List<GeneratePreviewResp> preview(List<String> tableNames);
 
     /**
      * 生成代码
      *
-     * @param tableNames 表明层
+     * @param tableNames 表名称列表
      * @param response   响应对象
      */
     void generate(List<String> tableNames, HttpServletResponse response);
