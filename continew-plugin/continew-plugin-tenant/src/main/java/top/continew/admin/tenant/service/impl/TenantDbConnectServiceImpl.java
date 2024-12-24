@@ -77,7 +77,8 @@ public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectM
 
     @Override
     protected void beforeUpdate(TenantDbConnectReq req, Long id) {
-        if (req.getType().equals(TenantConnectTypeEnum.MYSQL)) {
+        TenantConnectTypeEnum connectTypeEnum = TenantConnectTypeEnum.getByOrdinal(req.getType());
+        if (TenantConnectTypeEnum.MYSQL.equals(connectTypeEnum)) {
             DbConnectUtil.getMysqlDataSource(req.getHost(), req.getPort(), req.getUsername(), req
                 .getPassword(), null, null);
             checkRepeat(req, id);

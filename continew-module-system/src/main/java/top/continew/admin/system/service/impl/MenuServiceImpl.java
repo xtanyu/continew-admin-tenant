@@ -111,8 +111,8 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
     }
 
     @Override
-    @Cached(key = "#roleCode", name = CacheConstants.MENU_KEY_PREFIX)
-    public List<MenuResp> listByRoleCode(String roleCode) {
+    @Cached(key = "#roleCode + #tenantId", name = CacheConstants.MENU_KEY_PREFIX)
+    public List<MenuResp> listByRoleCode(String roleCode, Long tenantId) {
         List<MenuDO> menuList = baseMapper.selectListByRoleCode(roleCode);
         List<MenuResp> list = BeanUtil.copyToList(menuList, MenuResp.class);
         list.forEach(super::fill);

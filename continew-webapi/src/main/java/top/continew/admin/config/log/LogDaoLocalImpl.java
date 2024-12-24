@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import top.continew.admin.auth.model.req.AccountLoginReq;
+import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.system.enums.LogStatusEnum;
 import top.continew.admin.system.mapper.LogMapper;
@@ -39,7 +40,6 @@ import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.util.StrUtils;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
-import top.continew.starter.extension.tenant.enums.TenantIsolationLevel;
 import top.continew.starter.extension.tenant.handler.TenantHandler;
 import top.continew.starter.log.dao.LogDao;
 import top.continew.starter.log.model.LogRecord;
@@ -65,6 +65,7 @@ public class LogDaoLocalImpl implements LogDao {
     private final UserService userService;
     private final LogMapper logMapper;
     private final TraceProperties traceProperties;
+    private final TenantProperties tenantProperties;
 
     @Async
     @Override
@@ -83,15 +84,12 @@ public class LogDaoLocalImpl implements LogDao {
             .trim()));
         logDO.setTimeTaken(logRecord.getTimeTaken().toMillis());
         logDO.setCreateTime(LocalDateTime.ofInstant(logRecord.getTimestamp(), ZoneId.systemDefault()));
-        boolean enabled = SpringUtil.getProperty("continew-starter.tenant.enabled", Boolean.class, false);
-        if (enabled) {
-            if (TenantIsolationLevel.DATASOURCE.equals(TenantContextHolder.getIsolationLevel())) {
-                SpringUtil.getBean(TenantHandler.class).execute(TenantContextHolder.getTenantId(), () -> {
-                    // 设置操作人
-                    this.setCreateUser(logDO, logRequest, logResponse);
-                    logMapper.insert(logDO);
-                });
-            }
+        if (tenantProperties.isEnabled()) {
+            SpringUtil.getBean(TenantHandler.class).execute(TenantContextHolder.getTenantId(), () -> {
+                // 设置操作人
+                this.setCreateUser(logDO, logRequest, logResponse);
+                logMapper.insert(logDO);
+            });
         } else {
             this.setCreateUser(logDO, logRequest, logResponse);
             logMapper.insert(logDO);

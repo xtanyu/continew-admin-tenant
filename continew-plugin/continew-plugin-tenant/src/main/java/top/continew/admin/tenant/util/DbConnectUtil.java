@@ -24,6 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import top.continew.starter.core.exception.BusinessException;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,7 +76,8 @@ public class DbConnectUtil {
                                                 Map<String, String> parameter) {
         try {
             DataSource dataSource = new HikariDataSource(formatHikariConfig(host, port, username, password, dbName, parameter));
-            dataSource.getConnection();
+            Connection connection = dataSource.getConnection();
+            connection.close();
             return dataSource;
         } catch (Exception e) {
             throw new BusinessException("数据库连接失败,请检查基础配置信息");

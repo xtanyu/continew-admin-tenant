@@ -181,7 +181,8 @@ public class LoginServiceImpl implements LoginService {
         if (roleCodeSet.contains(SysConstants.SUPER_ROLE_CODE)) {
             menuSet.addAll(menuService.listAll(UserContextHolder.getTenantId()));
         } else {
-            roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode)));
+            roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode, UserContextHolder
+                .getTenantId())));
         }
         List<MenuResp> menuList = menuSet.stream().filter(m -> !MenuTypeEnum.BUTTON.equals(m.getType())).toList();
         if (CollUtil.isEmpty(menuList)) {
