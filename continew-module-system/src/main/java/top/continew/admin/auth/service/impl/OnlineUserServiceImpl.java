@@ -82,7 +82,7 @@ public class OnlineUserServiceImpl implements OnlineUserService {
             }
             //租户数据过滤
             if (tenantProperties.isEnabled()) {
-                if (!userContext.getTenantId().equals(TenantContextHolder.getTenantId())) {
+                if (!TenantContextHolder.getTenantId().equals(userContext.getTenantId())) {
                     continue;
                 }
             }

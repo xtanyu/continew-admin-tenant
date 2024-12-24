@@ -302,6 +302,7 @@ continew-starter.tenant:
     - sys_tenant # 租户
     - sys_tenant_package
     - sys_tenant_db_connect
+    - sys_app #应用
   #租户不能使用的菜单
   ignore-menus:
     - 1050 #菜单
@@ -313,4 +314,3 @@ continew-starter.tenant:
     - 9000 #代码生成
     - 10010 #租户管理
     - 7000 #能力开放
-  isolation-level: datasource

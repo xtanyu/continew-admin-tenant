@@ -30,7 +30,7 @@ import top.continew.admin.system.model.resp.FileStatisticsResp;
 import top.continew.admin.system.service.FileService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.enums.Api;
-import top.continew.starter.log.interceptor.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 /**
  * 文件管理 API

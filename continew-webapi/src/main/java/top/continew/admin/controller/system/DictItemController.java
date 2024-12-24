@@ -25,7 +25,7 @@ import top.continew.admin.system.model.resp.DictItemResp;
 import top.continew.admin.system.service.DictItemService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.enums.Api;
-import top.continew.starter.log.interceptor.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 /**
  * 字典项管理 API

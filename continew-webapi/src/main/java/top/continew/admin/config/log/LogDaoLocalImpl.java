@@ -23,8 +23,11 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.http.HttpStatus;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
@@ -37,10 +40,14 @@ import top.continew.admin.system.service.UserService;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.util.StrUtils;
-import top.continew.starter.log.core.dao.LogDao;
-import top.continew.starter.log.core.model.LogRecord;
-import top.continew.starter.log.core.model.LogRequest;
-import top.continew.starter.log.core.model.LogResponse;
+import top.continew.starter.extension.tenant.autoconfigure.TenantProperties;
+import top.continew.starter.extension.tenant.context.TenantContextHolder;
+import top.continew.starter.extension.tenant.enums.TenantIsolationLevel;
+import top.continew.starter.extension.tenant.handler.TenantHandler;
+import top.continew.starter.log.dao.LogDao;
+import top.continew.starter.log.model.LogRecord;
+import top.continew.starter.log.model.LogRequest;
+import top.continew.starter.log.model.LogResponse;
 import top.continew.starter.web.autoconfigure.trace.TraceProperties;
 import top.continew.starter.web.model.R;
 
@@ -75,13 +82,23 @@ public class LogDaoLocalImpl implements LogDao {
         // 设置基本信息
         logDO.setDescription(logRecord.getDescription());
         logDO.setModule(StrUtils.blankToDefault(logRecord.getModule(), null, m -> m
-            .replace("API", StringConstants.EMPTY)
-            .trim()));
+                .replace("API", StringConstants.EMPTY)
+                .trim()));
         logDO.setTimeTaken(logRecord.getTimeTaken().toMillis());
         logDO.setCreateTime(LocalDateTime.ofInstant(logRecord.getTimestamp(), ZoneId.systemDefault()));
-        // 设置操作人
-        this.setCreateUser(logDO, logRequest, logResponse);
-        logMapper.insert(logDO);
+        boolean enabled = SpringUtil.getProperty("continew-starter.tenant.enabled", Boolean.class, false);
+        if (enabled) {
+            if (TenantIsolationLevel.DATASOURCE.equals(TenantContextHolder.getIsolationLevel())) {
+                SpringUtil.getBean(TenantHandler.class).execute(TenantContextHolder.getTenantId(), () -> {
+                    // 设置操作人
+                    this.setCreateUser(logDO, logRequest, logResponse);
+                    logMapper.insert(logDO);
+                });
+            }
+        } else {
+            this.setCreateUser(logDO, logRequest, logResponse);
+            logMapper.insert(logDO);
+        }
     }
 
     /**
@@ -147,19 +164,19 @@ public class LogDaoLocalImpl implements LogDao {
             String requestBody = logRequest.getBody();
             AccountLoginReq loginReq = JSONUtil.toBean(requestBody, AccountLoginReq.class);
             logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(loginReq.getUsername())
-                .getId()));
+                    .getId()));
             return;
         }
         // 解析 Token 信息
         Map<String, String> requestHeaders = logRequest.getHeaders();
         String headerName = HttpHeaders.AUTHORIZATION;
         boolean isContainsAuthHeader = CollUtil.containsAny(requestHeaders.keySet(), Set.of(headerName, headerName
-            .toLowerCase()));
+                .toLowerCase()));
         if (MapUtil.isNotEmpty(requestHeaders) && isContainsAuthHeader) {
             String authorization = requestHeaders.getOrDefault(headerName, requestHeaders.get(headerName
-                .toLowerCase()));
+                    .toLowerCase()));
             String token = authorization.replace(SaManager.getConfig()
-                .getTokenPrefix() + StringConstants.SPACE, StringConstants.EMPTY);
+                    .getTokenPrefix() + StringConstants.SPACE, StringConstants.EMPTY);
             logDO.setCreateUser(Convert.toLong(StpUtil.getLoginIdByToken(token)));
         }
     }

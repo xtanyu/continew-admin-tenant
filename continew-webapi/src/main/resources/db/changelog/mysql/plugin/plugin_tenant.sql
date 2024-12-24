@@ -19,6 +19,7 @@ CREATE TABLE `sys_tenant` (
 `create_time` datetime NOT NULL COMMENT '创建时间',
 `update_user` bigint DEFAULT NULL COMMENT '修改人',
 `update_time` datetime DEFAULT NULL COMMENT '修改时间',
+`db_connect_id`  bigint DEFAULT NULL COMMENT '数据连接ID',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户表';
 

@@ -17,6 +17,7 @@
 package top.continew.admin.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -24,14 +25,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.continew.admin.common.constant.CacheConstants;
+import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.system.enums.MenuTypeEnum;
 import top.continew.admin.system.mapper.MenuMapper;
+import top.continew.admin.system.mapper.RoleMapper;
+import top.continew.admin.system.mapper.RoleMenuMapper;
 import top.continew.admin.system.model.entity.MenuDO;
+import top.continew.admin.system.model.entity.RoleDO;
+import top.continew.admin.system.model.entity.RoleMenuDO;
 import top.continew.admin.system.model.query.MenuQuery;
 import top.continew.admin.system.model.req.MenuReq;
 import top.continew.admin.system.model.resp.MenuResp;
 import top.continew.admin.system.service.MenuService;
+import top.continew.admin.system.service.RoleMenuService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.validation.CheckUtils;
@@ -50,6 +57,9 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuResp, MenuResp, MenuQuery, MenuReq> implements MenuService {
+
+    private final RoleMenuService roleMenuService;
+    private final RoleMapper roleMapper;
 
     @Override
     public Long add(MenuReq req) {
@@ -129,15 +139,20 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
             List<Long> delIds = new ArrayList<>();
             for (MenuDO menuDO : menuList) {
                 MenuDO tMenu = getOne(Wrappers.query(MenuDO.class)
-                    .eq(menuDO.getType().equals(MenuTypeEnum.BUTTON), "CONCAT(title,permission)", menuDO
-                        .getTitle() + menuDO.getPermission())
-                    .eq(!menuDO.getType().equals(MenuTypeEnum.BUTTON), "name", menuDO.getName()));
+                        .eq(menuDO.getType().equals(MenuTypeEnum.BUTTON.getValue()), "CONCAT(title,permission)", menuDO
+                                .getTitle() + menuDO.getPermission())
+                        .eq(!menuDO.getType().equals(MenuTypeEnum.BUTTON.getValue()), "name", menuDO.getName()));
                 if (tMenu != null) {
                     delIds.add(tMenu.getId());
                 }
             }
             if (!delIds.isEmpty()) {
+                //菜单删除
                 delete(delIds);
+                //绑定关系删除
+                roleMenuService.remove(Wrappers.lambdaQuery(RoleMenuDO.class)
+                        .in(RoleMenuDO::getMenuId, delIds)
+                );
             }
         }
     }
@@ -147,14 +162,21 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
         Long pId = 0l;
         if (pMenu != null) {
             MenuDO tPMenu = getOne(Wrappers.query(MenuDO.class)
-                .eq(pMenu.getType().equals(MenuTypeEnum.BUTTON), "CONCAT(title,permission)", pMenu.getTitle() + pMenu
-                    .getPermission())
-                .eq(!pMenu.getType().equals(MenuTypeEnum.BUTTON), "name", pMenu.getName()));
+                    .eq(pMenu.getType().equals(MenuTypeEnum.BUTTON.getValue()), "CONCAT(title,permission)", pMenu.getTitle() + pMenu
+                            .getPermission())
+                    .eq(!pMenu.getType().equals(MenuTypeEnum.BUTTON.getValue()), "name", pMenu.getName()));
             pId = tPMenu.getId();
         }
         menu.setId(null);
         menu.setParentId(pId);
+        //菜单新增
         save(menu);
+        //管理员绑定菜单
+        RoleDO roleDO = roleMapper.selectOne(Wrappers.lambdaQuery(RoleDO.class).eq(RoleDO::getCode, SysConstants.TENANT_ADMIN_CODE));
+        RoleMenuDO roleMenuDO = new RoleMenuDO();
+        roleMenuDO.setRoleId(roleDO.getId());
+        roleMenuDO.setMenuId(menu.getId());
+        roleMenuService.save(roleMenuDO);
     }
 
     /**
@@ -167,10 +189,10 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
      */
     private boolean isTitleExists(String title, Long parentId, Long id) {
         return baseMapper.lambdaQuery()
-            .eq(MenuDO::getTitle, title)
-            .eq(MenuDO::getParentId, parentId)
-            .ne(null != id, MenuDO::getId, id)
-            .exists();
+                .eq(MenuDO::getTitle, title)
+                .eq(MenuDO::getParentId, parentId)
+                .ne(null != id, MenuDO::getId, id)
+                .exists();
     }
 
     /**
@@ -182,9 +204,9 @@ public class MenuServiceImpl extends BaseServiceImpl<MenuMapper, MenuDO, MenuRes
      */
     private boolean isNameExists(String name, Long id) {
         return baseMapper.lambdaQuery()
-            .eq(MenuDO::getName, name)
-            .ne(MenuDO::getType, MenuTypeEnum.BUTTON)
-            .ne(null != id, MenuDO::getId, id)
-            .exists();
+                .eq(MenuDO::getName, name)
+                .ne(MenuDO::getType, MenuTypeEnum.BUTTON)
+                .ne(null != id, MenuDO::getId, id)
+                .exists();
     }
 }

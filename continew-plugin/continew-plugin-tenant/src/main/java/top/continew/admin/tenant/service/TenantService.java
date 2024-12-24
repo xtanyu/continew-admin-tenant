@@ -55,4 +55,9 @@ public interface TenantService extends BaseService<TenantResp, TenantDetailResp,
      */
     TenantDO getTenantById(Long id);
 
+    /**
+     * 根据用户id获取租户信息
+     */
+    TenantDO getTenantByUserId(Long userId);
+
 }

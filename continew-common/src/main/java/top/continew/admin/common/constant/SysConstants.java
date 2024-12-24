@@ -84,6 +84,21 @@ public class SysConstants {
      */
     public static final String TENANT_DB_PREFIX = "tenant_";
 
+    /**
+     * 默认租户
+     */
+    public static final String DEFAULT_TENANT = "0";
+
+    /**
+     * 默认数据源
+     */
+    public static final String DEFAULT_DATASOURCE = "master";
+
+    /**
+     * 租户管理员角色编码
+     */
+    public static final String TENANT_ADMIN_CODE = "tenant_admin";
+
     private SysConstants() {
     }
 }

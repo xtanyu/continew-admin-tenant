@@ -37,7 +37,7 @@ import top.continew.admin.system.model.resp.dashboard.DashboardNoticeResp;
 import top.continew.admin.system.model.resp.dashboard.DashboardOverviewCommonResp;
 import top.continew.admin.system.service.DashboardService;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.interceptor.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 import java.io.IOException;
 import java.util.List;

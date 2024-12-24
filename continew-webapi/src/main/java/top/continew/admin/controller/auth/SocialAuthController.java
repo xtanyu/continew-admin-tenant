@@ -36,7 +36,7 @@ import top.continew.admin.auth.service.LoginService;
 import top.continew.admin.tenant.service.TenantService;
 import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.interceptor.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 /**
  * 三方账号认证 API
@@ -77,8 +77,6 @@ public class SocialAuthController {
         AuthResponse<AuthUser> response = authRequest.login(callback);
         ValidationUtils.throwIf(!response.ok(), response.getMsg());
         AuthUser authUser = response.getData();
-        //验证租户
-        tenantService.checkStatus();
         String token = loginService.socialLogin(authUser);
         return LoginResp.builder().token(token).build();
     }
