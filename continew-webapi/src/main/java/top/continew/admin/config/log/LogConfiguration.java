@@ -20,8 +20,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.continew.admin.system.mapper.LogMapper;
 import top.continew.admin.system.service.UserService;
-import top.continew.starter.log.core.dao.LogDao;
-import top.continew.starter.log.interceptor.autoconfigure.ConditionalOnEnabledLog;
+import top.continew.starter.log.annotation.ConditionalOnEnabledLog;
+import top.continew.starter.log.dao.LogDao;
 import top.continew.starter.web.autoconfigure.trace.TraceProperties;
 
 /**

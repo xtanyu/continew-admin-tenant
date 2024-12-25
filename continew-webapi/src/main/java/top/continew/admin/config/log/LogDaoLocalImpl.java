@@ -37,10 +37,10 @@ import top.continew.admin.system.service.UserService;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.util.StrUtils;
-import top.continew.starter.log.core.dao.LogDao;
-import top.continew.starter.log.core.model.LogRecord;
-import top.continew.starter.log.core.model.LogRequest;
-import top.continew.starter.log.core.model.LogResponse;
+import top.continew.starter.log.dao.LogDao;
+import top.continew.starter.log.model.LogRecord;
+import top.continew.starter.log.model.LogRequest;
+import top.continew.starter.log.model.LogResponse;
 import top.continew.starter.web.autoconfigure.trace.TraceProperties;
 import top.continew.starter.web.model.R;
 

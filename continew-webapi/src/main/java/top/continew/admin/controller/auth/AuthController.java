@@ -45,7 +45,7 @@ import top.continew.admin.system.service.UserService;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 import java.util.List;
 

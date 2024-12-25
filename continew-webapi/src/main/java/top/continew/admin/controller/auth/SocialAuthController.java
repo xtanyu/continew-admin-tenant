@@ -35,7 +35,7 @@ import top.continew.admin.auth.model.resp.SocialAuthAuthorizeResp;
 import top.continew.admin.auth.service.LoginService;
 import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.core.validation.ValidationUtils;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 /**
  * 三方账号认证 API
