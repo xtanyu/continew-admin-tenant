@@ -85,7 +85,10 @@ public class LogDaoLocalImpl implements LogDao {
         logDO.setTimeTaken(logRecord.getTimeTaken().toMillis());
         logDO.setCreateTime(LocalDateTime.ofInstant(logRecord.getTimestamp(), ZoneId.systemDefault()));
         if (tenantProperties.isEnabled()) {
-            SpringUtil.getBean(TenantHandler.class).execute(TenantContextHolder.getTenantId(), () -> {
+            Long tenantId = TenantContextHolder.getTenantId() != null
+                ? TenantContextHolder.getTenantId()
+                : Long.valueOf(SysConstants.DEFAULT_TENANT);
+            SpringUtil.getBean(TenantHandler.class).execute(tenantId, () -> {
                 // 设置操作人
                 this.setCreateUser(logDO, logRequest, logResponse);
                 logMapper.insert(logDO);
