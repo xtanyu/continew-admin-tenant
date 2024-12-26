@@ -56,8 +56,4 @@ public interface AppService extends BaseService<AppResp, AppDetailResp, AppQuery
      */
     AppDO getByAccessKey(String accessKey);
 
-    /**
-     * 清除所有应用数据
-     */
-    void clear();
 }

@@ -70,4 +70,14 @@ public class TenantDO extends BaseDO {
      * 租户编号
      */
     private String tenantSn;
+
+    /**
+     * 隔离级别
+     */
+    private Integer isolationLevel;
+
+    /**
+     * 数据连接ID
+     */
+    private Long dbConnectId;
 }

@@ -76,4 +76,16 @@ public class TenantResp extends BaseResp {
      * 租户编号
      */
     private String tenantSn;
+
+    /**
+     * 隔离级别
+     */
+    @Schema(description = "隔离级别")
+    private Integer isolationLevel;
+
+    /**
+     * 数据连接ID
+     */
+    @Schema(description = "数据连接ID")
+    private Long dbConnectId;
 }

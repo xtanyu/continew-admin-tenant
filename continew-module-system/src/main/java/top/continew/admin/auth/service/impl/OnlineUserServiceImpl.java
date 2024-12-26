@@ -73,7 +73,7 @@ public class OnlineUserServiceImpl implements OnlineUserService {
         })
             .map(tokenKey -> StrUtil.subAfter(tokenKey, StringConstants.COLON, true))
             .collect(Collectors.groupingBy(token -> Convert.toLong(StpUtil.getLoginIdByToken(token))));
-        // 过滤 Token
+        // 筛选数据
         for (Map.Entry<Long, List<String>> entry : tokenMap.entrySet()) {
             Long userId = entry.getKey();
             UserContext userContext = UserContextHolder.getContext(userId);
@@ -82,7 +82,7 @@ public class OnlineUserServiceImpl implements OnlineUserService {
             }
             //租户数据过滤
             if (tenantProperties.isEnabled()) {
-                if (!userContext.getTenantId().equals(TenantContextHolder.getTenantId())) {
+                if (!TenantContextHolder.getTenantId().equals(userContext.getTenantId())) {
                     continue;
                 }
             }

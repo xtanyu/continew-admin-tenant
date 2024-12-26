@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package top.continew.admin.tenant.config;
+package top.continew.admin.tenant.mapper;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-import top.continew.starter.core.constant.PropertiesConstants;
-
-import java.util.List;
+import com.baomidou.dynamic.datasource.annotation.DS;
+import top.continew.admin.common.constant.SysConstants;
+import top.continew.starter.data.mp.base.BaseMapper;
+import top.continew.admin.tenant.model.entity.TenantDbConnectDO;
 
 /**
- * @description: 多租户配置
- * @author: 小熊
- * @create: 2024-11-29 12:05
+ * 租户数据连接 Mapper
+ *
+ * @author 小熊
+ * @since 2024/12/12 19:13
  */
-@Component
-@ConfigurationProperties(prefix = PropertiesConstants.TENANT)
-@Data
-public class TenantConfig {
-
-    private boolean enabled;
-
-    private List<Long> ignoreMenus;
-
-}
+@DS(SysConstants.DEFAULT_DATASOURCE)
+public interface TenantDbConnectMapper extends BaseMapper<TenantDbConnectDO> {}

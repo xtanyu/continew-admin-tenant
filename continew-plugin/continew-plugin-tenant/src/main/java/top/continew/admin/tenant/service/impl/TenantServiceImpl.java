@@ -18,16 +18,22 @@ package top.continew.admin.tenant.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.resource.ClassPathResource;
+import cn.hutool.core.io.resource.Resource;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
+import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import top.continew.admin.common.config.properties.TenantProperties;
+import top.continew.admin.common.constant.CacheConstants;
+import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.tenant.mapper.TenantMapper;
 import top.continew.admin.tenant.mapper.TenantPackageMapper;
@@ -38,7 +44,9 @@ import top.continew.admin.tenant.model.req.TenantReq;
 import top.continew.admin.tenant.model.resp.TenantAvailableResp;
 import top.continew.admin.tenant.model.resp.TenantDetailResp;
 import top.continew.admin.tenant.model.resp.TenantResp;
+import top.continew.admin.tenant.service.TenantDbConnectService;
 import top.continew.admin.tenant.service.TenantService;
+import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.extension.crud.model.entity.BaseIdDO;
@@ -46,7 +54,9 @@ import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
 import top.continew.starter.extension.crud.service.BaseServiceImpl;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
+import top.continew.starter.extension.tenant.enums.TenantIsolationLevel;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,6 +71,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
 
     private final TenantPackageMapper packageMapper;
     private final TenantProperties tenantProperties;
+    private final TenantDbConnectService dbConnectService;
 
     @Override
     protected void beforeAdd(TenantReq req) {
@@ -80,6 +91,26 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
             tenantSn = RandomUtil.randomString(6);
         } while (baseMapper.exists(Wrappers.lambdaQuery(TenantDO.class).eq(TenantDO::getTenantSn, tenantSn)));
         return tenantSn;
+    }
+
+    @Override
+    protected void afterAdd(TenantReq req, TenantDO entity) {
+        //数据源级别的租户需要创建数据库
+        if (entity.getIsolationLevel().equals(TenantIsolationLevel.DATASOURCE.ordinal())) {
+            JdbcTemplate jdbcTemplate = dbConnectService.getConnectJdbcTemplateById(entity.getDbConnectId());
+            String dbName = SysConstants.TENANT_DB_PREFIX + entity.getTenantSn();
+            //建库
+            jdbcTemplate.execute(StrUtil
+                .format("CREATE DATABASE {} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;", dbName));
+            jdbcTemplate.execute(StrUtil.format("USE {};", dbName));
+            //建表
+            Resource resource = new ClassPathResource("db/changelog/mysql/tenant_table.sql");
+            String tableSql = resource.readUtf8Str();
+            Arrays.stream(tableSql.split(";"))
+                .map(String::trim)
+                .filter(sql -> !sql.isEmpty())
+                .forEach(jdbcTemplate::execute);
+        }
     }
 
     @Override
@@ -122,6 +153,8 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
     @Override
     public void bindUser(Long tenantId, Long userId) {
         update(Wrappers.lambdaUpdate(TenantDO.class).set(TenantDO::getUserId, userId).eq(BaseIdDO::getId, tenantId));
+        TenantDO entity = getById(tenantId);
+        RedisUtils.set(CacheConstants.TENANT_KEY + tenantId, entity);
     }
 
     @Override
@@ -145,8 +178,25 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
     }
 
     @Override
+    @Cached(name = CacheConstants.TENANT_KEY, key = "#id")
     public TenantDO getTenantById(Long id) {
         return baseMapper.selectById(id);
+    }
+
+    @Override
+    protected void afterUpdate(TenantReq req, TenantDO entity) {
+        RedisUtils.set(CacheConstants.TENANT_KEY + entity.getId(), entity);
+    }
+
+    @Override
+    protected void afterDelete(List<Long> ids) {
+        ids.forEach(id -> RedisUtils.delete(CacheConstants.TENANT_KEY + id));
+
+    }
+
+    @Override
+    public TenantDO getTenantByUserId(Long userId) {
+        return baseMapper.selectOne(Wrappers.lambdaQuery(TenantDO.class).eq(TenantDO::getUserId, userId));
     }
 
 }

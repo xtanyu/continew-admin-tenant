@@ -1,7 +1,7 @@
 --- ### Spring 配置
 spring:
   application:
-    name: continew-admin-job-server
+    name: continew-admin-schedule-server
   ## 环境配置
   profiles:
     # 启用的环境

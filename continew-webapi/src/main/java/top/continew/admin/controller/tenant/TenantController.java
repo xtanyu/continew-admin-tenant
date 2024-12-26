@@ -18,19 +18,20 @@ package top.continew.admin.controller.tenant;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.annotation.SaMode;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.continew.admin.common.base.BaseController;
 import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.common.util.SecureUtils;
-import top.continew.admin.open.service.AppService;
 import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.model.req.user.UserPasswordResetReq;
@@ -39,13 +40,10 @@ import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.query.TenantQuery;
 import top.continew.admin.tenant.model.req.TenantLoginUserInfoReq;
 import top.continew.admin.tenant.model.req.TenantReq;
-import top.continew.admin.tenant.model.resp.TenantCommonResp;
-import top.continew.admin.tenant.model.resp.TenantDetailResp;
-import top.continew.admin.tenant.model.resp.TenantPackageDetailResp;
-import top.continew.admin.tenant.model.resp.TenantResp;
+import top.continew.admin.tenant.model.resp.*;
+import top.continew.admin.tenant.service.TenantDbConnectService;
 import top.continew.admin.tenant.service.TenantPackageService;
 import top.continew.admin.tenant.service.TenantService;
-import top.continew.admin.tenant.util.TenantUtil;
 import top.continew.starter.core.util.ExceptionUtils;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.core.validation.ValidationUtils;
@@ -54,6 +52,7 @@ import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 import top.continew.starter.extension.crud.model.resp.BaseIdResp;
 import top.continew.starter.extension.crud.model.resp.BaseResp;
+import top.continew.starter.extension.tenant.TenantHandler;
 
 import java.util.List;
 
@@ -76,8 +75,8 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     private final RoleService roleService;
     private final UserService userService;
     private final TenantSysDataService tenantSysDataService;
-    private final AppService appService;
     private final RoleMenuService roleMenuService;
+    private final TenantDbConnectService dbConnectService;
 
     @GetMapping("/common")
     @SaIgnore
@@ -90,16 +89,16 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     }
 
     @Override
-    @Transactional
+    @DSTransactional
     public BaseIdResp<Long> add(TenantReq req) {
-        //租户添加
-        BaseIdResp<Long> baseIdResp = super.add(req);
+        //套餐菜单
         TenantPackageDetailResp detailResp = packageService.get(req.getPackageId());
-        //菜单
         CheckUtils.throwIf(detailResp.getMenuIds().isEmpty(), "该套餐无可用菜单");
         List<MenuDO> menuRespList = menuService.listByIds(detailResp.getMenuIds());
+        //租户添加
+        BaseIdResp<Long> baseIdResp = super.add(req);
         //在租户中执行数据插入
-        TenantUtil.execute(baseIdResp.getId(), () -> {
+        SpringUtil.getBean(TenantHandler.class).execute(baseIdResp.getId(), () -> {
             //租户部门初始化
             Long deptId = deptService.initTenantDept(req.getName());
             //租户菜单初始化
@@ -119,16 +118,15 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     }
 
     @Override
-    @Transactional
     public void delete(List<Long> ids) {
-        for (Long id : ids) {
-            //在租户中执行数据清除
-            TenantUtil.execute(id, () -> {
-                //应用数据清除
-                appService.clear();
-                //系统数据清楚
-                tenantSysDataService.clear();
-            });
+        if (false) {
+            for (Long id : ids) {
+                //在租户中执行数据清除
+                SpringUtil.getBean(TenantHandler.class).execute(id, () -> {
+                    //系统数据清除
+                    tenantSysDataService.clear();
+                });
+            }
         }
         super.delete(ids);
     }
@@ -143,7 +141,7 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
         TenantDO tenantDO = baseService.getTenantById(tenantId);
         CheckUtils.throwIfNull(tenantDO, "租户不存在");
         StringBuilder username = new StringBuilder();
-        TenantUtil.execute(tenantDO.getId(), () -> {
+        SpringUtil.getBean(TenantHandler.class).execute(tenantDO.getId(), () -> {
             UserDO userDO = userService.getById(tenantDO.getUserId());
             CheckUtils.throwIfNull(userDO, "租户管理用户不存在");
             username.append(userDO.getUsername());
@@ -157,10 +155,11 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
     @PutMapping("/loginUser")
     @Operation(summary = "租户管理账号信息更新", description = "租户管理账号信息更新")
     @SaCheckPermission("tenant:user:editLoginUserInfo")
+    @DSTransactional
     public void editLoginUserInfo(@Validated @RequestBody TenantLoginUserInfoReq req) {
         TenantDO tenantDO = baseService.getTenantById(req.getTenantId());
         CheckUtils.throwIfNull(tenantDO, "租户不存在");
-        TenantUtil.execute(tenantDO.getId(), () -> {
+        SpringUtil.getBean(TenantHandler.class).execute(tenantDO.getId(), () -> {
             UserDO userDO = userService.getById(tenantDO.getUserId());
             CheckUtils.throwIfNull(userDO, "用户不存在");
             //修改用户名
@@ -178,6 +177,26 @@ public class TenantController extends BaseController<TenantService, TenantResp, 
                 userService.resetPassword(passwordResetReq, userDO.getId());
             }
         });
+    }
+
+    /**
+     * 查询所有租户套餐
+     */
+    @GetMapping("/all/package")
+    @Operation(summary = "查询所有租户套餐", description = "查询所有租户套餐")
+    @SaCheckPermission(value = {"tenant:user:add", "tenant:user:update"}, mode = SaMode.OR)
+    public List<TenantPackageResp> packageList() {
+        return packageService.list(null, null);
+    }
+
+    /**
+     * 查询所有数据库连接
+     */
+    @GetMapping("/all/dbConnect")
+    @Operation(summary = "获取租户数据连接列表", description = "获取租户数据连接列表")
+    @SaCheckPermission(value = {"tenant:user:add", "tenant:user:update"}, mode = SaMode.OR)
+    public List<TenantDbConnectResp> dbConnectList() {
+        return dbConnectService.list(null, null);
     }
 
 }

@@ -54,6 +54,9 @@ public class UserPasswordHistoryServiceImpl implements UserPasswordHistoryServic
 
     @Override
     public void deleteByUserIds(List<Long> userIds) {
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(UserPasswordHistoryDO::getUserId, userIds).remove();
     }
 

@@ -28,6 +28,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.continew.admin.auth.model.resp.RouteResp;
 import top.continew.admin.auth.service.LoginService;
+import top.continew.admin.common.config.properties.TenantProperties;
 import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.common.constant.RegexConstants;
 import top.continew.admin.common.constant.SysConstants;
@@ -63,8 +65,9 @@ import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.annotation.TreeField;
 import top.continew.starter.extension.crud.autoconfigure.CrudProperties;
-import top.continew.starter.extension.tenant.context.TenantContext;
+import top.continew.starter.extension.tenant.TenantHandler;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
+
 import top.continew.starter.messaging.websocket.util.WebSocketUtils;
 import top.continew.starter.web.util.SpringWebUtils;
 
@@ -97,6 +100,7 @@ public class LoginServiceImpl implements LoginService {
     private final UserSocialService userSocialService;
     private final OptionService optionService;
     private final MessageService messageService;
+    private final TenantProperties tenantProperties;
 
     @Override
     public String accountLogin(String username, String password, HttpServletRequest request) {
@@ -177,7 +181,8 @@ public class LoginServiceImpl implements LoginService {
         if (roleCodeSet.contains(SysConstants.SUPER_ROLE_CODE)) {
             menuSet.addAll(menuService.listAll(UserContextHolder.getTenantId()));
         } else {
-            roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode)));
+            roleCodeSet.forEach(roleCode -> menuSet.addAll(menuService.listByRoleCode(roleCode, UserContextHolder
+                .getTenantId())));
         }
         List<MenuResp> menuList = menuSet.stream().filter(m -> !MenuTypeEnum.BUTTON.equals(m.getType())).toList();
         if (CollUtil.isEmpty(menuList)) {
@@ -213,25 +218,35 @@ public class LoginServiceImpl implements LoginService {
      */
     private String login(UserDO user) {
         Long userId = user.getId();
-        //多线程执行时获取不到当前上下文的问题
-        TenantContext tenantContext = new TenantContext();
-        tenantContext.setTenantId(user.getTenantId());
+        Long tenantId = TenantContextHolder.getTenantId();
         CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> {
-            TenantContextHolder.setContext(tenantContext);
-            return roleService.listPermissionByUserId(userId);
+            Set<String> permissionSet = new HashSet<>();
+            if (tenantProperties.isEnabled()) {
+                SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantId, () -> permissionSet.addAll(roleService.listPermissionByUserId(userId)));
+            } else {
+                permissionSet.addAll(roleService.listPermissionByUserId(userId));
+            }
+            return permissionSet;
         }, threadPoolTaskExecutor);
         CompletableFuture<Set<RoleContext>> roleFuture = CompletableFuture.supplyAsync(() -> {
-            TenantContextHolder.setContext(tenantContext);
-            return roleService.listByUserId(userId);
+            Set<RoleContext> roleSet = new HashSet<>();
+            if (tenantProperties.isEnabled()) {
+                SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantId, () -> roleSet.addAll(roleService.listByUserId(userId)));
+            } else {
+                roleSet.addAll(roleService.listByUserId(userId));
+            }
+            return roleSet;
         }, threadPoolTaskExecutor);
-        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> {
-            TenantContextHolder.setContext(tenantContext);
-            return optionService.getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name());
-        });
+        CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> optionService
+            .getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name()));
         CompletableFuture.allOf(permissionFuture, roleFuture, passwordExpirationDaysFuture);
         UserContext userContext = new UserContext(permissionFuture.join(), roleFuture
             .join(), passwordExpirationDaysFuture.join());
         BeanUtil.copyProperties(user, userContext);
+        // 设置租户ID
+        userContext.setTenantId(tenantId);
         // 登录并缓存用户信息
         StpUtil.login(userContext.getId(), SaLoginConfig.setExtraData(BeanUtil
             .beanToMap(new UserExtraContext(SpringWebUtils.getRequest()))));

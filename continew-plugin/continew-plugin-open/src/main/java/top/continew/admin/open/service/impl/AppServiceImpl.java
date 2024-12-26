@@ -74,11 +74,6 @@ public class AppServiceImpl extends BaseServiceImpl<AppMapper, AppDO, AppResp, A
         return baseMapper.selectByAccessKey(accessKey);
     }
 
-    @Override
-    public void clear() {
-        baseMapper.delete(null);
-    }
-
     /**
      * 生成密钥
      *
