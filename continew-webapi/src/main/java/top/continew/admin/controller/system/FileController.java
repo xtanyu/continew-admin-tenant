@@ -20,16 +20,17 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.admin.system.model.query.FileQuery;
 import top.continew.admin.system.model.req.FileReq;
 import top.continew.admin.system.model.resp.FileResp;
 import top.continew.admin.system.model.resp.FileStatisticsResp;
 import top.continew.admin.system.service.FileService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
-import top.continew.starter.log.core.annotation.Log;
+import top.continew.starter.log.annotation.Log;
 
 /**
  * 文件管理 API

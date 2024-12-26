@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.continew.admin.system.mapper.RoleMenuMapper;
 import top.continew.admin.system.model.entity.RoleMenuDO;
 import top.continew.admin.system.service.RoleMenuService;
+import top.continew.starter.data.mp.service.impl.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class RoleMenuServiceImpl implements RoleMenuService {
+public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenuDO> implements RoleMenuService {
 
     private final RoleMenuMapper baseMapper;
 
@@ -64,6 +65,9 @@ public class RoleMenuServiceImpl implements RoleMenuService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteByRoleIds(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(RoleMenuDO::getRoleId, roleIds).remove();
     }
 

@@ -10,6 +10,6 @@
     </parent>
 
     <artifactId>continew-plugin-tenant</artifactId>
-    <description>多租户插件（行级）</description>
+    <description>多租户插件</description>
 
 </project>

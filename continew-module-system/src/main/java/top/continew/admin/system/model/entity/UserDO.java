@@ -112,5 +112,6 @@ public class UserDO extends BaseDO {
     /**
      * 租户 ID
      */
+    @TableField(select = false)
     private Long tenantId;
 }

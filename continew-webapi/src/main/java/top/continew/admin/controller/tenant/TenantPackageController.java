@@ -18,11 +18,12 @@ package top.continew.admin.controller.tenant;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.extra.spring.SpringUtil;
+import com.baomidou.dynamic.datasource.annotation.DSTransactional;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.continew.admin.common.base.BaseController;
@@ -39,11 +40,11 @@ import top.continew.admin.tenant.model.resp.TenantPackageDetailResp;
 import top.continew.admin.tenant.model.resp.TenantPackageResp;
 import top.continew.admin.tenant.service.TenantPackageService;
 import top.continew.admin.tenant.service.TenantService;
-import top.continew.admin.tenant.util.TenantUtil;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.enums.Api;
+import top.continew.starter.extension.tenant.TenantHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +79,7 @@ public class TenantPackageController extends BaseController<TenantPackageService
     }
 
     @Override
-    @Transactional
+    @DSTransactional
     public void update(TenantPackageReq req, Long id) {
         //查询套餐对应的租户
         List<TenantDO> tenantDOList = tenantService.list(Wrappers.lambdaQuery(TenantDO.class)
@@ -93,8 +94,8 @@ public class TenantPackageController extends BaseController<TenantPackageService
             //如果有删除的菜单则绑定了套餐的租户对应的菜单也会删除
             if (!deleteMenuIds.isEmpty()) {
                 List<MenuDO> deleteMenus = menuService.listByIds(deleteMenuIds);
-                tenantDOList.forEach(tenantDO -> TenantUtil.execute(tenantDO.getId(), () -> menuService
-                    .deleteTenantMenus(deleteMenus)));
+                tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class)
+                    .execute(tenantDO.getId(), () -> menuService.deleteTenantMenus(deleteMenus)));
             }
             //新增的菜单
             List<Long> addMenuIds = new ArrayList<>(newMenuIds);
@@ -104,8 +105,8 @@ public class TenantPackageController extends BaseController<TenantPackageService
                 List<MenuDO> addMenus = menuService.listByIds(addMenuIds);
                 for (MenuDO addMenu : addMenus) {
                     MenuDO pMenu = addMenu.getParentId() != 0 ? menuService.getById(addMenu.getParentId()) : null;
-                    tenantDOList.forEach(tenantDO -> TenantUtil.execute(tenantDO.getId(), () -> menuService
-                        .addTenantMenu(addMenu, pMenu)));
+                    tenantDOList.forEach(tenantDO -> SpringUtil.getBean(TenantHandler.class)
+                        .execute(tenantDO.getId(), () -> menuService.addTenantMenu(addMenu, pMenu)));
                 }
                 RedisUtils.deleteByPattern(CacheConstants.MENU_KEY_PREFIX + StringConstants.ASTERISK);
             }

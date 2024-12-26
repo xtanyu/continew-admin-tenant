@@ -94,5 +94,22 @@ public class TenantReq extends BaseReq {
     @NotBlank(message = "密码不能为空", groups = CrudValidationGroup.Add.class)
     private String password;
 
+    /**
+     * 租户编号
+     */
     private String tenantSn;
+
+    /**
+     * 隔离级别
+     */
+    @Schema(description = "隔离级别")
+    @NotNull(message = "隔离级别不能为空")
+    private Integer isolationLevel;
+
+    /**
+     * 数据连接ID
+     */
+    @Schema(description = "数据连接ID")
+    private Long dbConnectId;
+
 }

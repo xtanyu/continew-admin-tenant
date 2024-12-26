@@ -18,7 +18,6 @@ package top.continew.admin.generator.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
 import top.continew.starter.core.enums.BaseEnum;
 
 /**
@@ -47,44 +46,49 @@ public enum FormTypeEnum implements BaseEnum<Integer> {
     INPUT_PASSWORD(3, "密码输入框"),
 
     /**
+     * 文本域
+     */
+    TEXT_AREA(4, "文本域"),
+
+    /**
      * 下拉框
      */
-    SELECT(4, "下拉框"),
+    SELECT(5, "下拉框"),
 
     /**
      * 单选框
      */
-    RADIO(5, "单选框"),
+    RADIO(6, "单选框"),
 
     /**
      * 开关
      */
-    SWITCH(6, "开关"),
+    SWITCH(7, "开关"),
 
     /**
      * 复选框
      */
-    CHECK_BOX(7, "复选框"),
-
-    /**
-     * 文本域
-     */
-    TEXT_AREA(8, "文本域"),
-
-    /**
-     * 日期时间框
-     */
-    DATE_TIME(9, "日期时间框"),
-
-    /**
-     * 日期框
-     */
-    DATE(10, "日期框"),
+    CHECK_BOX(8, "复选框"),
 
     /**
      * 树形选择
      */
-    TREE_SELECT(11, "树选择"),;
+    TREE_SELECT(9, "树选择"),
+
+    /**
+     * 时间框
+     */
+    TIME(10, "时间框"),
+
+    /**
+     * 日期框
+     */
+    DATE(11, "日期框"),
+
+    /**
+     * 时间框
+     */
+    DATE_TIME(12, "日期时间框"),;
 
     private final Integer value;
     private final String description;

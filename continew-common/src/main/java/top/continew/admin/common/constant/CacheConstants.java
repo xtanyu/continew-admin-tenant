@@ -71,6 +71,16 @@ public class CacheConstants {
      */
     public static final String DATA_IMPORT_KEY = "SYSTEM" + DELIMITER + "DATA_IMPORT" + DELIMITER;
 
+    /**
+     * 数据连接键前缀
+     */
+    public static final String DB_CONNECT_KEY_PREFIX = "DB_CONNECT" + DELIMITER;
+
+    /**
+     * 租户信息前缀
+     */
+    public static final String TENANT_KEY = "TENANT" + DELIMITER;
+
     private CacheConstants() {
     }
 }

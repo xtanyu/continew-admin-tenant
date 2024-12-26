@@ -18,6 +18,7 @@ package top.continew.admin.system.model.resp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.continew.admin.system.enums.NoticeScopeEnum;
 import top.continew.admin.system.enums.NoticeStatusEnum;
 import top.continew.starter.extension.crud.model.resp.BaseResp;
 
@@ -76,7 +77,7 @@ public class NoticeResp extends BaseResp {
      * 通知范围
      */
     @Schema(description = "通知范围(1.所有人 2.指定用户)", example = "1")
-    private Integer noticeScope;
+    private NoticeScopeEnum noticeScope;
 
     /**
      * 指定用户

@@ -79,6 +79,11 @@ public class GeneratorProperties {
         private String extension = FileNameUtil.EXT_JAVA;
 
         /**
+         * 后缀
+         */
+        private String suffix;
+
+        /**
          * 是否为后端模板
          */
         private boolean backend = true;

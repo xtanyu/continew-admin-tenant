@@ -100,6 +100,11 @@ generator:
     Mapper:
       templatePath: backend/Mapper.ftl
       packageName: mapper
+    MapperXml:
+      templatePath: backend/MapperXml.ftl
+      packageName: mapper
+      extension: .xml
+      suffix: Mapper
     Service:
       templatePath: backend/Service.ftl
       packageName: service

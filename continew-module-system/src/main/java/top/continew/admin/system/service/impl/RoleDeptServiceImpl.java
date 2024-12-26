@@ -62,12 +62,18 @@ public class RoleDeptServiceImpl implements RoleDeptService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteByRoleIds(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(RoleDeptDO::getRoleId, roleIds).remove();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteByDeptIds(List<Long> deptIds) {
+        if (CollUtil.isEmpty(deptIds)) {
+            return;
+        }
         baseMapper.lambdaUpdate().in(RoleDeptDO::getDeptId, deptIds).remove();
     }
 

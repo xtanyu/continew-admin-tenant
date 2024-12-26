@@ -89,15 +89,15 @@ public class GeneratorController {
     }
 
     @Operation(summary = "生成预览", description = "预览生成代码")
-    @Parameter(name = "tableName", description = "表名称", required = true, example = "sys_user", in = ParameterIn.PATH)
+    @Parameter(name = "tableNames", description = "表名称", required = true, example = "sys_user", in = ParameterIn.PATH)
     @SaCheckPermission("code:generator:preview")
-    @GetMapping("/preview/{tableName}")
-    public List<GeneratePreviewResp> preview(@PathVariable String tableName) {
-        return baseService.preview(tableName);
+    @GetMapping("/preview/{tableNames}")
+    public List<GeneratePreviewResp> preview(@PathVariable List<String> tableNames) {
+        return baseService.preview(tableNames);
     }
 
     @Operation(summary = "生成代码", description = "生成代码")
-    @Parameter(name = "tableName", description = "表名称", required = true, example = "sys_user", in = ParameterIn.PATH)
+    @Parameter(name = "tableNames", description = "表名称", required = true, example = "sys_user", in = ParameterIn.PATH)
     @SaCheckPermission("code:generator:generate")
     @PostMapping("/{tableNames}")
     public void generate(@PathVariable List<String> tableNames, HttpServletResponse response) {

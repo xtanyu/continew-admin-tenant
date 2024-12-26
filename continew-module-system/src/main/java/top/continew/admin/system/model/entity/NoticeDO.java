@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
+import top.continew.admin.system.enums.NoticeScopeEnum;
 import top.continew.starter.extension.crud.model.entity.BaseDO;
 
 import java.io.Serial;
@@ -67,7 +68,7 @@ public class NoticeDO extends BaseDO {
     /**
      * 通知范围
      */
-    private Integer noticeScope;
+    private NoticeScopeEnum noticeScope;
 
     /**
      * 通知用户
