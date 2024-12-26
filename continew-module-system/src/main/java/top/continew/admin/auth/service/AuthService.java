@@ -17,51 +17,28 @@
 package top.continew.admin.auth.service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import me.zhyd.oauth.model.AuthUser;
+import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.auth.model.resp.RouteResp;
-import top.continew.admin.system.model.entity.UserDO;
 
 import java.util.List;
 
 /**
- * 登录业务接口
+ * 认证业务接口
  *
  * @author Charles7c
  * @since 2022/12/21 21:48
  */
-public interface LoginService {
+public interface AuthService {
 
     /**
-     * 检查用户状态
+     * 登录
      *
-     * @param user 用户信息
+     * @param req     登录请求参数
+     * @param request 请求对象
+     * @return 登录响应参数
      */
-    void checkUserStatus(UserDO user);
-
-    /**
-     * 检查用户是否被锁定
-     *
-     * @param username 用户名
-     * @param request  请求对象
-     * @param isError  是否登录错误
-     */
-    void checkUserLocked(String username, HttpServletRequest request, boolean isError);
-
-    /**
-     * 执行登录操作
-     *
-     * @param user 用户信息
-     * @return token
-     */
-    String login(UserDO user);
-
-    /**
-     * 三方账号登录
-     *
-     * @param authUser 三方账号信息
-     * @return 令牌
-     */
-    String socialLogin(AuthUser authUser);
+    LoginResp login(AuthReq req, HttpServletRequest request);
 
     /**
      * 构建路由树
@@ -70,11 +47,4 @@ public interface LoginService {
      * @return 路由树
      */
     List<RouteResp> buildRouteTree(Long userId);
-
-    /**
-     * 发送安全消息
-     * 
-     * @param user 用户信息
-     */
-    void sendSecurityMsg(UserDO user);
 }

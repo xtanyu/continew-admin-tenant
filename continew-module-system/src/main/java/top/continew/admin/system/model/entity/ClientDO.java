@@ -27,9 +27,9 @@ import java.io.Serial;
 import java.util.List;
 
 /**
- * 客户端管理实体
+ * 客户端实体
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 @Data
@@ -40,12 +40,12 @@ public class ClientDO extends BaseDO {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 客户端ID
+     * 客户端 ID
      */
     private String clientId;
 
     /**
-     * 客户端Key
+     * 客户端 Key
      */
     private String clientKey;
 

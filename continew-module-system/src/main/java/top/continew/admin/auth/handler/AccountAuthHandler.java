@@ -16,105 +16,109 @@
 
 package top.continew.admin.auth.handler;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import top.continew.admin.auth.AbstractAuthHandler;
 import top.continew.admin.auth.enums.AuthTypeEnum;
 import top.continew.admin.auth.model.req.AccountAuthReq;
 import top.continew.admin.auth.model.resp.LoginResp;
-import top.continew.admin.auth.service.LoginService;
-import top.continew.admin.auth.AuthHandler;
+import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.util.SecureUtils;
+import top.continew.admin.system.enums.PasswordPolicyEnum;
 import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.model.resp.ClientResp;
-import top.continew.admin.system.service.OptionService;
-import top.continew.admin.system.service.UserService;
+import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.util.ExceptionUtils;
+import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.core.validation.ValidationUtils;
+
+import java.time.Duration;
 
 /**
  * 账号认证处理器
  *
  * @author KAI
- * @since 2024/12/22 14:58:32
+ * @author Charles7c
+ * @since 2024/12/22 14:58
  */
 @Component
 @RequiredArgsConstructor
-public class AccountAuthHandler extends AbstractAuthHandler implements AuthHandler<AccountAuthReq, LoginResp> {
+public class AccountAuthHandler extends AbstractAuthHandler<AccountAuthReq> {
 
-    private final UserService userService;
-    private final LoginService loginService;
     private final PasswordEncoder passwordEncoder;
-    private final OptionService optionService;
 
-    /**
-     * 获取认证类型
-     *
-     * @return 账号认证类型
-     */
+    @Override
+    public LoginResp login(AccountAuthReq req, ClientResp client, HttpServletRequest request) {
+        // 解密密码
+        String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
+        ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
+        // 验证用户名密码
+        String username = req.getUsername();
+        UserDO user = userService.getByUsername(username);
+        boolean isError = ObjectUtil.isNull(user) || !passwordEncoder.matches(rawPassword, user.getPassword());
+        // 检查账号锁定状态
+        this.checkUserLocked(req.getUsername(), request, isError);
+        ValidationUtils.throwIf(isError, "用户名或密码错误");
+        // 检查用户状态
+        super.checkUserStatus(user);
+        // 执行认证
+        String token = this.authenticate(user, client);
+        return LoginResp.builder().token(token).build();
+    }
+
+    @Override
+    public void preLogin(AccountAuthReq req, ClientResp client, HttpServletRequest request) {
+        super.preLogin(req, client, request);
+        // 校验验证码
+        int loginCaptchaEnabled = optionService.getValueByCode2Int("LOGIN_CAPTCHA_ENABLED");
+        if (SysConstants.YES.equals(loginCaptchaEnabled)) {
+            ValidationUtils.throwIfBlank(req.getCaptcha(), "验证码不能为空");
+            ValidationUtils.throwIfBlank(req.getUuid(), "验证码标识不能为空");
+            String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + req.getUuid();
+            String captcha = RedisUtils.get(captchaKey);
+            ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
+            RedisUtils.delete(captchaKey);
+            ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, CAPTCHA_ERROR);
+        }
+    }
+
     @Override
     public AuthTypeEnum getAuthType() {
         return AuthTypeEnum.ACCOUNT;
     }
 
     /**
-     * 校验账号登录请求对象
+     * 检测用户是否已被锁定
      *
-     * @param authReq 登录请求参数
+     * @param username 用户名
+     * @param request  请求对象
+     * @param isError  是否登录错误
      */
-    @Override
-    public void validate(AccountAuthReq authReq) {
-        // 获取验证码开关
-        int enableCaptcha = optionService.getValueByCode2Int("LOGIN_CAPTCHA_ENABLED");
-
-        ValidationUtils.validate(authReq);
-        if (SysConstants.YES.equals(enableCaptcha)) {
-            ValidationUtils.throwIfEmpty(authReq.getCaptcha(), "验证码不能为空");
-            ValidationUtils.throwIfEmpty(authReq.getUuid(), "验证码标识不能为空");
+    private void checkUserLocked(String username, HttpServletRequest request, boolean isError) {
+        // 不锁定
+        int maxErrorCount = optionService.getValueByCode2Int(PasswordPolicyEnum.PASSWORD_ERROR_LOCK_COUNT.name());
+        if (maxErrorCount <= SysConstants.NO) {
+            return;
         }
-    }
-
-    /**
-     * 账号登录
-     *
-     * @param authReq 账号登录请求对象
-     * @param request HTTP请求对象
-     * @return 登录响应
-     */
-    @Override
-    public LoginResp login(AccountAuthReq authReq, ClientResp clientResp, HttpServletRequest request) {
-        this.validate(authReq);
-        // 解密密码
-        String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(authReq.getPassword()));
-        ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
-
-        // 验证用户名密码
-        UserDO user = userService.getByUsername(authReq.getUsername());
-        boolean isError = user == null || !passwordEncoder.matches(rawPassword, user.getPassword());
-
-        // 检查账号锁定状态
-        loginService.checkUserLocked(authReq.getUsername(), request, isError);
-        ValidationUtils.throwIf(isError, "用户名或密码错误");
-
-        // 检查用户状态
-        loginService.checkUserStatus(user);
-
-        // 执行登录
-        String token = this.authCertificate(user, clientResp);
-        return LoginResp.builder().token(token).build();
-    }
-
-    /**
-     * 获取认证信息
-     *
-     * @param user       用户信息
-     * @param clientResp 客户端信息
-     * @return 认证信息
-     */
-    @Override
-    public String authCertificate(UserDO user, ClientResp clientResp) {
-        return super.authCertificate(user, clientResp);
+        // 检测是否已被锁定
+        String key = CacheConstants.USER_PASSWORD_ERROR_KEY_PREFIX + RedisUtils.formatKey(username, JakartaServletUtil
+            .getClientIP(request));
+        int lockMinutes = optionService.getValueByCode2Int(PasswordPolicyEnum.PASSWORD_ERROR_LOCK_MINUTES.name());
+        Integer currentErrorCount = ObjectUtil.defaultIfNull(RedisUtils.get(key), 0);
+        CheckUtils.throwIf(currentErrorCount >= maxErrorCount, "账号锁定 {} 分钟，请稍后再试", lockMinutes);
+        // 登录成功清除计数
+        if (!isError) {
+            RedisUtils.delete(key);
+            return;
+        }
+        // 登录失败递增计数
+        currentErrorCount++;
+        RedisUtils.set(key, currentErrorCount, Duration.ofMinutes(lockMinutes));
+        CheckUtils.throwIf(currentErrorCount >= maxErrorCount, "密码错误已达 {} 次，账号锁定 {} 分钟", maxErrorCount, lockMinutes);
     }
 }

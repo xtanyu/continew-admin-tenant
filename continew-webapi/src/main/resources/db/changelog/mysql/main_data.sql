@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset Charles7c:1
+-- changeset charles7c:1
 -- comment 初始化表数据
 -- 初始化默认菜单
 INSERT INTO `sys_menu`
@@ -76,6 +76,13 @@ VALUES
 (1114, '修改', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:update', 4, 1, 1, NOW()),
 (1115, '删除', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:delete', 5, 1, 1, NOW()),
 
+( 1180, '客户端管理', 1000, 2, '/system/client', 'SystemClient', 'system/client/index', NULL, 'mobile', b'0', b'0', b'0', NULL, 9, 1, 1, NOW()),
+(1181, '列表', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:list', 1, 1, 1, NOW()),
+(1182, '详情', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:detail', 2, 1, 1, NOW()),
+(1183, '新增', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:add', 3, 1, 1, NOW()),
+(1184, '修改', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:update', 4, 1, 1, NOW()),
+(1185, '删除', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:delete', 5, 1, 1, NOW()),
+
 (1190, '系统配置', 1000, 2, '/system/config', 'SystemConfig', 'system/config/index', NULL, 'config', b'0', b'0', b'0', NULL, 999, 1, 1, NOW()),
 (1191, '查看', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:list', 1, 1, 1, NOW()),
 (1192, '修改', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:update', 2, 1, 1, NOW()),
@@ -150,7 +157,8 @@ INSERT INTO `sys_dict`
 (`id`, `name`, `code`, `description`, `is_system`, `create_user`, `create_time`)
 VALUES
 (1, '公告类型', 'notice_type', NULL, b'1', 1, NOW()),
-(2, '消息类型', 'message_type', NULL, b'1', 1, NOW());
+(2, '消息类型', 'message_type', NULL, b'1', 1, NOW()),
+(3, '客户端类型', 'client_type', NULL, b'1', 1, NOW());
 
 INSERT INTO `sys_dict_item`
 (`id`, `label`, `value`, `color`, `sort`, `description`, `status`, `dict_id`, `create_user`, `create_time`)
@@ -158,7 +166,10 @@ VALUES
 (1, '通知', '1', 'blue', 1, NULL, 1, 1, 1, NOW()),
 (2, '活动', '2', 'orangered', 2, NULL, 1, 1, 1, NOW()),
 (3, '安全消息', '1', 'blue', 1, NULL, 1, 2, 1, NOW()),
-(4, '活动消息', '2', 'orangered', 2, NULL, 1, 2, 1, NOW());
+(4, '活动消息', '2', 'orangered', 2, NULL, 1, 2, 1, NOW()),
+(5, '桌面端', 'PC', 'blue', 1, NULL, 1, 3, 1, NOW()),
+(6, '安卓', 'ANDROID', '#148628', 2, NULL, 1, 3, 1, NOW()),
+(7, '小程序', 'XCX', '#7930AD', 3, NULL, 1, 3, 1, NOW());
 
 -- 初始化默认用户和角色关联数据
 INSERT INTO `sys_user_role`
@@ -188,30 +199,8 @@ VALUES
 (1, '开发环境', 'local_dev', 2, NULL, NULL, NULL, 'C:/continew-admin/data/file/', 'http://localhost:8000/file', '本地存储', b'1', 1, 1, 1, NOW()),
 (2, '生产环境', 'local_prod', 2, NULL, NULL, NULL, '../data/file/', 'http://api.continew.top/file', '本地存储', b'0', 2, 2, 1, NOW());
 
--- 客户端管理管理菜单
-INSERT INTO `sys_menu`
-(`title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`)
+-- 初始化客户端数据
+INSERT INTO `sys_client`
+(`id`, `client_id`, `client_key`, `client_secret`, `auth_type`, `client_type`, `active_timeout`, `timeout`, `status`, `create_user`, `create_time`)
 VALUES
-( '客户端管理', 1000, 2, '/system/client', 'SystemClient', 'system/client/index', NULL, 'mobile', b'0', b'0', b'0', NULL, 9, 1, 1, NOW(), NULL, NULL);
-
-SET @parentId = LAST_INSERT_ID();
-
--- 客户端管理管理按钮
-INSERT INTO `sys_menu`
-(`title`, `parent_id`, `type`, `path`, `name`, `component`, `redirect`, `icon`, `is_external`, `is_cache`, `is_hidden`, `permission`, `sort`, `status`, `create_user`, `create_time`, `update_user`, `update_time`)
-VALUES
-    ('列表', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:list', 1, 1, 1, NOW(), NULL, NULL),
-    ('详情', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:detail', 2, 1, 1, NOW(), NULL, NULL),
-    ('新增', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:add', 3, 1, 1, NOW(), NULL, NULL),
-    ('修改', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:update', 4, 1, 1, NOW(), NULL, NULL),
-    ('删除', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:delete', 5, 1, 1, NOW(), NULL, NULL),
-    ('导出', @parentId, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:export', 6, 1, 1, NOW(), NULL, NULL);
--- 插入客户端字典数据
-INSERT INTO `sys_dict` (`id`, `name`, `code`, `description`, `is_system`, `create_user`, `create_time`, `update_user`, `update_time`) VALUES (4, '客户端类型', 'client_type', NULL, b'0', 1, '2024-12-17 18:09:37', NULL, NULL);
-INSERT INTO `sys_dict_item` (`id`, `label`, `value`, `color`, `sort`, `description`, `status`, `dict_id`, `create_user`, `create_time`, `update_user`, `update_time`) VALUES (659457796923719711, '桌面端', 'pc', 'blue', 999, NULL, 1, 4, 1, '2024-12-17 18:09:51', NULL, NULL);
-INSERT INTO `sys_dict_item` (`id`, `label`, `value`, `color`, `sort`, `description`, `status`, `dict_id`, `create_user`, `create_time`, `update_user`, `update_time`) VALUES (659457877756346402, '安卓', 'android', '#148628', 999, NULL, 1, 4, 1, '2024-12-17 18:10:10', NULL, NULL);
-INSERT INTO `sys_dict_item` (`id`, `label`, `value`, `color`, `sort`, `description`, `status`, `dict_id`, `create_user`, `create_time`, `update_user`, `update_time`) VALUES (659457929665052709, '小程序', 'xcx', '#7930AD', 999, NULL, 1, 4, 1, '2024-12-17 18:10:23', NULL, NULL);
--- 插入客户端数据
-INSERT INTO `sys_client` (`id`, `client_id`, `client_key`, `client_secret`, `auth_type`, `client_type`, `active_timeout`, `timeout`, `status`, `create_user`, `create_time`, `update_user`, `update_time`) VALUES (1, 'ef51c9a3e9046c4f2ea45142c8a8344a', 'pc', 'dd77ab1e353a027e0d60ce3b151e8642', '[\"account\", \"socialAuth\", \"email\", \"phone\"]', 'pc', 1800, 86400, 1, 1, now(), 1, '2024-12-25 17:41:36');
-
-
+(1, 'ef51c9a3e9046c4f2ea45142c8a8344a', 'pc', 'dd77ab1e353a027e0d60ce3b151e8642', '[\"ACCOUNT\", \"EMAIL\", \"PHONE\", \"SOCIAL\"]', 'PC', 1800, 86400, 1, 1, NOW());

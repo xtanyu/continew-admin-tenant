@@ -28,13 +28,13 @@ import java.io.Serial;
 import java.util.List;
 
 /**
- * 创建或修改客户端管理参数
+ * 创建或修改客户端参数
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 @Data
-@Schema(description = "创建或修改客户端管理参数")
+@Schema(description = "创建或修改客户端参数")
 public class ClientReq extends BaseReq {
 
     @Serial
@@ -63,11 +63,12 @@ public class ClientReq extends BaseReq {
     private String clientSecret;
 
     /**
-     * 登录类型
+     * 认证类型
      */
-    @Schema(description = "登录类型")
-    @NotNull(message = "登录类型不能为空")
+    @Schema(description = "认证类型")
+    @NotNull(message = "认证类型不能为空")
     private List<String> authType;
+
     /**
      * 客户端类型
      */
@@ -89,9 +90,8 @@ public class ClientReq extends BaseReq {
     private Integer timeout;
 
     /**
-     * 状态（1：启用；2：禁用）
+     * 状态
      */
-    @Schema(description = "状态（1：启用；2：禁用）")
-    @NotNull(message = "状态（1：启用；2：禁用）不能为空")
+    @Schema(description = "状态", example = "1")
     private DisEnableStatusEnum status;
 }

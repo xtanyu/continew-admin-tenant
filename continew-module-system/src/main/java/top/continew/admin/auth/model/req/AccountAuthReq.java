@@ -21,17 +21,16 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * 账号登录参数
+ * 账号认证参数
  *
  * @author Charles7c
  * @since 2022/12/21 20:43
  */
 @Data
-@Schema(description = "账号登录参数")
-public class AccountAuthReq extends AuthReq implements Serializable {
+@Schema(description = "账号认证参数")
+public class AccountAuthReq extends AuthReq {
 
     @Serial
     private static final long serialVersionUID = 1L;

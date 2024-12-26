@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset Charles7c:1
+-- changeset charles7c:1
 -- comment 初始化表结构
 CREATE TABLE IF NOT EXISTS "sys_menu" (
     "id"          int8         NOT NULL,

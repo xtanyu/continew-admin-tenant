@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package top.continew.admin.auth.handler;
+package top.continew.admin.auth;
 
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import jakarta.annotation.Resource;
-import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import top.continew.admin.auth.model.req.AuthReq;
 import top.continew.admin.common.context.RoleContext;
 import top.continew.admin.common.context.UserContext;
 import top.continew.admin.common.context.UserContextHolder;
 import top.continew.admin.common.context.UserExtraContext;
+import top.continew.admin.common.enums.DisEnableStatusEnum;
+import top.continew.admin.system.model.entity.DeptDO;
 import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.model.resp.ClientResp;
+import top.continew.admin.system.service.DeptService;
 import top.continew.admin.system.service.OptionService;
 import top.continew.admin.system.service.RoleService;
+import top.continew.admin.system.service.UserService;
+import top.continew.starter.core.validation.CheckUtils;
+import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.web.util.SpringWebUtils;
 
 import java.util.Set;
@@ -39,35 +46,49 @@ import java.util.concurrent.CompletableFuture;
 import static top.continew.admin.system.enums.PasswordPolicyEnum.PASSWORD_EXPIRATION_DAYS;
 
 /**
- * 认证处理器抽象类
+ * 认证处理器基类
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/22 14:52
  */
 @Component
-@RequiredArgsConstructor
-public abstract class AbstractAuthHandler {
+public abstract class AbstractAuthHandler<T extends AuthReq> implements AuthHandler<T> {
+
     @Resource
-    private RoleService roleService;
+    protected OptionService optionService;
     @Resource
-    private OptionService optionService;
+    protected UserService userService;
+    @Resource
+    protected RoleService roleService;
+    @Resource
+    private DeptService deptService;
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    public static final String CAPTCHA_EXPIRED = "验证码已失效";
-    public static final String CAPTCHA_ERROR = "验证码错误";
-    public static final String CLIENT_ID = "clientId";
+    protected static final String CAPTCHA_EXPIRED = "验证码已失效";
+    protected static final String CAPTCHA_ERROR = "验证码错误";
+    protected static final String CLIENT_ID = "clientId";
+
+    @Override
+    public void preLogin(T req, ClientResp client, HttpServletRequest request) {
+        // 参数校验
+        ValidationUtils.validate(req);
+    }
+
+    @Override
+    public void postLogin(T req, ClientResp client, HttpServletRequest request) {
+    }
 
     /**
-     * 获取登录凭证
+     * 认证
      *
-     * @param user       用户信息
-     * @param clientResp 客户端信息
-     * @return token 认证信息
+     * @param user   用户信息
+     * @param client 客户端信息
+     * @return token 令牌信息
      */
-    protected String authCertificate(UserDO user, ClientResp clientResp) {
-        preLogin(user, clientResp);
-        // 核心登录逻辑
+    protected String authenticate(UserDO user, ClientResp client) {
+        // 获取权限、角色、密码过期天数
         Long userId = user.getId();
         CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> roleService
             .listPermissionByUserId(userId), threadPoolTaskExecutor);
@@ -76,62 +97,35 @@ public abstract class AbstractAuthHandler {
         CompletableFuture<Integer> passwordExpirationDaysFuture = CompletableFuture.supplyAsync(() -> optionService
             .getValueByCode2Int(PASSWORD_EXPIRATION_DAYS.name()));
         CompletableFuture.allOf(permissionFuture, roleFuture, passwordExpirationDaysFuture);
-
         UserContext userContext = new UserContext(permissionFuture.join(), roleFuture
             .join(), passwordExpirationDaysFuture.join());
-
         BeanUtil.copyProperties(user, userContext);
-        SaLoginModel model = new SaLoginModel();
-        // 设置登录 token 最低活跃频率 如未指定，则使用全局配置的 activeTimeout 值
-        model.setActiveTimeout(clientResp.getActiveTimeout());
-        // 设置登录 token 有效期，单位：秒 （如未指定，自动取全局配置的 timeout 值
-        model.setTimeout(clientResp.getTimeout());
-        // 设置设备类型
-        model.setDevice(clientResp.getClientType());
-        userContext.setClientType(clientResp.getClientType());
-        // 设置客户端id
-        userContext.setClientId(clientResp.getClientId());
-        model.setExtra(CLIENT_ID, clientResp.getClientId());
-        // 自定义用户上下文处理
-        customizeUserContext(userContext, user, clientResp);
-
         // 登录并缓存用户信息
+        SaLoginModel model = new SaLoginModel();
+        // 指定此次登录 token 最低活跃频率，单位：秒（如未指定，则使用全局配置的 activeTimeout 值）
+        model.setActiveTimeout(client.getActiveTimeout());
+        // 指定此次登录 token 有效期，单位：秒 （如未指定，自动取全局配置的 timeout 值）
+        model.setTimeout(client.getTimeout());
+        // 客户端类型
+        model.setDevice(client.getClientType());
+        userContext.setClientType(client.getClientType());
+        // 客户端 ID
+        model.setExtra(CLIENT_ID, client.getClientId());
+        userContext.setClientId(client.getClientId());
         StpUtil.login(userContext.getId(), model.setExtraData(BeanUtil.beanToMap(new UserExtraContext(SpringWebUtils
             .getRequest()))));
         UserContextHolder.setContext(userContext);
-
-        // 后置处理
-        String token = StpUtil.getTokenValue();
-        postLogin(token, user, clientResp);
-        return token;
+        return StpUtil.getTokenValue();
     }
 
     /**
-     * 登录前置处理
+     * 检查用户状态
      *
-     * @param user       用户信息
-     * @param clientResp 客户端信息
+     * @param user 用户信息
      */
-    private void preLogin(UserDO user, ClientResp clientResp) {
-    }
-
-    /**
-     * 自定义用户上下文处理
-     *
-     * @param userContext 用户上下文
-     * @param user        用户信息
-     * @param clientResp  客户端信息
-     */
-    protected void customizeUserContext(UserContext userContext, UserDO user, ClientResp clientResp) {
-    }
-
-    /**
-     * 登录后置处理
-     *
-     * @param token      登录令牌
-     * @param user       用户信息
-     * @param clientResp 客户端信息
-     */
-    protected void postLogin(String token, UserDO user, ClientResp clientResp) {
+    protected void checkUserStatus(UserDO user) {
+        CheckUtils.throwIfEqual(DisEnableStatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
+        DeptDO dept = deptService.getById(user.getDeptId());
+        CheckUtils.throwIfEqual(DisEnableStatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
     }
 }

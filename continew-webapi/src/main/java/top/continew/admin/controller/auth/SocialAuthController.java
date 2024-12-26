@@ -17,24 +17,20 @@
 package top.continew.admin.controller.auth;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.dev33.satoken.stp.StpUtil;
 import com.xkcoding.justauth.AuthRequestFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import me.zhyd.oauth.model.AuthCallback;
-import me.zhyd.oauth.model.AuthResponse;
-import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
-import org.springframework.web.bind.annotation.*;
-import top.continew.admin.auth.model.resp.LoginResp;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import top.continew.admin.auth.model.resp.SocialAuthAuthorizeResp;
-import top.continew.admin.auth.service.LoginService;
 import top.continew.starter.core.exception.BadRequestException;
-import top.continew.starter.core.validation.ValidationUtils;
 import top.continew.starter.log.annotation.Log;
 
 /**
@@ -51,7 +47,6 @@ import top.continew.starter.log.annotation.Log;
 @RequestMapping("/oauth")
 public class SocialAuthController {
 
-    private final LoginService loginService;
     private final AuthRequestFactory authRequestFactory;
 
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
@@ -62,21 +57,6 @@ public class SocialAuthController {
         return SocialAuthAuthorizeResp.builder()
             .authorizeUrl(authRequest.authorize(AuthStateUtils.createState()))
             .build();
-    }
-
-    @Operation(summary = "三方账号登录", description = "三方账号登录")
-    @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
-    @PostMapping("/{source}")
-    public LoginResp login(@PathVariable String source, @RequestBody AuthCallback callback) {
-        if (StpUtil.isLogin()) {
-            StpUtil.logout();
-        }
-        AuthRequest authRequest = this.getAuthRequest(source);
-        AuthResponse<AuthUser> response = authRequest.login(callback);
-        ValidationUtils.throwIf(!response.ok(), response.getMsg());
-        AuthUser authUser = response.getData();
-        String token = loginService.socialLogin(authUser);
-        return LoginResp.builder().token(token).build();
     }
 
     private AuthRequest getAuthRequest(String source) {

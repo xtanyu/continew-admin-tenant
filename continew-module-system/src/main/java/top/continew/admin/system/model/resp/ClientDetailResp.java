@@ -22,19 +22,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.starter.extension.crud.model.resp.BaseDetailResp;
+import top.continew.starter.file.excel.converter.ExcelBaseEnumConverter;
 
 import java.io.Serial;
 import java.util.List;
 
 /**
- * 客户端管理详情信息
+ * 客户端详情信息
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 @Data
 @ExcelIgnoreUnannotated
-@Schema(description = "客户端管理详情信息")
+@Schema(description = "客户端详情信息")
 public class ClientDetailResp extends BaseDetailResp {
 
     @Serial
@@ -44,55 +45,55 @@ public class ClientDetailResp extends BaseDetailResp {
      * 客户端ID
      */
     @Schema(description = "客户端ID")
-    @ExcelProperty(value = "客户端ID")
+    @ExcelProperty(value = "客户端ID", order = 2)
     private String clientId;
 
     /**
      * 客户端Key
      */
     @Schema(description = "客户端Key")
-    @ExcelProperty(value = "客户端Key")
+    @ExcelProperty(value = "客户端Key", order = 3)
     private String clientKey;
 
     /**
      * 客户端秘钥
      */
     @Schema(description = "客户端秘钥")
-    @ExcelProperty(value = "客户端秘钥")
+    @ExcelProperty(value = "客户端秘钥", order = 4)
     private String clientSecret;
 
     /**
      * 登录类型
      */
     @Schema(description = "登录类型")
-    @ExcelProperty(value = "登录类型")
+    @ExcelProperty(value = "登录类型", order = 5)
     private List<String> authType;
 
     /**
      * 客户端类型
      */
     @Schema(description = "客户端类型")
-    @ExcelProperty(value = "客户端类型")
+    @ExcelProperty(value = "客户端类型", order = 6)
     private String clientType;
 
     /**
      * Token最低活跃频率（-1为不限制）
      */
     @Schema(description = "Token最低活跃频率（-1为不限制）")
-    @ExcelProperty(value = "Token最低活跃频率（-1为不限制）")
+    @ExcelProperty(value = "Token最低活跃频率（-1为不限制）", order = 7)
     private Integer activeTimeout;
 
     /**
      * Token有效期（默认30天，单位：秒）
      */
     @Schema(description = "Token有效期（默认30天，单位：秒）")
-    @ExcelProperty(value = "Token有效期（默认30天，单位：秒）")
+    @ExcelProperty(value = "Token有效期（默认30天，单位：秒）", order = 8)
     private Integer timeout;
 
     /**
      * 状态
      */
-    @Schema(description = "状态")
-    @ExcelProperty(value = "状态")
+    @Schema(description = "状态", example = "1")
+    @ExcelProperty(value = "状态", converter = ExcelBaseEnumConverter.class, order = 9)
     private DisEnableStatusEnum status;
 }

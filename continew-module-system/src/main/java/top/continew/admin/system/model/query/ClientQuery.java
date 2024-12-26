@@ -27,13 +27,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 客户端管理查询条件
+ * 客户端查询条件
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 @Data
-@Schema(description = "客户端管理查询条件")
+@Schema(description = "客户端查询条件")
 public class ClientQuery implements Serializable {
 
     @Serial
@@ -43,33 +43,30 @@ public class ClientQuery implements Serializable {
      * 客户端Key
      */
     @Schema(description = "客户端Key")
-    @Query(type = QueryType.EQ)
     private String clientKey;
 
     /**
      * 客户端秘钥
      */
     @Schema(description = "客户端秘钥")
-    @Query(type = QueryType.EQ)
     private String clientSecret;
 
     /**
-     * 登录类型
+     * 认证类型
      */
-    @Schema(description = "登录类型")
+    @Schema(description = "认证类型")
     @Query(type = QueryType.IN)
     private List<String> authType;
+
     /**
      * 客户端类型
      */
     @Schema(description = "客户端类型")
-    @Query(type = QueryType.EQ)
     private String clientType;
 
     /**
-     * 状态（1：启用；2：禁用）
+     * 状态
      */
-    @Schema(description = "状态")
-    @Query(type = QueryType.EQ)
+    @Schema(description = "状态", example = "1")
     private DisEnableStatusEnum status;
 }

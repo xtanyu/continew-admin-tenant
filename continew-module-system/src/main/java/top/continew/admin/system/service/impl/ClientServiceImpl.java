@@ -17,10 +17,7 @@
 package top.continew.admin.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.continew.admin.auth.enums.AuthTypeEnum;
 import top.continew.admin.system.mapper.ClientMapper;
@@ -37,40 +34,38 @@ import top.continew.starter.extension.crud.service.BaseServiceImpl;
 import java.util.List;
 
 /**
- * 客户端管理业务实现
+ * 客户端业务实现
  *
- * @author MoChou
+ * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
 @Service
-@RequiredArgsConstructor
 public class ClientServiceImpl extends BaseServiceImpl<ClientMapper, ClientDO, ClientResp, ClientDetailResp, ClientQuery, ClientReq> implements ClientService {
+
     @Override
-    protected void beforeAdd(ClientReq req) {
+    public void beforeAdd(ClientReq req) {
         String clientId = DigestUtil.md5Hex(req.getClientKey() + StringConstants.COLON + req.getClientSecret());
         req.setClientId(clientId);
     }
 
-    /**
-     * 通过ClientId获取客户端实例
-     * 
-     * @param clientId 客户端id
-     * @return 客户端响应对象
-     */
     @Override
-    public ClientResp getClientByClientId(String clientId) {
-        ClientDO clientDO = baseMapper.selectOne(new LambdaQueryWrapper<ClientDO>()
-            .eq(ClientDO::getClientId, clientId));
-        return BeanUtil.copyProperties(clientDO, ClientResp.class);
+    public void beforeDelete(List<Long> ids) {
+        // 查询如果删除客户端记录以后是否还存在账号认证的方式，不存在则不允许删除
+        List<ClientDO> clientList = baseMapper.lambdaQuery()
+            .in(ClientDO::getId, ids)
+            .like(ClientDO::getAuthType, AuthTypeEnum.ACCOUNT.getValue())
+            .list();
+        ValidationUtils.throwIfEmpty(clientList, "请至少保留 [{}] 认证类型", AuthTypeEnum.ACCOUNT.getDescription());
+        super.beforeDelete(ids);
     }
 
     @Override
-    protected void beforeDelete(List<Long> ids) {
-        // 查询如果删除客户端记录以后是否还存在账号认证的方式，不存在则不允许删除
-        List<ClientDO> clientDOS = baseMapper.selectList(new LambdaQueryWrapper<ClientDO>().notIn(ClientDO::getId, ids)
-            .like(ClientDO::getAuthType, AuthTypeEnum.ACCOUNT.getValue()));
-        ValidationUtils.throwIfEmpty(clientDOS, StrUtil.format("请至少保留一条{}认证的方式", AuthTypeEnum.ACCOUNT
-            .getDescription()));
-        super.beforeDelete(ids);
+    public ClientResp getByClientId(String clientId) {
+        return baseMapper.lambdaQuery()
+            .eq(ClientDO::getClientId, clientId)
+            .oneOpt()
+            .map(client -> BeanUtil.copyProperties(client, ClientResp.class))
+            .orElse(null);
     }
 }

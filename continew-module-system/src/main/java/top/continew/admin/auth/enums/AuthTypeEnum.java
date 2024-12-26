@@ -22,10 +22,11 @@ import top.continew.admin.common.constant.UiConstants;
 import top.continew.starter.core.enums.BaseEnum;
 
 /**
- * 认证类型
+ * 认证类型枚举
  *
+ * @author KAI
  * @author Charles7c
- * @since 2023/12/23 13:38
+ * @since 2024/12/22 14:52
  */
 @Getter
 @RequiredArgsConstructor
@@ -34,22 +35,22 @@ public enum AuthTypeEnum implements BaseEnum<String> {
     /**
      * 账号
      */
-    ACCOUNT("account", "账号", UiConstants.COLOR_ERROR),
+    ACCOUNT("ACCOUNT", "账号", UiConstants.COLOR_SUCCESS),
 
     /**
      * 邮箱
      */
-    EMAIL("email", "邮箱", UiConstants.COLOR_PRIMARY),
+    EMAIL("EMAIL", "邮箱", UiConstants.COLOR_PRIMARY),
 
     /**
      * 手机号
      */
-    PHONE("phone", "手机号", UiConstants.COLOR_SUCCESS),
+    PHONE("PHONE", "手机号", UiConstants.COLOR_PRIMARY),
 
     /**
-     * 第三方授权
+     * 第三方账号
      */
-    SOCIAL_AUTH("socialAuth", "第三方授权", UiConstants.COLOR_DEFAULT);
+    SOCIAL("SOCIAL", "第三方账号", UiConstants.COLOR_ERROR);
 
     private final String value;
     private final String description;

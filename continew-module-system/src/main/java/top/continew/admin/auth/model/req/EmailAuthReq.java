@@ -24,17 +24,16 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * 邮箱登录参数
+ * 邮箱认证参数
  *
  * @author Charles7c
  * @since 2023/10/23 20:15
  */
 @Data
-@Schema(description = "邮箱登录参数")
-public class EmailAuthReq extends AuthReq implements Serializable {
+@Schema(description = "邮箱认证参数")
+public class EmailAuthReq extends AuthReq {
 
     @Serial
     private static final long serialVersionUID = 1L;

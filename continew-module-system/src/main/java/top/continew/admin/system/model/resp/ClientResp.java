@@ -25,13 +25,13 @@ import java.io.Serial;
 import java.util.List;
 
 /**
- * 客户端管理信息
+ * 客户端信息
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 @Data
-@Schema(description = "客户端管理信息")
+@Schema(description = "客户端信息")
 public class ClientResp extends BaseResp {
 
     @Serial

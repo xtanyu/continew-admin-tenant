@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset Charles7c:1
+-- changeset charles7c:1
 -- comment 初始化表数据
 -- 初始化默认菜单
 INSERT INTO "sys_menu"

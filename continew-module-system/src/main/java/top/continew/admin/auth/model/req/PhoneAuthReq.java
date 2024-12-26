@@ -24,17 +24,16 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * 手机号登录参数
+ * 手机号认证参数
  *
  * @author Charles7c
  * @since 2023/10/26 22:37
  */
 @Data
-@Schema(description = "手机号登录参数")
-public class PhoneAuthReq extends AuthReq implements Serializable {
+@Schema(description = "手机号认证参数")
+public class PhoneAuthReq extends AuthReq {
 
     @Serial
     private static final long serialVersionUID = 1L;

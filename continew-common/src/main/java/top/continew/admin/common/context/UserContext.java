@@ -81,12 +81,12 @@ public class UserContext implements Serializable {
     private Set<RoleContext> roles;
 
     /**
-     * 设备类型
+     * 客户端类型
      */
     private String clientType;
 
     /**
-     * 客户端ID
+     * 客户端 ID
      */
     private String clientId;
 

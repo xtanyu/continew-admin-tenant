@@ -20,9 +20,9 @@ import top.continew.starter.data.mp.base.BaseMapper;
 import top.continew.admin.system.model.entity.ClientDO;
 
 /**
- * 客户端管理 Mapper
+ * 客户端 Mapper
  *
- * @author MoChou
+ * @author KAI
  * @since 2024/12/03 16:04
  */
 public interface ClientMapper extends BaseMapper<ClientDO> {}

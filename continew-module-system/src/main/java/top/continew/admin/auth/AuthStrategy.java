@@ -14,40 +14,43 @@
  * limitations under the License.
  */
 
-package top.continew.admin.auth.config;
+package top.continew.admin.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import top.continew.admin.auth.enums.AuthTypeEnum;
 import top.continew.admin.auth.model.req.AuthReq;
-import top.continew.admin.auth.AuthHandler;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 登录类型策略上文
+ * 认证策略
  *
  * @author KAI
- * @since 2024/12/20 15:16:55
+ * @author Charles7c
+ * @since 2024/12/20 15:16
  */
 @Component
-public class AuthHandlerContext {
-    private final Map<String, AuthHandler<?, ?>> handlerMap = new HashMap<>();
+public class AuthStrategy {
+
+    private final Map<AuthTypeEnum, AuthHandler<? extends AuthReq>> handlerMap = new HashMap<>();
 
     @Autowired
-    public AuthHandlerContext(List<AuthHandler<?, ?>> strategies) {
-        for (AuthHandler<?, ?> strategy : strategies) {
-            handlerMap.put(strategy.getAuthType().getValue(), strategy);
+    public AuthStrategy(List<AuthHandler<? extends AuthReq>> handlers) {
+        for (AuthHandler<? extends AuthReq> handler : handlers) {
+            handlerMap.put(handler.getAuthType(), handler);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends AuthReq, R> AuthHandler<T, R> getHandler(String type) {
-        AuthHandler<?, ?> strategy = handlerMap.get(type);
-        if (strategy == null) {
-            throw new IllegalArgumentException("No handler found for type: " + type);
-        }
-        return (AuthHandler<T, R>)strategy;
+    /**
+     * 根据认证类型获取
+     *
+     * @param authType 认证类型
+     * @return 认证处理器
+     */
+    public AuthHandler<AuthReq> getHandler(AuthTypeEnum authType) {
+        return (AuthHandler<AuthReq>)handlerMap.get(authType);
     }
 }

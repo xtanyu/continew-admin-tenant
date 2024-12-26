@@ -20,27 +20,42 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import top.continew.admin.auth.enums.AuthTypeEnum;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
- * 登录参数基础类
+ * 认证参数基类
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/22 15:16
  */
 @Data
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "authType", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = AccountAuthReq.class, name = "account"),
-    @JsonSubTypes.Type(value = EmailAuthReq.class, name = "email"),
-    @JsonSubTypes.Type(value = PhoneAuthReq.class, name = "phone"),
-    @JsonSubTypes.Type(value = SocialAuthReq.class, name = "socialAuth")})
-public abstract class AuthReq {
+@JsonSubTypes({@JsonSubTypes.Type(value = AccountAuthReq.class, name = "ACCOUNT"),
+    @JsonSubTypes.Type(value = EmailAuthReq.class, name = "EMAIL"),
+    @JsonSubTypes.Type(value = PhoneAuthReq.class, name = "PHONE"),
+    @JsonSubTypes.Type(value = SocialAuthReq.class, name = "SOCIAL")})
+public class AuthReq implements Serializable {
 
-    @Schema(description = "客户端id")
-    @NotBlank(message = "客户端id不能为空")
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 客户端 ID
+     */
+    @Schema(description = "客户端 ID")
+    @NotBlank(message = "客户端ID不能为空")
     private String clientId;
 
+    /**
+     * 认证类型
+     */
     @Schema(description = "认证类型")
-    @NotBlank(message = "认证类型不能为空")
-    private String authType;
+    @NotNull(message = "认证类型非法")
+    private AuthTypeEnum authType;
 }

@@ -19,37 +19,52 @@ package top.continew.admin.auth;
 import jakarta.servlet.http.HttpServletRequest;
 import top.continew.admin.auth.enums.AuthTypeEnum;
 import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.system.model.resp.ClientResp;
 
 /**
- * 认证接口
+ * 认证处理器
  *
  * @author KAI
- * @since 2024/12/22 14:52:23
+ * @author Charles7c
+ * @since 2024/12/22 14:52
  */
-public interface AuthHandler<T extends AuthReq, R> {
+public interface AuthHandler<T extends AuthReq> {
 
     /**
-     * 执行登录
+     * 登录
      *
-     * @param authReq 登录请求参数
-     * @param request HTTP请求对象
-     * @return 登录响应
+     * @param req     登录请求参数
+     * @param client  客户端信息
+     * @param request 请求对象
+     * @return 登录响应参数
      */
-    R login(T authReq, ClientResp clientResp, HttpServletRequest request);
+    LoginResp login(T req, ClientResp client, HttpServletRequest request);
 
     /**
-     * 获取登录类型
+     * 登录前置处理
      *
-     * @return 登录类型Enum
+     *
+     * @param req     登录请求参数
+     * @param client  客户端信息
+     * @param request 请求对象
+     */
+    void preLogin(T req, ClientResp client, HttpServletRequest request);
+
+    /**
+     * 登录后置处理
+     *
+     *
+     * @param req     登录请求参数
+     * @param client  客户端信息
+     * @param request 请求对象
+     */
+    void postLogin(T req, ClientResp client, HttpServletRequest request);
+
+    /**
+     * 获取认证类型
+     *
+     * @return 认证类型
      */
     AuthTypeEnum getAuthType();
-
-    /**
-     * 校验参数
-     *
-     * @param authReq 登录请求参数
-     */
-    void validate(T authReq);
-
 }

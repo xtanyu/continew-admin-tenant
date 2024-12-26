@@ -20,30 +20,40 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.io.Serial;
+
 /**
- * 第三方登录参数
+ * 第三方账号认证参数
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/25 15:43
  */
 @Data
-@Schema(description = "第三方登录参数")
+@Schema(description = "第三方账号认证参数")
 public class SocialAuthReq extends AuthReq {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * 第三方登录平台
      */
+    @Schema(description = "第三方登录平台", example = "gitee")
     @NotBlank(message = "第三方登录平台不能为空")
     private String source;
 
     /**
-     * 第三方登录code
+     * 授权码
      */
-    @NotBlank(message = "第三方登录code不能为空")
+    @Schema(description = "授权码", example = "a08d33e9e577fb339de027499784ed4e871d6f62ae65b459153e906ab546bd56")
+    @NotBlank(message = "授权码不能为空")
     private String code;
 
     /**
-     * 第三方登录state
+     * 状态码
      */
-    @NotBlank(message = "第三方登录state不能为空")
+    @Schema(description = "状态码", example = "2ca8d8baf437eb374efaa1191a3d")
+    @NotBlank(message = "状态码不能为空")
     private String state;
 }

@@ -146,13 +146,13 @@ public class LogDaoLocalImpl implements LogDao {
         // 解析登录接口信息
         if (requestUri.startsWith(SysConstants.LOGIN_URI) && LogStatusEnum.SUCCESS.equals(logDO.getStatus())) {
             String requestBody = logRequest.getBody();
-            //账号登录设置操作人
+            // 解析账号登录用户为操作人
             if (requestBody.contains(AuthTypeEnum.ACCOUNT.getValue())) {
-                AccountAuthReq loginReq = JSONUtil.toBean(requestBody, AccountAuthReq.class);
-                logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(loginReq.getUsername())
+                AccountAuthReq authReq = JSONUtil.toBean(requestBody, AccountAuthReq.class);
+                logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(authReq.getUsername())
                     .getId()));
+                return;
             }
-            return;
         }
         // 解析 Token 信息
         Map<String, String> requestHeaders = logRequest.getHeaders();
