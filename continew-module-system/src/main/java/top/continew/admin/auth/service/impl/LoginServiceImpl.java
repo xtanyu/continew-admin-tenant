@@ -97,32 +97,6 @@ public class LoginServiceImpl implements LoginService {
     private final MessageService messageService;
 
     @Override
-    public String accountLogin(String username, String password, HttpServletRequest request) {
-        UserDO user = userService.getByUsername(username);
-        boolean isError = ObjectUtil.isNull(user) || !passwordEncoder.matches(password, user.getPassword());
-        this.checkUserLocked(username, request, isError);
-        CheckUtils.throwIf(isError, "用户名或密码错误");
-        this.checkUserStatus(user);
-        return this.login(user);
-    }
-
-    @Override
-    public String phoneLogin(String phone) {
-        UserDO user = userService.getByPhone(phone);
-        CheckUtils.throwIfNull(user, "此手机号未绑定本系统账号");
-        this.checkUserStatus(user);
-        return this.login(user);
-    }
-
-    @Override
-    public String emailLogin(String email) {
-        UserDO user = userService.getByEmail(email);
-        CheckUtils.throwIfNull(user, "此邮箱未绑定本系统账号");
-        this.checkUserStatus(user);
-        return this.login(user);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public String socialLogin(AuthUser authUser) {
         String source = authUser.getSource();
@@ -209,7 +183,8 @@ public class LoginServiceImpl implements LoginService {
      * @param user 用户信息
      * @return 令牌
      */
-    private String login(UserDO user) {
+    @Override
+    public String login(UserDO user) {
         Long userId = user.getId();
         CompletableFuture<Set<String>> permissionFuture = CompletableFuture.supplyAsync(() -> roleService
             .listPermissionByUserId(userId), threadPoolTaskExecutor);
@@ -233,7 +208,8 @@ public class LoginServiceImpl implements LoginService {
      *
      * @param user 用户信息
      */
-    private void checkUserStatus(UserDO user) {
+    @Override
+    public void checkUserStatus(UserDO user) {
         CheckUtils.throwIfEqual(DisEnableStatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
         DeptDO dept = deptService.getById(user.getDeptId());
         CheckUtils.throwIfEqual(DisEnableStatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
@@ -246,7 +222,8 @@ public class LoginServiceImpl implements LoginService {
      * @param request  请求对象
      * @param isError  是否登录错误
      */
-    private void checkUserLocked(String username, HttpServletRequest request, boolean isError) {
+    @Override
+    public void checkUserLocked(String username, HttpServletRequest request, boolean isError) {
         // 不锁定
         int maxErrorCount = optionService.getValueByCode2Int(PasswordPolicyEnum.PASSWORD_ERROR_LOCK_COUNT.name());
         if (maxErrorCount <= SysConstants.NO) {
@@ -274,7 +251,8 @@ public class LoginServiceImpl implements LoginService {
      *
      * @param user 用户信息
      */
-    private void sendSecurityMsg(UserDO user) {
+    @Override
+    public void sendSecurityMsg(UserDO user) {
         MessageReq req = new MessageReq();
         MessageTemplateEnum socialRegister = MessageTemplateEnum.SOCIAL_REGISTER;
         req.setTitle(socialRegister.getTitle().formatted(projectProperties.getName()));

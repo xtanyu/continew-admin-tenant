@@ -28,7 +28,8 @@ import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
-import top.continew.admin.auth.model.req.AccountLoginReq;
+import top.continew.admin.auth.enums.AuthTypeEnum;
+import top.continew.admin.auth.model.req.AccountAuthReq;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.system.enums.LogStatusEnum;
 import top.continew.admin.system.mapper.LogMapper;
@@ -145,9 +146,12 @@ public class LogDaoLocalImpl implements LogDao {
         // 解析登录接口信息
         if (requestUri.startsWith(SysConstants.LOGIN_URI) && LogStatusEnum.SUCCESS.equals(logDO.getStatus())) {
             String requestBody = logRequest.getBody();
-            AccountLoginReq loginReq = JSONUtil.toBean(requestBody, AccountLoginReq.class);
-            logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(loginReq.getUsername())
-                .getId()));
+            //账号登录设置操作人
+            if (requestBody.contains(AuthTypeEnum.ACCOUNT.getValue())) {
+                AccountAuthReq loginReq = JSONUtil.toBean(requestBody, AccountAuthReq.class);
+                logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(loginReq.getUsername())
+                    .getId()));
+            }
             return;
         }
         // 解析 Token 信息
