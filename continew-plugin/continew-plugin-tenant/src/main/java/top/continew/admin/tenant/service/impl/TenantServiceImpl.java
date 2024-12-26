@@ -88,7 +88,7 @@ public class TenantServiceImpl extends BaseServiceImpl<TenantMapper, TenantDO, T
     private String generateTenantSn() {
         String tenantSn;
         do {
-            tenantSn = RandomUtil.randomString(6);
+            tenantSn = RandomUtil.randomString(RandomUtil.BASE_CHAR_NUMBER_LOWER, 6);
         } while (baseMapper.exists(Wrappers.lambdaQuery(TenantDO.class).eq(TenantDO::getTenantSn, tenantSn)));
         return tenantSn;
     }
