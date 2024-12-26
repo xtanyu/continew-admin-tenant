@@ -21,7 +21,9 @@ import cn.hutool.json.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.continew.admin.tenant.mapper.TenantMapper;
 import top.continew.admin.tenant.mapper.TenantPackageMapper;
+import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.entity.TenantPackageDO;
 import top.continew.admin.tenant.model.query.TenantPackageQuery;
 import top.continew.admin.tenant.model.req.TenantPackageReq;
@@ -42,6 +44,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TenantPackageServiceImpl extends BaseServiceImpl<TenantPackageMapper, TenantPackageDO, TenantPackageResp, TenantPackageDetailResp, TenantPackageQuery, TenantPackageReq> implements TenantPackageService {
+
+    private final TenantMapper tenantMapper;
+
     @Override
     public TenantPackageDetailResp get(Long id) {
         TenantPackageDO tenantPackageDO = getById(id);
@@ -60,7 +65,7 @@ public class TenantPackageServiceImpl extends BaseServiceImpl<TenantPackageMappe
 
     @Override
     protected void beforeDelete(List<Long> ids) {
-        CheckUtils.throwIf(baseMapper.selectCount(Wrappers.lambdaQuery(TenantPackageDO.class)
-            .in(TenantPackageDO::getId, ids)) > 0, "存在关联租户无法删除");
+        CheckUtils.throwIf(tenantMapper.selectCount(Wrappers.lambdaQuery(TenantDO.class)
+            .in(TenantDO::getPackageId, ids)) > 0, "存在关联租户无法删除");
     }
 }

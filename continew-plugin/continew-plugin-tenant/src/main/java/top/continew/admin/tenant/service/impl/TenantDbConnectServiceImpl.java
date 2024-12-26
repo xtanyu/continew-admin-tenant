@@ -23,6 +23,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.tenant.mapper.TenantDbConnectMapper;
+import top.continew.admin.tenant.mapper.TenantMapper;
+import top.continew.admin.tenant.model.entity.TenantDO;
 import top.continew.admin.tenant.model.entity.TenantDbConnectDO;
 import top.continew.admin.tenant.model.enums.TenantConnectTypeEnum;
 import top.continew.admin.tenant.model.query.TenantDbConnectQuery;
@@ -47,6 +49,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectMapper, TenantDbConnectDO, TenantDbConnectResp, TenantDbConnectDetailResp, TenantDbConnectQuery, TenantDbConnectReq> implements TenantDbConnectService {
+
+    private final TenantMapper tenantMapper;
 
     @Override
     @Cached(name = CacheConstants.DB_CONNECT_KEY_PREFIX, key = "#id")
@@ -83,6 +87,12 @@ public class TenantDbConnectServiceImpl extends BaseServiceImpl<TenantDbConnectM
                 .getPassword(), null, null);
             checkRepeat(req, id);
         }
+    }
+
+    @Override
+    protected void beforeDelete(List<Long> ids) {
+        CheckUtils.throwIf(tenantMapper.selectCount(Wrappers.lambdaQuery(TenantDO.class)
+            .in(TenantDO::getDbConnectId, ids)) > 0, "存在关联租户无法删除");
     }
 
     @Override
