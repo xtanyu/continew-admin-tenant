@@ -52,7 +52,7 @@ import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 import top.continew.starter.extension.crud.model.resp.BaseIdResp;
 import top.continew.starter.extension.crud.model.resp.BaseResp;
-import top.continew.starter.extension.tenant.handler.TenantHandler;
+import top.continew.starter.extension.tenant.TenantHandler;
 
 import java.util.List;
 

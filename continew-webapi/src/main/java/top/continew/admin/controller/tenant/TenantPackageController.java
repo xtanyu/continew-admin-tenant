@@ -44,7 +44,7 @@ import top.continew.starter.cache.redisson.util.RedisUtils;
 import top.continew.starter.core.constant.StringConstants;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
 import top.continew.starter.extension.crud.enums.Api;
-import top.continew.starter.extension.tenant.handler.TenantHandler;
+import top.continew.starter.extension.tenant.TenantHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;

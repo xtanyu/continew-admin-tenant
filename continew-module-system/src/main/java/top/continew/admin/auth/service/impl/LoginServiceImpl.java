@@ -65,9 +65,9 @@ import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.annotation.TreeField;
 import top.continew.starter.extension.crud.autoconfigure.CrudProperties;
+import top.continew.starter.extension.tenant.TenantHandler;
 import top.continew.starter.extension.tenant.context.TenantContextHolder;
 
-import top.continew.starter.extension.tenant.handler.TenantHandler;
 import top.continew.starter.messaging.websocket.util.WebSocketUtils;
 import top.continew.starter.web.util.SpringWebUtils;
 
