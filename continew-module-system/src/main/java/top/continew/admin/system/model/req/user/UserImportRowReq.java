@@ -65,7 +65,7 @@ public class UserImportRowReq extends BaseReq {
     /**
      * 部门名称
      */
-    @NotNull(message = "所属部门不能为空")
+    @NotBlank(message = "所属部门不能为空")
     private String deptName;
 
     /**
