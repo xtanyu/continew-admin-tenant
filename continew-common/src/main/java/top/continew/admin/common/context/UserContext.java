@@ -85,6 +85,16 @@ public class UserContext implements Serializable {
      */
     private Long tenantId;
 
+    /*
+     * 设备类型
+     */
+    private String clientType;
+
+    /**
+     * 客户端ID
+     */
+    private String clientId;
+
     public UserContext(Set<String> permissions, Set<RoleContext> roles, Integer passwordExpirationDays) {
         this.permissions = permissions;
         this.setRoles(roles);

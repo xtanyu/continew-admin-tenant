@@ -19,6 +19,7 @@ package top.continew.admin.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import me.zhyd.oauth.model.AuthUser;
 import top.continew.admin.auth.model.resp.RouteResp;
+import top.continew.admin.system.model.entity.UserDO;
 
 import java.util.List;
 
@@ -31,30 +32,28 @@ import java.util.List;
 public interface LoginService {
 
     /**
-     * 账号登录
+     * 检查用户状态
+     *
+     * @param user 用户信息
+     */
+    void checkUserStatus(UserDO user);
+
+    /**
+     * 检查用户是否被锁定
      *
      * @param username 用户名
-     * @param password 密码
      * @param request  请求对象
-     * @return 令牌
+     * @param isError  是否登录错误
      */
-    String accountLogin(String username, String password, HttpServletRequest request);
+    void checkUserLocked(String username, HttpServletRequest request, boolean isError);
 
     /**
-     * 手机号登录
+     * 执行登录操作
      *
-     * @param phone 手机号
-     * @return 令牌
+     * @param user 用户信息
+     * @return token
      */
-    String phoneLogin(String phone);
-
-    /**
-     * 邮箱登录
-     *
-     * @param email 邮箱
-     * @return 令牌
-     */
-    String emailLogin(String email);
+    String login(UserDO user);
 
     /**
      * 三方账号登录
@@ -71,4 +70,11 @@ public interface LoginService {
      * @return 路由树
      */
     List<RouteResp> buildRouteTree(Long userId);
+
+    /**
+     * 发送安全消息
+     * 
+     * @param user 用户信息
+     */
+    void sendSecurityMsg(UserDO user);
 }

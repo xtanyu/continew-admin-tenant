@@ -67,7 +67,7 @@ public class SysConstants {
     /**
      * 账号登录 URI
      */
-    public static final String LOGIN_URI = "/auth/account";
+    public static final String LOGIN_URI = "/auth/login";
 
     /**
      * 退出 URI
