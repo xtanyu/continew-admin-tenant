@@ -18,18 +18,18 @@ package top.continew.admin.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.req.LoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.system.model.resp.ClientResp;
 
 /**
- * 认证处理器
+ * 登录处理器
  *
  * @author KAI
  * @author Charles7c
  * @since 2024/12/22 14:52
  */
-public interface AuthHandler<T extends AuthReq> {
+public interface LoginHandler<T extends LoginReq> {
 
     /**
      * 登录

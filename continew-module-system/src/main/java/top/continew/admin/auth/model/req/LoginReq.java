@@ -28,7 +28,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 认证参数基类
+ * 登录参数基类
  *
  * @author KAI
  * @author Charles7c
@@ -36,11 +36,12 @@ import java.io.Serializable;
  */
 @Data
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "authType", visible = true)
-@JsonSubTypes({@JsonSubTypes.Type(value = AccountAuthReq.class, name = "ACCOUNT"),
-    @JsonSubTypes.Type(value = EmailAuthReq.class, name = "EMAIL"),
-    @JsonSubTypes.Type(value = PhoneAuthReq.class, name = "PHONE"),
-    @JsonSubTypes.Type(value = SocialAuthReq.class, name = "SOCIAL")})
-public class AuthReq implements Serializable {
+@JsonSubTypes({@JsonSubTypes.Type(value = AccountLoginReq.class, name = "ACCOUNT"),
+    @JsonSubTypes.Type(value = EmailLoginReq.class, name = "EMAIL"),
+    @JsonSubTypes.Type(value = PhoneLoginReq.class, name = "PHONE"),
+    @JsonSubTypes.Type(value = SocialLoginReq.class, name = "SOCIAL")})
+@Schema(description = "基础登录参数")
+public class LoginReq implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -48,14 +49,14 @@ public class AuthReq implements Serializable {
     /**
      * 客户端 ID
      */
-    @Schema(description = "客户端 ID")
+    @Schema(description = "客户端 ID", example = "ef51c9a3e9046c4f2ea45142c8a8344a")
     @NotBlank(message = "客户端ID不能为空")
     private String clientId;
 
     /**
      * 认证类型
      */
-    @Schema(description = "认证类型")
+    @Schema(description = "认证类型", example = "ACCOUNT")
     @NotNull(message = "认证类型非法")
     private AuthTypeEnum authType;
 }

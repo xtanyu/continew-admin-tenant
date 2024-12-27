@@ -30,6 +30,7 @@ import java.util.List;
  * 客户端实体
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
 @Data
@@ -66,17 +67,17 @@ public class ClientDO extends BaseDO {
     private String clientType;
 
     /**
-     * Token最低活跃频率（-1为不限制）
+     * Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）
      */
-    private Integer activeTimeout;
+    private Long activeTimeout;
 
     /**
-     * Token有效期（默认30天，单位：秒）
+     * Token 有效期（单位：秒，-1：永不过期）
      */
-    private Integer timeout;
+    private Long timeout;
 
     /**
-     * 状态（1：启用；2：禁用）
+     * 状态
      */
     private DisEnableStatusEnum status;
 }

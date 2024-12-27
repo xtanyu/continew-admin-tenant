@@ -23,7 +23,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.req.LoginReq;
 import top.continew.admin.common.context.RoleContext;
 import top.continew.admin.common.context.UserContext;
 import top.continew.admin.common.context.UserContextHolder;
@@ -37,7 +37,7 @@ import top.continew.admin.system.service.OptionService;
 import top.continew.admin.system.service.RoleService;
 import top.continew.admin.system.service.UserService;
 import top.continew.starter.core.validation.CheckUtils;
-import top.continew.starter.core.validation.ValidationUtils;
+import top.continew.starter.core.validation.Validator;
 import top.continew.starter.web.util.SpringWebUtils;
 
 import java.util.Set;
@@ -46,14 +46,14 @@ import java.util.concurrent.CompletableFuture;
 import static top.continew.admin.system.enums.PasswordPolicyEnum.PASSWORD_EXPIRATION_DAYS;
 
 /**
- * 认证处理器基类
+ * 登录处理器基类
  *
  * @author KAI
  * @author Charles7c
  * @since 2024/12/22 14:52
  */
 @Component
-public abstract class AbstractAuthHandler<T extends AuthReq> implements AuthHandler<T> {
+public abstract class AbstractLoginHandler<T extends LoginReq> implements LoginHandler<T> {
 
     @Resource
     protected OptionService optionService;
@@ -73,7 +73,7 @@ public abstract class AbstractAuthHandler<T extends AuthReq> implements AuthHand
     @Override
     public void preLogin(T req, ClientResp client, HttpServletRequest request) {
         // 参数校验
-        ValidationUtils.validate(req);
+        Validator.validate(req);
     }
 
     @Override
@@ -100,18 +100,15 @@ public abstract class AbstractAuthHandler<T extends AuthReq> implements AuthHand
         UserContext userContext = new UserContext(permissionFuture.join(), roleFuture
             .join(), passwordExpirationDaysFuture.join());
         BeanUtil.copyProperties(user, userContext);
-        // 登录并缓存用户信息
+        // 设置登录配置参数
         SaLoginModel model = new SaLoginModel();
-        // 指定此次登录 token 最低活跃频率，单位：秒（如未指定，则使用全局配置的 activeTimeout 值）
         model.setActiveTimeout(client.getActiveTimeout());
-        // 指定此次登录 token 有效期，单位：秒 （如未指定，自动取全局配置的 timeout 值）
         model.setTimeout(client.getTimeout());
-        // 客户端类型
         model.setDevice(client.getClientType());
         userContext.setClientType(client.getClientType());
-        // 客户端 ID
         model.setExtra(CLIENT_ID, client.getClientId());
         userContext.setClientId(client.getClientId());
+        // 登录并缓存用户信息
         StpUtil.login(userContext.getId(), model.setExtraData(BeanUtil.beanToMap(new UserExtraContext(SpringWebUtils
             .getRequest()))));
         UserContextHolder.setContext(userContext);

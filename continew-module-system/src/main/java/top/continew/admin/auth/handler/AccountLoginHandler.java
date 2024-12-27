@@ -22,9 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import top.continew.admin.auth.AbstractAuthHandler;
+import top.continew.admin.auth.AbstractLoginHandler;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.AccountAuthReq;
+import top.continew.admin.auth.model.req.AccountLoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.common.constant.SysConstants;
@@ -40,7 +40,7 @@ import top.continew.starter.core.validation.ValidationUtils;
 import java.time.Duration;
 
 /**
- * 账号认证处理器
+ * 账号登录处理器
  *
  * @author KAI
  * @author Charles7c
@@ -48,12 +48,12 @@ import java.time.Duration;
  */
 @Component
 @RequiredArgsConstructor
-public class AccountAuthHandler extends AbstractAuthHandler<AccountAuthReq> {
+public class AccountLoginHandler extends AbstractLoginHandler<AccountLoginReq> {
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResp login(AccountAuthReq req, ClientResp client, HttpServletRequest request) {
+    public LoginResp login(AccountLoginReq req, ClientResp client, HttpServletRequest request) {
         // 解密密码
         String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
         ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
@@ -72,7 +72,7 @@ public class AccountAuthHandler extends AbstractAuthHandler<AccountAuthReq> {
     }
 
     @Override
-    public void preLogin(AccountAuthReq req, ClientResp client, HttpServletRequest request) {
+    public void preLogin(AccountLoginReq req, ClientResp client, HttpServletRequest request) {
         super.preLogin(req, client, request);
         // 校验验证码
         int loginCaptchaEnabled = optionService.getValueByCode2Int("LOGIN_CAPTCHA_ENABLED");

@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.AccountAuthReq;
+import top.continew.admin.auth.model.req.AccountLoginReq;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.system.enums.LogStatusEnum;
 import top.continew.admin.system.mapper.LogMapper;
@@ -148,7 +148,7 @@ public class LogDaoLocalImpl implements LogDao {
             String requestBody = logRequest.getBody();
             // 解析账号登录用户为操作人
             if (requestBody.contains(AuthTypeEnum.ACCOUNT.getValue())) {
-                AccountAuthReq authReq = JSONUtil.toBean(requestBody, AccountAuthReq.class);
+                AccountLoginReq authReq = JSONUtil.toBean(requestBody, AccountLoginReq.class);
                 logDO.setCreateUser(ExceptionUtils.exToNull(() -> userService.getByUsername(authReq.getUsername())
                     .getId()));
                 return;

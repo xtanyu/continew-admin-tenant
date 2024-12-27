@@ -23,37 +23,41 @@ import lombok.Data;
 import java.io.Serial;
 
 /**
- * 第三方账号认证参数
+ * 账号登录参数
  *
- * @author KAI
  * @author Charles7c
- * @since 2024/12/25 15:43
+ * @since 2022/12/21 20:43
  */
 @Data
-@Schema(description = "第三方账号认证参数")
-public class SocialAuthReq extends AuthReq {
+@Schema(description = "账号登录参数")
+public class AccountLoginReq extends LoginReq {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 第三方登录平台
+     * 用户名
      */
-    @Schema(description = "第三方登录平台", example = "gitee")
-    @NotBlank(message = "第三方登录平台不能为空")
-    private String source;
+    @Schema(description = "用户名", example = "zhangsan")
+    @NotBlank(message = "用户名不能为空")
+    private String username;
 
     /**
-     * 授权码
+     * 密码（加密）
      */
-    @Schema(description = "授权码", example = "a08d33e9e577fb339de027499784ed4e871d6f62ae65b459153e906ab546bd56")
-    @NotBlank(message = "授权码不能为空")
-    private String code;
+    @Schema(description = "密码（加密）", example = "HHwZoiBwCfh0xLdWOAd0bHOkEZlIMMOQKJyeFUw9T3ArrhL57od2i42s1o0sSXKkeHPJXvQsninhPFH2lArDDQ==")
+    @NotBlank(message = "密码不能为空")
+    private String password;
 
     /**
-     * 状态码
+     * 验证码
      */
-    @Schema(description = "状态码", example = "2ca8d8baf437eb374efaa1191a3d")
-    @NotBlank(message = "状态码不能为空")
-    private String state;
+    @Schema(description = "验证码", example = "ABCD")
+    private String captcha;
+
+    /**
+     * 验证码标识
+     */
+    @Schema(description = "验证码标识", example = "090b9a2c-1691-4fca-99db-e4ed0cff362f")
+    private String uuid;
 }

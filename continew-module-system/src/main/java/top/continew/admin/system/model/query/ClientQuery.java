@@ -30,6 +30,7 @@ import java.util.List;
  * 客户端查询条件
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
 @Data
@@ -40,28 +41,28 @@ public class ClientQuery implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 客户端Key
+     * 客户端 Key
      */
-    @Schema(description = "客户端Key")
+    @Schema(description = "客户端 Key", example = "PC")
     private String clientKey;
 
     /**
      * 客户端秘钥
      */
-    @Schema(description = "客户端秘钥")
+    @Schema(description = "客户端秘钥", example = "dd77ab1e353a027e0d60ce3b151e8642")
     private String clientSecret;
 
     /**
      * 认证类型
      */
-    @Schema(description = "认证类型")
+    @Schema(description = "认证类型", example = "ACCOUNT")
     @Query(type = QueryType.IN)
     private List<String> authType;
 
     /**
      * 客户端类型
      */
-    @Schema(description = "客户端类型")
+    @Schema(description = "客户端类型", example = "PC")
     private String clientType;
 
     /**

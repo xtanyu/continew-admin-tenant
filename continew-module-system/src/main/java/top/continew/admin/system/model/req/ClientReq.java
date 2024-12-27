@@ -18,7 +18,7 @@ package top.continew.admin.system.model.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
@@ -31,6 +31,7 @@ import java.util.List;
  * 创建或修改客户端参数
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
 @Data
@@ -41,15 +42,9 @@ public class ClientReq extends BaseReq {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 客户端ID
+     * 客户端 Key
      */
-    @Schema(description = "客户端ID")
-    private String clientId;
-
-    /**
-     * 客户端Key
-     */
-    @Schema(description = "客户端Key")
+    @Schema(description = "客户端 Key", example = "PC")
     @NotBlank(message = "客户端Key不能为空")
     @Length(max = 32, message = "客户端Key长度不能超过 {max} 个字符")
     private String clientKey;
@@ -57,7 +52,7 @@ public class ClientReq extends BaseReq {
     /**
      * 客户端秘钥
      */
-    @Schema(description = "客户端秘钥")
+    @Schema(description = "客户端秘钥", example = "dd77ab1e353a027e0d60ce3b151e8642")
     @NotBlank(message = "客户端秘钥不能为空")
     @Length(max = 255, message = "客户端秘钥长度不能超过 {max} 个字符")
     private String clientSecret;
@@ -65,33 +60,39 @@ public class ClientReq extends BaseReq {
     /**
      * 认证类型
      */
-    @Schema(description = "认证类型")
-    @NotNull(message = "认证类型不能为空")
+    @Schema(description = "认证类型", example = "ACCOUNT")
+    @NotEmpty(message = "认证类型不能为空")
     private List<String> authType;
 
     /**
      * 客户端类型
      */
-    @Schema(description = "客户端类型")
+    @Schema(description = "客户端类型", example = "PC")
     @NotBlank(message = "客户端类型不能为空")
     @Length(max = 32, message = "客户端类型长度不能超过 {max} 个字符")
     private String clientType;
 
     /**
-     * Token最低活跃频率（-1为不限制）
+     * Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）
      */
-    @Schema(description = "Token最低活跃频率（-1为不限制）")
-    private Integer activeTimeout;
+    @Schema(description = "Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）", example = "1800")
+    private Long activeTimeout;
 
     /**
-     * Token有效期（默认30天，单位：秒）
+     * Token 有效期（单位：秒，-1：永不过期）
      */
-    @Schema(description = "Token有效期（默认30天，单位：秒）")
-    private Integer timeout;
+    @Schema(description = "Token 有效期（单位：秒，-1：永不过期）", example = "86400")
+    private Long timeout;
 
     /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
     private DisEnableStatusEnum status;
+
+    /**
+     * 客户端 ID
+     */
+    @Schema(hidden = true)
+    private String clientId;
 }

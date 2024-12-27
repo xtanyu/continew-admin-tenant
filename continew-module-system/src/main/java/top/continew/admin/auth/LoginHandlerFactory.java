@@ -19,27 +19,27 @@ package top.continew.admin.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.req.LoginReq;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 认证策略
+ * 登录处理器工厂
  *
  * @author KAI
  * @author Charles7c
  * @since 2024/12/20 15:16
  */
 @Component
-public class AuthStrategy {
+public class LoginHandlerFactory {
 
-    private final Map<AuthTypeEnum, AuthHandler<? extends AuthReq>> handlerMap = new HashMap<>();
+    private final Map<AuthTypeEnum, LoginHandler<? extends LoginReq>> handlerMap = new EnumMap<>(AuthTypeEnum.class);
 
     @Autowired
-    public AuthStrategy(List<AuthHandler<? extends AuthReq>> handlers) {
-        for (AuthHandler<? extends AuthReq> handler : handlers) {
+    public LoginHandlerFactory(List<LoginHandler<? extends LoginReq>> handlers) {
+        for (LoginHandler<? extends LoginReq> handler : handlers) {
             handlerMap.put(handler.getAuthType(), handler);
         }
     }
@@ -50,7 +50,7 @@ public class AuthStrategy {
      * @param authType 认证类型
      * @return 认证处理器
      */
-    public AuthHandler<AuthReq> getHandler(AuthTypeEnum authType) {
-        return (AuthHandler<AuthReq>)handlerMap.get(authType);
+    public LoginHandler<LoginReq> getHandler(AuthTypeEnum authType) {
+        return (LoginHandler<LoginReq>)handlerMap.get(authType);
     }
 }

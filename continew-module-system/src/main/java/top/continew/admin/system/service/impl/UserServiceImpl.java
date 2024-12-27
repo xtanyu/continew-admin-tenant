@@ -440,13 +440,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
     }
 
     @Override
-    public Long add(UserDO user) {
-        user.setStatus(DisEnableStatusEnum.ENABLE);
-        baseMapper.insert(user);
-        return user.getId();
-    }
-
-    @Override
     public UserDO getByUsername(String username) {
         return baseMapper.selectByUsername(username);
     }

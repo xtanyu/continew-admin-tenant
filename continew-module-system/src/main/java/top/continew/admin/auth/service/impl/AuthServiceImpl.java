@@ -24,10 +24,10 @@ import cn.hutool.core.lang.tree.TreeUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.continew.admin.auth.AuthHandler;
-import top.continew.admin.auth.AuthStrategy;
+import top.continew.admin.auth.LoginHandler;
+import top.continew.admin.auth.LoginHandlerFactory;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.req.LoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.auth.model.resp.RouteResp;
 import top.continew.admin.auth.service.AuthService;
@@ -58,14 +58,14 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final AuthStrategy authStrategy;
+    private final LoginHandlerFactory loginHandlerFactory;
     private final ClientService clientService;
     private final RoleService roleService;
     private final MenuService menuService;
     private final CrudProperties crudProperties;
 
     @Override
-    public LoginResp login(AuthReq req, HttpServletRequest request) {
+    public LoginResp login(LoginReq req, HttpServletRequest request) {
         AuthTypeEnum authType = req.getAuthType();
         // 校验客户端
         ClientResp client = clientService.getByClientId(req.getClientId());
@@ -74,13 +74,13 @@ public class AuthServiceImpl implements AuthService {
         ValidationUtils.throwIf(!client.getAuthType().contains(authType.getValue()), "该客户端暂未授权 [{}] 认证", authType
             .getDescription());
         // 获取处理器
-        AuthHandler<AuthReq> authHandler = authStrategy.getHandler(authType);
+        LoginHandler<LoginReq> loginHandler = loginHandlerFactory.getHandler(authType);
         // 登录前置处理
-        authHandler.preLogin(req, client, request);
+        loginHandler.preLogin(req, client, request);
         // 登录
-        LoginResp loginResp = authHandler.login(req, client, request);
+        LoginResp loginResp = loginHandler.login(req, client, request);
         // 登录后置处理
-        authHandler.postLogin(req, client, request);
+        loginHandler.postLogin(req, client, request);
         return loginResp;
     }
 

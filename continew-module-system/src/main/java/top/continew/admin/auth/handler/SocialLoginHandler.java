@@ -31,12 +31,13 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.continew.admin.auth.AbstractAuthHandler;
+import top.continew.admin.auth.AbstractLoginHandler;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.SocialAuthReq;
+import top.continew.admin.auth.model.req.SocialLoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.common.constant.RegexConstants;
 import top.continew.admin.common.constant.SysConstants;
+import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.common.enums.GenderEnum;
 import top.continew.admin.system.enums.MessageTemplateEnum;
 import top.continew.admin.system.enums.MessageTypeEnum;
@@ -58,14 +59,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 第三方账号认证处理器
+ * 第三方账号登录处理器
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/25 14:21
  */
 @Component
 @RequiredArgsConstructor
-public class SocialAuthHandler extends AbstractAuthHandler<SocialAuthReq> {
+public class SocialLoginHandler extends AbstractLoginHandler<SocialLoginReq> {
 
     private final AuthRequestFactory authRequestFactory;
     private final UserSocialService userSocialService;
@@ -74,7 +76,7 @@ public class SocialAuthHandler extends AbstractAuthHandler<SocialAuthReq> {
     private final ProjectProperties projectProperties;
 
     @Override
-    public LoginResp login(SocialAuthReq req, ClientResp client, HttpServletRequest request) {
+    public LoginResp login(SocialLoginReq req, ClientResp client, HttpServletRequest request) {
         // 获取第三方登录信息
         AuthRequest authRequest = this.getAuthRequest(req.getSource());
         AuthCallback callback = new AuthCallback();
@@ -105,7 +107,9 @@ public class SocialAuthHandler extends AbstractAuthHandler<SocialAuthReq> {
             user.setGender(GenderEnum.valueOf(authUser.getGender().name()));
             user.setAvatar(authUser.getAvatar());
             user.setDeptId(SysConstants.SUPER_DEPT_ID);
-            Long userId = userService.add(user);
+            user.setStatus(DisEnableStatusEnum.ENABLE);
+            userService.save(user);
+            Long userId = user.getId();
             RoleDO role = roleService.getByCode(SysConstants.SUPER_ROLE_CODE);
             userRoleService.assignRolesToUser(Collections.singletonList(role.getId()), userId);
             userSocial = new UserSocialDO();
@@ -127,7 +131,7 @@ public class SocialAuthHandler extends AbstractAuthHandler<SocialAuthReq> {
     }
 
     @Override
-    public void preLogin(SocialAuthReq req, ClientResp client, HttpServletRequest request) {
+    public void preLogin(SocialLoginReq req, ClientResp client, HttpServletRequest request) {
         super.preLogin(req, client, request);
         if (StpUtil.isLogin()) {
             StpUtil.logout();
