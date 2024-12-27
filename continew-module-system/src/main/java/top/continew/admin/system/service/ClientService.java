@@ -18,7 +18,6 @@ package top.continew.admin.system.service;
 
 import top.continew.admin.system.model.query.ClientQuery;
 import top.continew.admin.system.model.req.ClientReq;
-import top.continew.admin.system.model.resp.ClientDetailResp;
 import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.starter.extension.crud.service.BaseService;
 
@@ -29,7 +28,7 @@ import top.continew.starter.extension.crud.service.BaseService;
  * @author Charles7c
  * @since 2024/12/03 16:04
  */
-public interface ClientService extends BaseService<ClientResp, ClientDetailResp, ClientQuery, ClientReq> {
+public interface ClientService extends BaseService<ClientResp, ClientResp, ClientQuery, ClientReq> {
 
     /**
      * 根据客户端 ID 查詢

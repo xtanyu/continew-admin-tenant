@@ -117,7 +117,7 @@ public class FileDO extends BaseDO {
      * 例如:
      * http://domain.cn/bucketName/2024/11/27/6746ec3b2907f0de80afdd70.png => 2024/11/27/
      * http://bucketName.domain.cn/2024/11/27/6746ec3b2907f0de80afdd70.png => 2024/11/27/
-     * 
+     *
      * @param url       文件路径
      * @param storageDO 存储桶信息
      * @return

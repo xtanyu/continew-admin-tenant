@@ -18,8 +18,8 @@ package top.continew.admin.system.model.resp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.continew.admin.common.base.BaseDetailResp;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
-import top.continew.starter.extension.crud.model.resp.BaseResp;
 
 import java.io.Serial;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "客户端信息")
-public class ClientResp extends BaseResp {
+public class ClientResp extends BaseDetailResp {
 
     @Serial
     private static final long serialVersionUID = 1L;

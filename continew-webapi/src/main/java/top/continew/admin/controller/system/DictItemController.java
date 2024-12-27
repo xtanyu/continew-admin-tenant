@@ -18,12 +18,12 @@ package top.continew.admin.controller.system;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RestController;
+import top.continew.admin.common.base.BaseController;
 import top.continew.admin.system.model.query.DictItemQuery;
 import top.continew.admin.system.model.req.DictItemReq;
 import top.continew.admin.system.model.resp.DictItemResp;
 import top.continew.admin.system.service.DictItemService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
-import top.continew.admin.common.base.BaseController;
 import top.continew.starter.extension.crud.enums.Api;
 import top.continew.starter.log.annotation.Log;
 

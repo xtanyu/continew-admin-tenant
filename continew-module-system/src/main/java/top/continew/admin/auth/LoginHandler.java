@@ -44,7 +44,6 @@ public interface LoginHandler<T extends LoginReq> {
     /**
      * 登录前置处理
      *
-     *
      * @param req     登录请求参数
      * @param client  客户端信息
      * @param request 请求对象
@@ -53,7 +52,6 @@ public interface LoginHandler<T extends LoginReq> {
 
     /**
      * 登录后置处理
-     *
      *
      * @param req     登录请求参数
      * @param client  客户端信息

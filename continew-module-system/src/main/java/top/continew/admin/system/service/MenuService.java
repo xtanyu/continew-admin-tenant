@@ -20,8 +20,8 @@ import top.continew.admin.system.model.entity.MenuDO;
 import top.continew.admin.system.model.query.MenuQuery;
 import top.continew.admin.system.model.req.MenuReq;
 import top.continew.admin.system.model.resp.MenuResp;
-import top.continew.starter.extension.crud.service.BaseService;
 import top.continew.starter.data.mp.service.IService;
+import top.continew.starter.extension.crud.service.BaseService;
 
 import java.util.List;
 import java.util.Set;

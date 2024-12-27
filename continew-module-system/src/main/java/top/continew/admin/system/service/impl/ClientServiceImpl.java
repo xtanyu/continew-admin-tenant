@@ -24,7 +24,6 @@ import top.continew.admin.system.mapper.ClientMapper;
 import top.continew.admin.system.model.entity.ClientDO;
 import top.continew.admin.system.model.query.ClientQuery;
 import top.continew.admin.system.model.req.ClientReq;
-import top.continew.admin.system.model.resp.ClientDetailResp;
 import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.admin.system.service.ClientService;
 import top.continew.starter.core.constant.StringConstants;
@@ -41,7 +40,7 @@ import java.util.List;
  * @since 2024/12/03 16:04
  */
 @Service
-public class ClientServiceImpl extends BaseServiceImpl<ClientMapper, ClientDO, ClientResp, ClientDetailResp, ClientQuery, ClientReq> implements ClientService {
+public class ClientServiceImpl extends BaseServiceImpl<ClientMapper, ClientDO, ClientResp, ClientResp, ClientQuery, ClientReq> implements ClientService {
 
     @Override
     public void beforeAdd(ClientReq req) {

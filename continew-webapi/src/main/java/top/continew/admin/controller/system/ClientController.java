@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import top.continew.admin.common.base.BaseController;
 import top.continew.admin.system.model.query.ClientQuery;
 import top.continew.admin.system.model.req.ClientReq;
-import top.continew.admin.system.model.resp.ClientDetailResp;
 import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.admin.system.service.ClientService;
 import top.continew.starter.extension.crud.annotation.CrudRequestMapping;
@@ -36,5 +35,5 @@ import top.continew.starter.extension.crud.enums.Api;
 @Tag(name = "客户端管理 API")
 @RestController
 @CrudRequestMapping(value = "/system/client", api = {Api.PAGE, Api.DETAIL, Api.ADD, Api.UPDATE, Api.DELETE})
-public class ClientController extends BaseController<ClientService, ClientResp, ClientDetailResp, ClientQuery, ClientReq> {
+public class ClientController extends BaseController<ClientService, ClientResp, ClientResp, ClientQuery, ClientReq> {
 }
