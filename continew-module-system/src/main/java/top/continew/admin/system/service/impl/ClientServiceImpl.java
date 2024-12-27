@@ -18,8 +18,10 @@ package top.continew.admin.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.continew.admin.auth.enums.AuthTypeEnum;
+import top.continew.admin.auth.model.query.OnlineUserQuery;
+import top.continew.admin.auth.service.OnlineUserService;
 import top.continew.admin.system.mapper.ClientMapper;
 import top.continew.admin.system.model.entity.ClientDO;
 import top.continew.admin.system.model.query.ClientQuery;
@@ -27,7 +29,7 @@ import top.continew.admin.system.model.req.ClientReq;
 import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.admin.system.service.ClientService;
 import top.continew.starter.core.constant.StringConstants;
-import top.continew.starter.core.validation.ValidationUtils;
+import top.continew.starter.core.validation.CheckUtils;
 import top.continew.starter.extension.crud.service.BaseServiceImpl;
 
 import java.util.List;
@@ -40,7 +42,10 @@ import java.util.List;
  * @since 2024/12/03 16:04
  */
 @Service
+@RequiredArgsConstructor
 public class ClientServiceImpl extends BaseServiceImpl<ClientMapper, ClientDO, ClientResp, ClientResp, ClientQuery, ClientReq> implements ClientService {
+
+    private final OnlineUserService onlineUserService;
 
     @Override
     public void beforeAdd(ClientReq req) {
@@ -50,13 +55,13 @@ public class ClientServiceImpl extends BaseServiceImpl<ClientMapper, ClientDO, C
 
     @Override
     public void beforeDelete(List<Long> ids) {
-        // 查询如果删除客户端记录以后是否还存在账号认证的方式，不存在则不允许删除
-        List<ClientDO> clientList = baseMapper.lambdaQuery()
-            .in(ClientDO::getId, ids)
-            .like(ClientDO::getAuthType, AuthTypeEnum.ACCOUNT.getValue())
-            .list();
-        ValidationUtils.throwIfEmpty(clientList, "请至少保留 [{}] 认证类型", AuthTypeEnum.ACCOUNT.getDescription());
-        super.beforeDelete(ids);
+        // 如果还存在在线用户，则不能删除
+        OnlineUserQuery query = new OnlineUserQuery();
+        for (Long id : ids) {
+            ClientDO client = this.getById(id);
+            query.setClientId(client.getClientId());
+            CheckUtils.throwIfNotEmpty(onlineUserService.list(query), "客户端 [{}] 还存在在线用户，不能删除", client.getClientKey());
+        }
     }
 
     @Override

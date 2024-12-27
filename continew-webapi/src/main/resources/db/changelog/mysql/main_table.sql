@@ -300,14 +300,15 @@ CREATE TABLE IF NOT EXISTS `sys_client` (
     `client_id`      varchar(50)  NOT NULL                    COMMENT '客户端ID',
     `client_key`     varchar(255) NOT NULL                    COMMENT '客户端Key',
     `client_secret`  varchar(255) NOT NULL                    COMMENT '客户端秘钥',
-    `auth_type`      json         DEFAULT NULL                COMMENT '认证类型',
+    `auth_type`      json         NOT NULL                    COMMENT '认证类型',
     `client_type`    varchar(50)  NOT NULL                    COMMENT '客户端类型',
-    `active_timeout` int          DEFAULT '-1'                COMMENT 'Token最低活跃频率（-1为不限制）',
-    `timeout`        int          DEFAULT '2592000'           COMMENT 'Token有效期（默认30天，单位：秒）',
+    `active_timeout` bigint(20)   DEFAULT -1                  COMMENT 'Token最低活跃频率（单位：秒，-1：不限制，永不冻结）',
+    `timeout`        bigint(20)   DEFAULT 2592000             COMMENT 'Token有效期（单位：秒，-1：永不过期）',
     `status`         tinyint(1)   UNSIGNED NOT NULL DEFAULT 1 COMMENT '状态（1：启用；2：禁用）',
     `create_user`    bigint(20)   NOT NULL                    COMMENT '创建人',
     `create_time`    datetime     NOT NULL                    COMMENT '创建时间',
     `update_user`    bigint(20)   DEFAULT NULL                COMMENT '修改人',
     `update_time`    datetime     DEFAULT NULL                COMMENT '修改时间',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `uk_client_id`(`client_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='客户端表';

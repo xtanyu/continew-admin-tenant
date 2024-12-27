@@ -72,13 +72,13 @@ public class ClientResp extends BaseDetailResp {
      * Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）
      */
     @Schema(description = "Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）", example = "1800")
-    private Integer activeTimeout;
+    private Long activeTimeout;
 
     /**
      * Token 有效期（单位：秒，-1：永不过期）
      */
     @Schema(description = "Token 有效期（单位：秒，-1：永不过期）", example = "86400")
-    private Integer timeout;
+    private Long timeout;
 
     /**
      * 状态

@@ -76,6 +76,13 @@ VALUES
 (1114, '修改', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:update', 4, 1, 1, NOW()),
 (1115, '删除', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:delete', 5, 1, 1, NOW()),
 
+( 1180, '客户端管理', 1000, 2, '/system/client', 'SystemClient', 'system/client/index', NULL, 'mobile', false, false, false, NULL, 9, 1, 1, NOW()),
+(1181, '列表', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:list', 1, 1, 1, NOW()),
+(1182, '详情', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:detail', 2, 1, 1, NOW()),
+(1183, '新增', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:add', 3, 1, 1, NOW()),
+(1184, '修改', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:update', 4, 1, 1, NOW()),
+(1185, '删除', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:delete', 5, 1, 1, NOW()),
+
 (1190, '系统配置', 1000, 2, '/system/config', 'SystemConfig', 'system/config/index', NULL, 'config', false, false, false, NULL, 999, 1, 1, NOW()),
 (1191, '查看', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:list', 1, 1, 1, NOW()),
 (1192, '修改', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:update', 2, 1, 1, NOW()),
@@ -150,7 +157,8 @@ INSERT INTO "sys_dict"
 ("id", "name", "code", "description", "is_system", "create_user", "create_time")
 VALUES
 (1, '公告类型', 'notice_type', NULL, true, 1, NOW()),
-(2, '消息类型', 'message_type', NULL, true, 1, NOW());
+(2, '消息类型', 'message_type', NULL, true, 1, NOW()),
+(3, '客户端类型', 'client_type', NULL, true, 1, NOW());
 
 INSERT INTO "sys_dict_item"
 ("id", "label", "value", "color", "sort", "description", "status", "dict_id", "create_user", "create_time")
@@ -158,7 +166,10 @@ VALUES
 (1, '通知', '1', 'blue', 1, NULL, 1, 1, 1, NOW()),
 (2, '活动', '2', 'orangered', 2, NULL, 1, 1, 1, NOW()),
 (3, '安全消息', '1', 'blue', 1, NULL, 1, 2, 1, NOW()),
-(4, '活动消息', '2', 'orangered', 2, NULL, 1, 2, 1, NOW());
+(4, '活动消息', '2', 'orangered', 2, NULL, 1, 2, 1, NOW()),
+(5, '桌面端', 'PC', 'blue', 1, NULL, 1, 3, 1, NOW()),
+(6, '安卓', 'ANDROID', '#148628', 2, NULL, 1, 3, 1, NOW()),
+(7, '小程序', 'XCX', '#7930AD', 3, NULL, 1, 3, 1, NOW());
 
 -- 初始化默认用户和角色关联数据
 INSERT INTO "sys_user_role"
