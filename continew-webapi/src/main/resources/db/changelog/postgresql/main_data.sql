@@ -198,3 +198,9 @@ INSERT INTO "sys_storage"
 VALUES
 (1, '开发环境', 'local_dev', 2, NULL, NULL, NULL, 'C:/continew-admin/data/file/', 'http://localhost:8000/file', '本地存储', true, 1, 1, 1, NOW()),
 (2, '生产环境', 'local_prod', 2, NULL, NULL, NULL, '../data/file/', 'http://api.continew.top/file', '本地存储', false, 2, 2, 1, NOW());
+
+-- 初始化客户端数据
+INSERT INTO "sys_client"
+("id", "client_id", "client_key", "client_secret", "auth_type", "client_type", "active_timeout", "timeout", "status", "create_user", "create_time")
+VALUES
+(1, 'ef51c9a3e9046c4f2ea45142c8a8344a', 'pc', 'dd77ab1e353a027e0d60ce3b151e8642', '[\"ACCOUNT\", \"EMAIL\", \"PHONE\", \"SOCIAL\"]', 'PC', 1800, 86400, 1, 1, NOW());

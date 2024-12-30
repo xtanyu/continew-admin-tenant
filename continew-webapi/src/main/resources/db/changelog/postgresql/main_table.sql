@@ -391,6 +391,8 @@ CREATE TABLE IF NOT EXISTS "sys_notice" (
     "type"           varchar(30)  NOT NULL,
     "effective_time" timestamp    DEFAULT NULL,
     "terminate_time" timestamp    DEFAULT NULL,
+    "notice_scope"   int2         NOT NULL DEFAULT 1,
+    "notice_users"   json         DEFAULT NULL,
     "sort"           int4         NOT NULL DEFAULT 999,
     "create_user"    int8         NOT NULL,
     "create_time"    timestamp    NOT NULL,
@@ -406,6 +408,8 @@ COMMENT ON COLUMN "sys_notice"."content"        IS '内容';
 COMMENT ON COLUMN "sys_notice"."type"           IS '类型';
 COMMENT ON COLUMN "sys_notice"."effective_time" IS '生效时间';
 COMMENT ON COLUMN "sys_notice"."terminate_time" IS '终止时间';
+COMMENT ON COLUMN "sys_notice"."notice_scope"   IS '通知范围（1：所有人；2：指定用户）';
+COMMENT ON COLUMN "sys_notice"."notice_users"   IS '通知用户';
 COMMENT ON COLUMN "sys_notice"."sort"           IS '排序';
 COMMENT ON COLUMN "sys_notice"."create_user"    IS '创建人';
 COMMENT ON COLUMN "sys_notice"."create_time"    IS '创建时间';
