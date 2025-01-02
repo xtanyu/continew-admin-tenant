@@ -216,7 +216,7 @@ auth:
   ## 密码配置
   password:
     excludes:
-      - /auth/route
+      - /auth/user/route
       - /auth/user/info
       - /auth/logout
       - /system/user/password
