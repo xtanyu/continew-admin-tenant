@@ -66,6 +66,7 @@ import java.io.IOException;
 public class UserController extends BaseController<UserService, UserResp, UserDetailResp, UserQuery, UserReq> {
 
     @Override
+    @Operation(summary = "新增数据", description = "新增数据")
     public BaseIdResp<Long> add(@Validated(CrudValidationGroup.Add.class) @RequestBody UserReq req) {
         String rawPassword = ExceptionUtils.exToNull(() -> SecureUtils.decryptByRsaPrivateKey(req.getPassword()));
         ValidationUtils.throwIfNull(rawPassword, "密码解密失败");
