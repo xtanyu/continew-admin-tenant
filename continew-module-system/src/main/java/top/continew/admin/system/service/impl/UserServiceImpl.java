@@ -84,6 +84,7 @@ import top.continew.starter.extension.crud.model.query.SortQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
 import top.continew.starter.extension.crud.service.BaseServiceImpl;
 import top.continew.starter.web.util.FileUploadUtils;
+import top.continew.starter.core.util.SpringUtils;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -518,7 +519,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
             baseMapper.insert(insertList);
         }
         if (CollUtil.isNotEmpty(updateList)) {
-            this.updateBatchById(updateList);
+            SpringUtils.getProxy(this).updateBatchById(updateList);
             userRoleService.deleteByUserIds(updateList.stream().map(UserDO::getId).toList());
         }
         if (CollUtil.isNotEmpty(userRoleDOList)) {
