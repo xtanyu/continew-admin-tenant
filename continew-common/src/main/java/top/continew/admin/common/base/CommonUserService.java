@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package top.continew.admin.common.constant;
+package top.continew.admin.common.base;
+
+import cn.crane4j.annotation.ContainerMethod;
+import cn.crane4j.annotation.MappingType;
+import top.continew.admin.common.constant.ContainerConstants;
 
 /**
- * 数据源容器相关常量（Crane4j 数据填充组件使用）
+ * 公共用户业务接口
  *
  * @author Charles7c
- * @since 2024/1/20 12:33
+ * @since 2025/1/9 20:17
  */
-public class ContainerConstants {
+public interface CommonUserService {
 
     /**
-     * 用户昵称
+     * 根据 ID 查询昵称
+     *
+     * <p>
+     * 数据填充容器 {@link ContainerConstants#USER_NICKNAME}
+     * </p>
+     * 
+     * @param id ID
+     * @return 昵称
      */
-    public static final String USER_NICKNAME = "UserNickname";
-
-    /**
-     * 用户角色 ID 列表
-     */
-    public static final String USER_ROLE_ID_LIST = "UserRoleIdList";
-
-    /**
-     * 用户角色名称列表
-     */
-    public static final String USER_ROLE_NAME_LIST = "UserRoleNameList";
-
-    private ContainerConstants() {
-    }
+    @ContainerMethod(namespace = ContainerConstants.USER_NICKNAME, type = MappingType.ORDER_OF_KEYS)
+    String getNicknameById(Long id);
 }

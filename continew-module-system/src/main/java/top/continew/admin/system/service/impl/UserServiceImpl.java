@@ -54,6 +54,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.continew.admin.auth.service.OnlineUserService;
+import top.continew.admin.common.base.CommonUserService;
 import top.continew.admin.common.constant.CacheConstants;
 import top.continew.admin.common.constant.SysConstants;
 import top.continew.admin.common.context.UserContext;
@@ -82,7 +83,6 @@ import top.continew.starter.extension.crud.model.query.PageQuery;
 import top.continew.starter.extension.crud.model.query.SortQuery;
 import top.continew.starter.extension.crud.model.resp.PageResp;
 import top.continew.starter.extension.crud.service.BaseServiceImpl;
-import top.continew.starter.extension.crud.service.CommonUserService;
 import top.continew.starter.web.util.FileUploadUtils;
 
 import java.io.IOException;
@@ -207,6 +207,12 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
         super.delete(ids);
         // 踢出在线用户
         ids.forEach(onlineUserService::kickOut);
+    }
+
+    @Override
+    @Cached(key = "#id", name = CacheConstants.USER_KEY_PREFIX, cacheType = CacheType.BOTH, syncLocal = true)
+    public String getNicknameById(Long id) {
+        return baseMapper.selectNicknameById(id);
     }
 
     @Override
@@ -460,12 +466,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, UserDO, UserRes
             return 0L;
         }
         return baseMapper.lambdaQuery().in(UserDO::getDeptId, deptIds).count();
-    }
-
-    @Override
-    @Cached(key = "#id", name = CacheConstants.USER_KEY_PREFIX, cacheType = CacheType.BOTH, syncLocal = true)
-    public String getNicknameById(Long id) {
-        return baseMapper.selectNicknameById(id);
     }
 
     @Override

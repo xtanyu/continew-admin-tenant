@@ -23,7 +23,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.continew.starter.extension.crud.constant.ContainerPool;
+import top.continew.admin.common.constant.ContainerConstants;
 
 import java.io.Serial;
 import java.time.LocalDateTime;
@@ -45,7 +45,7 @@ public class BaseDetailResp extends BaseResp {
      */
     @JsonIgnore
     @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerPool.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
+    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**
