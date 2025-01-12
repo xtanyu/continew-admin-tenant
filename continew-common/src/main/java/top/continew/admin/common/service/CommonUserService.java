@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package top.continew.admin.common.base;
+package top.continew.admin.common.service;
 
 import cn.crane4j.annotation.ContainerMethod;
 import cn.crane4j.annotation.MappingType;

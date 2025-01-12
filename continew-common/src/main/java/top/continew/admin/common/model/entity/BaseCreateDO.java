@@ -14,60 +14,41 @@
  * limitations under the License.
  */
 
-package top.continew.admin.system.model.entity;
+package top.continew.admin.common.model.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-import top.continew.admin.common.enums.DisEnableStatusEnum;
-import top.continew.admin.common.model.entity.BaseDO;
+import top.continew.starter.extension.crud.model.entity.BaseIdDO;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 
 /**
- * 部门实体
+ * 实体类基类
+ *
+ * <p>
+ * 通用字段：创建人、创建时间
+ * </p>
  *
  * @author Charles7c
- * @since 2023/1/22 13:50
+ * @since 2025/1/12 23:00
  */
 @Data
-@TableName("sys_dept")
-public class DeptDO extends BaseDO {
+public class BaseCreateDO extends BaseIdDO {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 名称
+     * 创建人
      */
-    private String name;
+    @TableField(fill = FieldFill.INSERT)
+    private Long createUser;
 
     /**
-     * 上级部门 ID
+     * 创建时间
      */
-    private Long parentId;
-
-    /**
-     * 祖级列表
-     */
-    private String ancestors;
-
-    /**
-     * 描述
-     */
-    private String description;
-
-    /**
-     * 排序
-     */
-    private Integer sort;
-
-    /**
-     * 状态
-     */
-    private DisEnableStatusEnum status;
-
-    /**
-     * 是否为系统内置数据
-     */
-    private Boolean isSystem;
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 }

@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.continew.admin.common.base.BaseController;
+import top.continew.admin.common.controller.BaseController;
 import top.continew.admin.system.model.query.RoleQuery;
 import top.continew.admin.system.model.req.RoleReq;
 import top.continew.admin.system.model.resp.RoleDetailResp;

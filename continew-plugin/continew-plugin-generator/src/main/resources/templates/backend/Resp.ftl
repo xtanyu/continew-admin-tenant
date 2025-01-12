@@ -12,7 +12,7 @@ import lombok.Data;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import top.continew.admin.common.base.BaseResp;
+import top.continew.admin.common.model.resp.BaseResp;
 
 /**
  * ${businessName}信息

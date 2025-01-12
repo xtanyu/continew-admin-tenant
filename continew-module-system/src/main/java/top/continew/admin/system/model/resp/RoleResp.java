@@ -18,7 +18,7 @@ package top.continew.admin.system.model.resp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.continew.admin.common.base.BaseDetailResp;
+import top.continew.admin.common.model.resp.BaseDetailResp;
 import top.continew.admin.common.enums.DataScopeEnum;
 
 import java.io.Serial;
@@ -71,9 +71,4 @@ public class RoleResp extends BaseDetailResp {
      */
     @Schema(description = "描述", example = "测试人员描述信息")
     private String description;
-
-    @Override
-    public Boolean getDisabled() {
-        return this.getIsSystem();
-    }
 }

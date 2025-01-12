@@ -18,7 +18,7 @@ package top.continew.admin.controller.system;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RestController;
-import top.continew.admin.common.base.BaseController;
+import top.continew.admin.common.controller.BaseController;
 import top.continew.admin.system.model.query.ClientQuery;
 import top.continew.admin.system.model.req.ClientReq;
 import top.continew.admin.system.model.resp.ClientResp;
