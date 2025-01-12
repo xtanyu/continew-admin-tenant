@@ -31,6 +31,7 @@ import top.continew.admin.system.mapper.*;
 import top.continew.admin.system.model.entity.*;
 import top.continew.starter.cache.redisson.util.RedisUtils;
 
+import java.util.List;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -63,9 +64,10 @@ public class DemoEnvironmentJob {
 
     private static final Long DELETE_FLAG = 10000L;
     private static final Long MESSAGE_FLAG = 0L;
-    private static final Long[] USER_FLAG = {1L, 547889293968801831L};
-    private static final Long ROLE_FLAG = 547888897925840928L;
-    private static final Long DEPT_FLAG = 547888580614160409L;
+    private static final List<Long> USER_FLAG = List
+        .of(1L, 547889293968801822L, 547889293968801823L, 547889293968801824L, 547889293968801825L, 547889293968801826L, 547889293968801827L, 547889293968801828L, 547889293968801829L, 547889293968801830L, 547889293968801831L);
+    private static final List<Long> ROLE_FLAG = List.of(1L, 547888897925840927L, 547888897925840928L);
+    private static final Long DEPT_FLAG = 547887852587843611L;
 
     /**
      * 重置演示环境数据
@@ -89,7 +91,7 @@ public class DemoEnvironmentJob {
             this.log(messageCount, "通知");
             Long userCount = userMapper.lambdaQuery().notIn(UserDO::getId, USER_FLAG).count();
             this.log(userCount, "用户");
-            Long roleCount = roleMapper.lambdaQuery().gt(RoleDO::getId, ROLE_FLAG).count();
+            Long roleCount = roleMapper.lambdaQuery().notIn(RoleDO::getId, ROLE_FLAG).count();
             this.log(roleCount, "角色");
             Long menuCount = menuMapper.lambdaQuery().gt(MenuDO::getId, DELETE_FLAG).count();
             this.log(menuCount, "菜单");
@@ -124,9 +126,9 @@ public class DemoEnvironmentJob {
                 return userMapper.lambdaUpdate().notIn(UserDO::getId, USER_FLAG).remove();
             });
             this.clean(roleCount, "角色", null, () -> {
-                roleDeptMapper.lambdaUpdate().ne(RoleDeptDO::getRoleId, ROLE_FLAG).remove();
-                roleMenuMapper.lambdaUpdate().ne(RoleMenuDO::getRoleId, ROLE_FLAG).remove();
-                return roleMapper.lambdaUpdate().gt(RoleDO::getId, ROLE_FLAG).remove();
+                roleDeptMapper.lambdaUpdate().notIn(RoleDeptDO::getRoleId, ROLE_FLAG).remove();
+                roleMenuMapper.lambdaUpdate().notIn(RoleMenuDO::getRoleId, ROLE_FLAG).remove();
+                return roleMapper.lambdaUpdate().notIn(RoleDO::getId, ROLE_FLAG).remove();
             });
             this.clean(menuCount, "菜单", CacheConstants.MENU_KEY_PREFIX, () -> menuMapper.lambdaUpdate()
                 .gt(MenuDO::getId, DELETE_FLAG)
