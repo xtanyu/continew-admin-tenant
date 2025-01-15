@@ -16,34 +16,41 @@
 
 package top.continew.admin.auth.model.req;
 
+import cn.hutool.core.lang.RegexPool;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+import java.io.Serial;
 
 /**
- * 第三方登录参数
+ * 手机号登录参数
  *
- * @author KAI
- * @since 2024/12/25 15:43
+ * @author Charles7c
+ * @since 2023/10/26 22:37
  */
 @Data
-@Schema(description = "第三方登录参数")
-public class SocialAuthReq extends AuthReq {
-    /**
-     * 第三方登录平台
-     */
-    @NotBlank(message = "第三方登录平台不能为空")
-    private String source;
+@Schema(description = "手机号登录参数")
+public class PhoneLoginReq extends LoginReq {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 第三方登录code
+     * 手机号
      */
-    @NotBlank(message = "第三方登录code不能为空")
-    private String code;
+    @Schema(description = "手机号", example = "13811111111")
+    @NotBlank(message = "手机号不能为空")
+    @Pattern(regexp = RegexPool.MOBILE, message = "手机号格式错误")
+    private String phone;
 
     /**
-     * 第三方登录state
+     * 验证码
      */
-    @NotBlank(message = "第三方登录state不能为空")
-    private String state;
+    @Schema(description = "验证码", example = "8888")
+    @NotBlank(message = "验证码不能为空")
+    @Length(max = 4, message = "验证码非法")
+    private String captcha;
 }

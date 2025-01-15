@@ -24,34 +24,33 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * 手机号登录参数
+ * 邮箱登录参数
  *
  * @author Charles7c
- * @since 2023/10/26 22:37
+ * @since 2023/10/23 20:15
  */
 @Data
-@Schema(description = "手机号登录参数")
-public class PhoneAuthReq extends AuthReq implements Serializable {
+@Schema(description = "邮箱登录参数")
+public class EmailLoginReq extends LoginReq {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 手机号
+     * 邮箱
      */
-    @Schema(description = "手机号", example = "13811111111")
-    @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = RegexPool.MOBILE, message = "手机号格式错误")
-    private String phone;
+    @Schema(description = "邮箱", example = "123456789@qq.com")
+    @NotBlank(message = "邮箱不能为空")
+    @Pattern(regexp = RegexPool.EMAIL, message = "邮箱格式错误")
+    private String email;
 
     /**
      * 验证码
      */
-    @Schema(description = "验证码", example = "8888")
+    @Schema(description = "验证码", example = "888888")
     @NotBlank(message = "验证码不能为空")
-    @Length(max = 4, message = "验证码非法")
+    @Length(max = 6, message = "验证码非法")
     private String captcha;
 }

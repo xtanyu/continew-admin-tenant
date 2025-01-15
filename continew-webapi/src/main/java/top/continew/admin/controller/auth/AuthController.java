@@ -19,30 +19,28 @@ package top.continew.admin.controller.auth;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
+import com.xkcoding.justauth.AuthRequestFactory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.continew.admin.auth.config.AuthHandlerContext;
-import top.continew.admin.auth.model.req.AuthReq;
+import top.continew.admin.auth.model.req.LoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
 import top.continew.admin.auth.model.resp.RouteResp;
+import top.continew.admin.auth.model.resp.SocialAuthAuthorizeResp;
 import top.continew.admin.auth.model.resp.UserInfoResp;
-import top.continew.admin.auth.service.LoginService;
+import top.continew.admin.auth.service.AuthService;
 import top.continew.admin.common.context.UserContext;
 import top.continew.admin.common.context.UserContextHolder;
-import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.admin.system.model.resp.user.UserDetailResp;
-import top.continew.admin.system.service.ClientService;
 import top.continew.admin.system.service.UserService;
-import top.continew.starter.core.exception.BusinessException;
-import top.continew.starter.core.validation.ValidationUtils;
+import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.log.annotation.Log;
 
 import java.util.List;
@@ -53,50 +51,43 @@ import java.util.List;
  * @author Charles7c
  * @since 2022/12/21 20:37
  */
-@Slf4j
-@Log(module = "登录")
 @Tag(name = "认证 API")
+@Log(module = "登录")
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-    private final ClientService clientService;
 
+    private final AuthService authService;
     private final UserService userService;
-
-    private final LoginService loginService;
-
-    private final AuthHandlerContext authHandlerContext;
+    private final AuthRequestFactory authRequestFactory;
 
     @SaIgnore
-    @Operation(summary = "登录", description = "统一登录入口")
+    @Operation(summary = "登录", description = "用户登录")
     @PostMapping("/login")
-    public LoginResp login(@Validated @RequestBody AuthReq loginReq, HttpServletRequest request) {
-        // 认证类型
-        String authType = loginReq.getAuthType();
-
-        // 获取并验证客户端信息
-        ClientResp clientResp = clientService.getClientByClientId(loginReq.getClientId());
-        ValidationUtils.throwIfNull(clientResp, "客户端信息不存在,请检查客户端id是否正确!");
-
-        // 验证认证类型
-        ValidationUtils.throwIf(!clientResp.getAuthType().contains(authType), StrUtil.format("暂未授权此类型:{}", authType));
-        try {
-            // 执行登录策略
-            return (LoginResp)authHandlerContext.getHandler(authType).login(loginReq, clientResp, request);
-        } catch (Exception e) {
-            log.error("登录失败: {}", e.getMessage(), e);
-            throw new BusinessException("登录失败: " + e.getMessage());
-        }
+    public LoginResp login(@Validated @RequestBody LoginReq req, HttpServletRequest request) {
+        return authService.login(req, request);
     }
 
-    @Operation(summary = "用户退出", description = "注销用户的当前登录")
+    @Operation(summary = "登出", description = "注销用户的当前登录")
     @Parameter(name = "Authorization", description = "令牌", required = true, example = "Bearer xxxx-xxxx-xxxx-xxxx", in = ParameterIn.HEADER)
     @PostMapping("/logout")
     public Object logout() {
         Object loginId = StpUtil.getLoginId(-1L);
         StpUtil.logout();
         return loginId;
+    }
+
+    @SaIgnore
+    @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
+    @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
+    @GetMapping("/{source}")
+    public SocialAuthAuthorizeResp authorize(@PathVariable String source) {
+        AuthRequest authRequest = this.getAuthRequest(source);
+        return SocialAuthAuthorizeResp.builder()
+            .authorizeUrl(authRequest.authorize(AuthStateUtils.createState()))
+            .build();
     }
 
     @Log(ignore = true)
@@ -114,8 +105,16 @@ public class AuthController {
 
     @Log(ignore = true)
     @Operation(summary = "获取路由信息", description = "获取登录用户的路由信息")
-    @GetMapping("/route")
+    @GetMapping("/user/route")
     public List<RouteResp> listRoute() {
-        return loginService.buildRouteTree(UserContextHolder.getUserId());
+        return authService.buildRouteTree(UserContextHolder.getUserId());
+    }
+
+    private AuthRequest getAuthRequest(String source) {
+        try {
+            return authRequestFactory.get(source);
+        } catch (Exception e) {
+            throw new BadRequestException("暂不支持 [%s] 平台账号登录".formatted(source));
+        }
     }
 }

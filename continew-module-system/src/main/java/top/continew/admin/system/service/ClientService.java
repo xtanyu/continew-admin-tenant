@@ -18,18 +18,23 @@ package top.continew.admin.system.service;
 
 import top.continew.admin.system.model.query.ClientQuery;
 import top.continew.admin.system.model.req.ClientReq;
-import top.continew.admin.system.model.resp.ClientDetailResp;
 import top.continew.admin.system.model.resp.ClientResp;
 import top.continew.starter.extension.crud.service.BaseService;
 
 /**
- * 客户端管理业务接口
+ * 客户端业务接口
  *
- * @author MoChou
+ * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
-public interface ClientService extends BaseService<ClientResp, ClientDetailResp, ClientQuery, ClientReq> {
+public interface ClientService extends BaseService<ClientResp, ClientResp, ClientQuery, ClientReq> {
 
-    ClientResp getClientByClientId(String clientId);
-
+    /**
+     * 根据客户端 ID 查詢
+     *
+     * @param clientId 客戶端 ID
+     * @return 客户端信息
+     */
+    ClientResp getByClientId(String clientId);
 }

@@ -21,44 +21,39 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 /**
- * 账号登录参数
+ * 第三方账号登录参数
  *
+ * @author KAI
  * @author Charles7c
- * @since 2022/12/21 20:43
+ * @since 2024/12/25 15:43
  */
 @Data
-@Schema(description = "账号登录参数")
-public class AccountAuthReq extends AuthReq implements Serializable {
+@Schema(description = "第三方账号登录参数")
+public class SocialLoginReq extends LoginReq {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户名
+     * 第三方登录平台
      */
-    @Schema(description = "用户名", example = "zhangsan")
-    @NotBlank(message = "用户名不能为空")
-    private String username;
+    @Schema(description = "第三方登录平台", example = "gitee")
+    @NotBlank(message = "第三方登录平台不能为空")
+    private String source;
 
     /**
-     * 密码（加密）
+     * 授权码
      */
-    @Schema(description = "密码（加密）", example = "HHwZoiBwCfh0xLdWOAd0bHOkEZlIMMOQKJyeFUw9T3ArrhL57od2i42s1o0sSXKkeHPJXvQsninhPFH2lArDDQ==")
-    @NotBlank(message = "密码不能为空")
-    private String password;
+    @Schema(description = "授权码", example = "a08d33e9e577fb339de027499784ed4e871d6f62ae65b459153e906ab546bd56")
+    @NotBlank(message = "授权码不能为空")
+    private String code;
 
     /**
-     * 验证码
+     * 状态码
      */
-    @Schema(description = "验证码", example = "ABCD")
-    private String captcha;
-
-    /**
-     * 验证码标识
-     */
-    @Schema(description = "验证码标识", example = "090b9a2c-1691-4fca-99db-e4ed0cff362f")
-    private String uuid;
+    @Schema(description = "状态码", example = "2ca8d8baf437eb374efaa1191a3d")
+    @NotBlank(message = "状态码不能为空")
+    private String state;
 }

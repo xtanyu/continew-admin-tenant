@@ -18,70 +18,71 @@ package top.continew.admin.system.model.resp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.continew.admin.common.model.resp.BaseDetailResp;
 import top.continew.admin.common.enums.DisEnableStatusEnum;
-import top.continew.starter.extension.crud.model.resp.BaseResp;
 
 import java.io.Serial;
 import java.util.List;
 
 /**
- * 客户端管理信息
+ * 客户端信息
  *
- * @author MoChou
+ * @author KAI
+ * @author Charles7c
  * @since 2024/12/03 16:04
  */
 @Data
-@Schema(description = "客户端管理信息")
-public class ClientResp extends BaseResp {
+@Schema(description = "客户端信息")
+public class ClientResp extends BaseDetailResp {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 客户端ID
+     * 客户端 ID
      */
-    @Schema(description = "客户端ID")
+    @Schema(description = "客户端 ID", example = "ef51c9a3e9046c4f2ea45142c8a8344a")
     private String clientId;
 
     /**
-     * 客户端Key
+     * 客户端 Key
      */
-    @Schema(description = "客户端Key")
+    @Schema(description = "客户端 Key", example = "PC")
     private String clientKey;
 
     /**
      * 客户端秘钥
      */
-    @Schema(description = "客户端秘钥")
+    @Schema(description = "客户端秘钥", example = "dd77ab1e353a027e0d60ce3b151e8642")
     private String clientSecret;
 
     /**
      * 认证类型
      */
-    @Schema(description = "认证类型")
+    @Schema(description = "认证类型", example = "ACCOUNT")
     private List<String> authType;
 
     /**
      * 客户端类型
      */
-    @Schema(description = "客户端类型")
+    @Schema(description = "客户端类型", example = "PC")
     private String clientType;
 
     /**
-     * Token最低活跃频率（-1为不限制）
+     * Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）
      */
-    @Schema(description = "Token最低活跃频率（-1为不限制）")
-    private Integer activeTimeout;
+    @Schema(description = "Token 最低活跃频率（单位：秒，-1：不限制，永不冻结）", example = "1800")
+    private Long activeTimeout;
 
     /**
-     * Token有效期（默认30天，单位：秒）
+     * Token 有效期（单位：秒，-1：永不过期）
      */
-    @Schema(description = "Token有效期（默认30天，单位：秒）")
-    private Integer timeout;
+    @Schema(description = "Token 有效期（单位：秒，-1：永不过期）", example = "86400")
+    private Long timeout;
 
     /**
-     * 状态（1：启用；2：禁用）
+     * 状态
      */
-    @Schema(description = "状态")
+    @Schema(description = "状态", example = "1")
     private DisEnableStatusEnum status;
 }

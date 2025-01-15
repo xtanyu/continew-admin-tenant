@@ -18,6 +18,7 @@ package top.continew.admin.auth.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
@@ -30,84 +31,61 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.continew.admin.auth.AuthHandler;
+import top.continew.admin.auth.AbstractLoginHandler;
 import top.continew.admin.auth.enums.AuthTypeEnum;
-import top.continew.admin.auth.model.req.SocialAuthReq;
+import top.continew.admin.auth.model.req.SocialLoginReq;
 import top.continew.admin.auth.model.resp.LoginResp;
-import top.continew.admin.auth.service.LoginService;
 import top.continew.admin.common.constant.RegexConstants;
 import top.continew.admin.common.constant.SysConstants;
+import top.continew.admin.common.enums.DisEnableStatusEnum;
 import top.continew.admin.common.enums.GenderEnum;
+import top.continew.admin.system.enums.MessageTemplateEnum;
+import top.continew.admin.system.enums.MessageTypeEnum;
 import top.continew.admin.system.model.entity.RoleDO;
 import top.continew.admin.system.model.entity.UserDO;
 import top.continew.admin.system.model.entity.UserSocialDO;
+import top.continew.admin.system.model.req.MessageReq;
 import top.continew.admin.system.model.resp.ClientResp;
-import top.continew.admin.system.service.RoleService;
+import top.continew.admin.system.service.MessageService;
 import top.continew.admin.system.service.UserRoleService;
-import top.continew.admin.system.service.UserService;
 import top.continew.admin.system.service.UserSocialService;
+import top.continew.starter.core.autoconfigure.project.ProjectProperties;
 import top.continew.starter.core.exception.BadRequestException;
 import top.continew.starter.core.validation.ValidationUtils;
+import top.continew.starter.messaging.websocket.util.WebSocketUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 
 /**
- * 手机号认证处理器
+ * 第三方账号登录处理器
  *
  * @author KAI
+ * @author Charles7c
  * @since 2024/12/25 14:21
  */
 @Component
 @RequiredArgsConstructor
-public class SocialAuthHandler extends AbstractAuthHandler implements AuthHandler<SocialAuthReq, LoginResp> {
+public class SocialLoginHandler extends AbstractLoginHandler<SocialLoginReq> {
+
     private final AuthRequestFactory authRequestFactory;
     private final UserSocialService userSocialService;
-    private final UserService userService;
-    private final RoleService roleService;
     private final UserRoleService userRoleService;
-    private final LoginService loginService;
+    private final MessageService messageService;
+    private final ProjectProperties projectProperties;
 
-    /**
-     * 获取认证类型
-     *
-     * @return 第三方认证类型
-     */
     @Override
-    public AuthTypeEnum getAuthType() {
-        return AuthTypeEnum.SOCIAL_AUTH;
-    }
-
-    /**
-     * 校验第三方登录请求对象
-     *
-     * @param authReq 登录请求参数
-     */
-    @Override
-    public void validate(SocialAuthReq authReq) {
-        ValidationUtils.validate(authReq);
-    }
-
-    /**
-     * 第三方登录
-     *
-     * @param authReq 第三方登录请求对象
-     * @param request HTTP请求对象
-     * @return 登录响应
-     */
-    @Override
-    public LoginResp login(SocialAuthReq authReq, ClientResp clientResp, HttpServletRequest request) {
-        this.validate(authReq);
-        if (StpUtil.isLogin()) {
-            StpUtil.logout();
-        }
-        AuthRequest authRequest = this.getAuthRequest(authReq.getSource());
+    public LoginResp login(SocialLoginReq req, ClientResp client, HttpServletRequest request) {
+        // 获取第三方登录信息
+        AuthRequest authRequest = this.getAuthRequest(req.getSource());
         AuthCallback callback = new AuthCallback();
-        callback.setCode(authReq.getCode());
-        callback.setState(authReq.getState());
+        callback.setCode(req.getCode());
+        callback.setState(req.getState());
         AuthResponse<AuthUser> response = authRequest.login(callback);
         ValidationUtils.throwIf(!response.ok(), response.getMsg());
         AuthUser authUser = response.getData();
+        // 如未绑定则自动注册新用户，保存或更新关联信息
         String source = authUser.getSource();
         String openId = authUser.getUuid();
         UserSocialDO userSocial = userSocialService.getBySourceAndOpenId(source, openId);
@@ -129,26 +107,48 @@ public class SocialAuthHandler extends AbstractAuthHandler implements AuthHandle
             user.setGender(GenderEnum.valueOf(authUser.getGender().name()));
             user.setAvatar(authUser.getAvatar());
             user.setDeptId(SysConstants.SUPER_DEPT_ID);
-            Long userId = userService.add(user);
+            user.setStatus(DisEnableStatusEnum.ENABLE);
+            userService.save(user);
+            Long userId = user.getId();
             RoleDO role = roleService.getByCode(SysConstants.SUPER_ROLE_CODE);
             userRoleService.assignRolesToUser(Collections.singletonList(role.getId()), userId);
             userSocial = new UserSocialDO();
             userSocial.setUserId(userId);
             userSocial.setSource(source);
             userSocial.setOpenId(openId);
-            loginService.sendSecurityMsg(user);
+            this.sendSecurityMsg(user);
         } else {
             user = BeanUtil.copyProperties(userService.getById(userSocial.getUserId()), UserDO.class);
         }
-        loginService.checkUserStatus(user);
+        // 检查用户状态
+        super.checkUserStatus(user);
         userSocial.setMetaJson(JSONUtil.toJsonStr(authUser));
         userSocial.setLastLoginTime(LocalDateTime.now());
         userSocialService.saveOrUpdate(userSocial);
-        // 执行登录
-        String token = this.authCertificate(user, clientResp);
+        // 执行认证
+        String token = super.authenticate(user, client);
         return LoginResp.builder().token(token).build();
     }
 
+    @Override
+    public void preLogin(SocialLoginReq req, ClientResp client, HttpServletRequest request) {
+        super.preLogin(req, client, request);
+        if (StpUtil.isLogin()) {
+            StpUtil.logout();
+        }
+    }
+
+    @Override
+    public AuthTypeEnum getAuthType() {
+        return AuthTypeEnum.SOCIAL;
+    }
+
+    /**
+     * 获取 AuthRequest
+     *
+     * @param source 平台名称
+     * @return AuthRequest
+     */
     private AuthRequest getAuthRequest(String source) {
         try {
             return authRequestFactory.get(source);
@@ -158,15 +158,20 @@ public class SocialAuthHandler extends AbstractAuthHandler implements AuthHandle
     }
 
     /**
-     * 获取认证信息
+     * 发送安全消息
      *
-     * @param user       用户信息
-     * @param clientResp 客户端信息
-     * @return 认证信息
+     * @param user 用户信息
      */
-    @Override
-    protected String authCertificate(UserDO user, ClientResp clientResp) {
-        return super.authCertificate(user, clientResp);
+    private void sendSecurityMsg(UserDO user) {
+        MessageReq req = new MessageReq();
+        MessageTemplateEnum socialRegister = MessageTemplateEnum.SOCIAL_REGISTER;
+        req.setTitle(socialRegister.getTitle().formatted(projectProperties.getName()));
+        req.setContent(socialRegister.getContent().formatted(user.getNickname()));
+        req.setType(MessageTypeEnum.SECURITY);
+        messageService.add(req, CollUtil.toList(user.getId()));
+        List<String> tokenList = StpUtil.getTokenValueListByLoginId(user.getId());
+        for (String token : tokenList) {
+            WebSocketUtils.sendMessage(token, "1");
+        }
     }
-
 }
